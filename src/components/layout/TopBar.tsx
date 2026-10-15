@@ -1,0 +1,62 @@
+import type { ReactNode } from 'react'
+import { ChevronLeft } from 'lucide-react'
+import { useNavigate } from 'react-router'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+
+type TopBarProps = {
+  /** Rendered as the page's <h1> */
+  title: string
+  /** Right-aligned slot, e.g. icon buttons */
+  actions?: ReactNode
+  /** Shows a back button (for screens outside the bottom nav, like Search or a book) */
+  back?: boolean
+  className?: string
+}
+
+export function TopBar({ title, actions, back = false, className }: TopBarProps) {
+  const navigate = useNavigate()
+
+  function goBack() {
+    // react-router stores the history index; fall back to Home on a direct visit
+    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
+    if (idx > 0) navigate(-1)
+    else navigate('/', { replace: true })
+  }
+
+  return (
+    <header
+      className={cn(
+        'sticky top-0 z-40 border-b border-border bg-background/95 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-background/80',
+        className,
+      )}
+    >
+      <div className="flex h-14 items-center gap-1 px-2">
+        {back && (
+          <Button variant="ghost" size="icon" className="size-11" aria-label="Go back" onClick={goBack}>
+            <ChevronLeft className="size-6" aria-hidden="true" />
+          </Button>
+        )}
+        <h1 className={cn('min-w-0 flex-1 truncate font-heading text-xl font-bold tracking-tight', !back && 'pl-2')}>
+          {title}
+        </h1>
+        {actions && <div className="flex shrink-0 items-center gap-1">{actions}</div>}
+      </div>
+    </header>
+  )
+}
+
+type TopBarIconButtonProps = {
+  label: string
+  icon: ReactNode
+  onClick?: () => void
+}
+
+/** Icon-only action for the TopBar: 44px touch target, accessible name via aria-label */
+export function TopBarIconButton({ label, icon, onClick }: TopBarIconButtonProps) {
+  return (
+    <Button variant="ghost" size="icon" className="size-11 [&_svg]:size-5" aria-label={label} onClick={onClick}>
+      {icon}
+    </Button>
+  )
+}

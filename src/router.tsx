@@ -6,10 +6,13 @@ import { DiscoverPage } from '@/pages/DiscoverPage'
 import { HomePage } from '@/pages/HomePage'
 import { LibraryPage } from '@/pages/LibraryPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { ComponentsPage } from '@/pages/dev/ComponentsPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { SearchPage } from '@/pages/SearchPage'
 
 export const router = createBrowserRouter([
+  // Dev-only playground, outside the app shell (no bottom nav)
+  { path: '/dev/components', element: <ComponentsPage /> },
   {
     element: <AppShell />,
     children: [

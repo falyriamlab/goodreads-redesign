@@ -13,6 +13,8 @@ export type Book = {
   pace: Pace
   tropes: string[]
   coverUrl: string | null
+  /** false for upcoming books: they can't be marked read or reviewed yet */
+  isPublished: boolean
   /** null until we have real data — never fake ratings */
   avgRating: number | null
   ratingsCount: number | null

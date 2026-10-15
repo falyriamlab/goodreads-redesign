@@ -1,0 +1,113 @@
+import { create } from 'zustand'
+import { createJSONStorage, persist } from 'zustand/middleware'
+import { normalizeRating } from '@/lib/rating'
+import type { LibraryEntry, ReadingStatus } from '@/types/library'
+
+export const EMPTY_ENTRY: LibraryEntry = {
+  status: null,
+  rating: null,
+  loved: false,
+  currentPage: 0,
+  startedAt: null,
+  finishedAt: null,
+  rereads: 0,
+}
+
+const today = () => new Date().toISOString().slice(0, 10)
+
+type LibraryState = {
+  entries: Record<string, LibraryEntry>
+  setStatus: (bookId: string, status: ReadingStatus | null) => void
+  setRating: (bookId: string, rating: number | null) => void
+  toggleLoved: (bookId: string) => void
+  setProgress: (bookId: string, currentPage: number) => void
+}
+
+// Mock seed for Sofía's library (dates are mock data)
+export const LIBRARY_SEED: Record<string, LibraryEntry> = {
+  'fourth-wing': { ...EMPTY_ENTRY, status: 'reading', currentPage: 312, startedAt: '2026-10-02' },
+  'six-of-crows': { ...EMPTY_ENTRY, status: 'read', rating: 4.25, startedAt: '2026-08-03', finishedAt: '2026-08-14' },
+  'the-song-of-achilles': {
+    ...EMPTY_ENTRY,
+    status: 'read',
+    rating: 5,
+    loved: true,
+    startedAt: '2026-08-20',
+    finishedAt: '2026-08-27',
+  },
+  'book-lovers': { ...EMPTY_ENTRY, status: 'read', rating: 3.5, startedAt: '2026-09-05', finishedAt: '2026-09-11' },
+  'iron-flame': { ...EMPTY_ENTRY, status: 'want' },
+  babel: { ...EMPTY_ENTRY, status: 'want' },
+}
+
+export const useLibrary = create<LibraryState>()(
+  persist(
+    (set) => {
+      const update = (bookId: string, fn: (entry: LibraryEntry) => LibraryEntry) =>
+        set((state) => ({
+          entries: { ...state.entries, [bookId]: fn(state.entries[bookId] ?? EMPTY_ENTRY) },
+        }))
+
+      return {
+        entries: LIBRARY_SEED,
+
+        setStatus: (bookId, status) => {
+          // "Remove from shelves": drop the whole entry (rating, loved and dates included)
+          if (status === null) {
+            set((state) => {
+              const { [bookId]: _removed, ...rest } = state.entries
+              return { entries: rest }
+            })
+            return
+          }
+          update(bookId, (entry) => {
+            if (entry.status === status) return entry
+            if (status === 'reading') {
+              // Starting again after finishing counts as a reread
+              const isReread = entry.status === 'read'
+              return {
+                ...entry,
+                status,
+                startedAt: today(),
+                finishedAt: isReread ? null : entry.finishedAt,
+                currentPage: isReread ? 0 : entry.currentPage,
+                rereads: isReread ? entry.rereads + 1 : entry.rereads,
+              }
+            }
+            if (status === 'read') return { ...entry, status, finishedAt: today() }
+            return { ...entry, status }
+          })
+        },
+
+        setRating: (bookId, rating) =>
+          update(bookId, (entry) => ({ ...entry, rating: rating === null ? null : normalizeRating(rating) })),
+
+        toggleLoved: (bookId) => update(bookId, (entry) => ({ ...entry, loved: !entry.loved })),
+
+        setProgress: (bookId, currentPage) =>
+          update(bookId, (entry) => {
+            const page = Math.max(0, Math.floor(currentPage))
+            // Logging progress on an unshelved / want-to-read book means you've started it
+            const starting = entry.status === null || entry.status === 'want'
+            return {
+              ...entry,
+              currentPage: page,
+              status: starting ? 'reading' : entry.status,
+              startedAt: starting ? today() : entry.startedAt,
+            }
+          }),
+      }
+    },
+    {
+      name: 'goodreads-library',
+      version: 1,
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ entries: state.entries }),
+    },
+  ),
+)
+
+/** Entry for one book; returns a stable empty entry when the book isn't shelved */
+export function useLibraryEntry(bookId: string): LibraryEntry {
+  return useLibrary((state) => state.entries[bookId] ?? EMPTY_ENTRY)
+}

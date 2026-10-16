@@ -159,7 +159,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
 
     if (share) {
       onOpenChange(false)
-      navigate(`/share?book=${bookId}`)
+      navigate(`/share?type=book&book=${bookId}`)
     } else if (status === 'read') {
       setStep('next')
     } else {

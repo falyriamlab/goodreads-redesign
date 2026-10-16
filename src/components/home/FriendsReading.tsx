@@ -25,20 +25,15 @@ export function FriendsReading() {
               ? `${friend.name} is reading ${book.title}`
               : `${friend.name} rated ${book.title} ${formatRating(friend.rating)} stars`
           return (
-            <li key={friend.id}>
-              {/* One link per cell; its name comes from aria-label, so the visuals are hidden from AT */}
+            <li key={friend.id} className="relative">
+              {/* Book link: its name comes from aria-label, so the visuals are hidden from AT */}
               <Link
                 to={`/book/${book.id}`}
                 aria-label={label}
                 className="flex flex-col items-center gap-1.5 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
               >
-                <span aria-hidden="true" className="relative w-full">
+                <span aria-hidden="true" className="w-full">
                   <BookCover book={book} size="sm" className="w-full" />
-                  <Avatar size="sm" className="absolute -right-1.5 -bottom-1.5 ring-2 ring-background">
-                    <AvatarFallback className="bg-secondary text-[0.625rem] font-semibold text-secondary-foreground">
-                      {initials(friend.name)}
-                    </AvatarFallback>
-                  </Avatar>
                 </span>
                 <span aria-hidden="true" className="flex min-h-4 items-center">
                   {friend.status === 'reading' ? (
@@ -47,6 +42,18 @@ export function FriendsReading() {
                     <StarRating value={friend.rating} size="xs" />
                   )}
                 </span>
+              </Link>
+              {/* Profile link: a sibling over the cover corner (never nested), 44px hit area */}
+              <Link
+                to={`/u/${friend.handle}`}
+                aria-label={`${friend.name}'s profile`}
+                className="absolute -right-3 bottom-3 z-10 flex size-11 items-center justify-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+              >
+                <Avatar size="sm" className="ring-2 ring-background">
+                  <AvatarFallback className="bg-secondary text-[0.625rem] font-semibold text-secondary-foreground">
+                    {initials(friend.name)}
+                  </AvatarFallback>
+                </Avatar>
               </Link>
             </li>
           )

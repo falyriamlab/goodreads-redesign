@@ -6,6 +6,7 @@ import {
   CommunityPage,
   ComponentsPage,
   DiscoverPage,
+  EditProfilePage,
   HomePage,
   JournalPage,
   LazyPage,
@@ -14,7 +15,10 @@ import {
   ProfilePage,
   ResultsPage,
   SearchPage,
+  SettingsPage,
   SharePage,
+  StatsPage,
+  VisitorProfilePage,
 } from '@/pages/lazyPages'
 
 export const router = createBrowserRouter([
@@ -34,6 +38,10 @@ export const router = createBrowserRouter([
           { path: '/library/journal', element: <LazyPage page={JournalPage} /> },
           { path: '/community', element: <LazyPage page={CommunityPage} /> },
           { path: '/profile', element: <LazyPage page={ProfilePage} /> },
+          { path: '/profile/edit', element: <LazyPage page={EditProfilePage} /> },
+          { path: '/profile/stats', element: <LazyPage page={StatsPage} /> },
+          { path: '/settings', element: <LazyPage page={SettingsPage} /> },
+          { path: '/u/:handle', element: <LazyPage page={VisitorProfilePage} /> },
           { path: '/book/:id', element: <LazyPage page={BookPage} /> },
           { path: '/share', element: <LazyPage page={SharePage} /> },
           { path: '*', element: <LazyPage page={NotFoundPage} /> },

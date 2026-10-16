@@ -31,3 +31,13 @@ function subscribeToThemeClass(onChange: () => void) {
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
   return () => observer.disconnect()
 }
+
+/** The explicit choice saved by the pre-paint script's key, or "system" */
+export function getStoredTheme(): ThemeMode {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    return stored === 'light' || stored === 'dark' ? stored : 'system'
+  } catch {
+    return 'system'
+  }
+}

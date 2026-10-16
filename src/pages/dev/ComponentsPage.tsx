@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { getBookById } from '@/mocks/books'
 import { reviews } from '@/mocks/reviews'
-import { isDarkTheme, setTheme } from '@/lib/theme'
+import { useIsDark } from '@/lib/theme'
 import { LIBRARY_SEED, useLibrary } from '@/state/library'
 import type { Book } from '@/types/book'
 import type { ReadingStatus } from '@/types/library'
@@ -72,7 +72,9 @@ function ChipDemo({
 }
 
 export function ComponentsPage() {
-  const [dark, setDark] = useState(isDarkTheme)
+  // Theme lives in the store (Settings → Appearance); this switch is a shortcut
+  const dark = useIsDark()
+  const setThemeMode = useLibrary((s) => s.setThemeMode)
   const [rating, setRating] = useState<number | null>(4.25)
   const [unrated, setUnrated] = useState<number | null>(null)
   const [loved, setLoved] = useState(true)
@@ -87,8 +89,7 @@ export function ComponentsPage() {
           <Switch
             checked={dark}
             onCheckedChange={(checked) => {
-              setTheme(checked ? 'dark' : 'light')
-              setDark(checked)
+              setThemeMode(checked ? 'dark' : 'light')
             }}
           />
         </label>

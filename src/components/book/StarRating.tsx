@@ -3,13 +3,14 @@ import { Star } from 'lucide-react'
 import { RATING_MAX as MAX, RATING_STEP as STEP, formatRating, normalizeRating } from '@/lib/rating'
 import { cn } from '@/lib/utils'
 
-type StarSize = 'xs' | 'sm' | 'md' | 'lg'
+type StarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 const starSize: Record<StarSize, string> = {
   xs: 'size-3',
   sm: 'size-4',
   md: 'size-5',
   lg: 'size-9',
+  xl: 'size-16',
 }
 
 function ratingText(value: number): string {
@@ -17,22 +18,29 @@ function ratingText(value: number): string {
 }
 
 /** One star: outline always visible, solid fill clipped to `fill` (0–1). Filled vs empty differs by shape, not hue. */
-function StarGlyph({ fill, size }: { fill: number; size: StarSize }) {
+/** tone "current": stars take the text color (e.g. on the green Brand share card, where amber lacks contrast) */
+type Tone = 'rating' | 'current'
+const toneClass: Record<Tone, { stroke: string; fill: string }> = {
+  rating: { stroke: 'text-rating', fill: 'fill-rating text-rating' },
+  current: { stroke: 'text-current', fill: 'fill-current text-current' },
+}
+
+function StarGlyph({ fill, size, tone }: { fill: number; size: StarSize; tone: Tone }) {
   return (
     <span className={cn('relative inline-block shrink-0', starSize[size])} aria-hidden="true">
-      <Star className="absolute inset-0 size-full text-rating" strokeWidth={1.75} />
+      <Star className={cn('absolute inset-0 size-full', toneClass[tone].stroke)} strokeWidth={1.75} />
       <span className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
-        <Star className={cn('fill-rating text-rating', starSize[size])} strokeWidth={1.75} />
+        <Star className={cn(toneClass[tone].fill, starSize[size])} strokeWidth={1.75} />
       </span>
     </span>
   )
 }
 
-function Stars({ value, size }: { value: number; size: StarSize }) {
+function Stars({ value, size, tone = 'rating' }: { value: number; size: StarSize; tone?: Tone }) {
   return (
     <span className="flex">
       {Array.from({ length: MAX }, (_, i) => (
-        <StarGlyph key={i} size={size} fill={Math.min(1, Math.max(0, value - i))} />
+        <StarGlyph key={i} size={size} tone={tone} fill={Math.min(1, Math.max(0, value - i))} />
       ))}
     </span>
   )
@@ -44,6 +52,7 @@ type DisplayProps = {
   size?: StarSize
   /** Show the number next to the stars */
   showValue?: boolean
+  tone?: Tone
   className?: string
 }
 
@@ -60,14 +69,14 @@ type InputProps = {
 export function StarRating(props: DisplayProps | InputProps) {
   if (props.mode === 'input') return <StarRatingInput {...props} />
 
-  const { value, size = 'sm', showValue = false, className } = props
+  const { value, size = 'sm', showValue = false, className, tone = 'rating' } = props
   if (value === null) {
     return <span className={cn('text-xs text-muted-foreground', className)}>Not rated yet</span>
   }
   return (
     <span className={cn('inline-flex items-center gap-1.5', className)}>
       <span role="img" aria-label={`Rated ${formatRating(value)} out of 5 stars`}>
-        <Stars value={value} size={size} />
+        <Stars value={value} size={size} tone={tone} />
       </span>
       {showValue && (
         <span aria-hidden="true" className="font-mono text-xs font-medium text-foreground tabular-nums">

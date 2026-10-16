@@ -1,9 +1,12 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { todayISO } from '@/lib/date'
+import { addFavorite, moveFavorite, normalizeFavorites, removeFavorite } from '@/lib/profile'
 import { normalizeRating } from '@/lib/rating'
+import { getStoredTheme, setTheme, type ThemeMode } from '@/lib/theme'
 import { getBookById } from '@/mocks/books'
 import type { DnfReason, LibraryEntry, ReadingEvent, ReadingStatus, Shelf } from '@/types/library'
+import type { Profile } from '@/types/profile'
 
 export const EMPTY_ENTRY: LibraryEntry = {
   status: null,
@@ -137,6 +140,16 @@ type LibraryState = LibrarySnapshot & {
   libraryView: LibraryView
   setLibraryView: (view: LibraryView) => void
 
+  profile: Profile
+  updateProfile: (patch: Partial<Profile>) => void
+  addFavorite: (bookId: string) => void
+  removeFavorite: (bookId: string) => void
+  moveFavorite: (bookId: string, toIndex: number) => void
+
+  /** Light / Dark / System. Mirrored to localStorage "theme" so index.html applies it before first paint. */
+  themeMode: ThemeMode
+  setThemeMode: (mode: ThemeMode) => void
+
   setStatus: (bookId: string, status: ReadingStatus | null) => void
   setRating: (bookId: string, rating: number | null) => void
   toggleLoved: (bookId: string) => void
@@ -181,13 +194,21 @@ const SEED_READ: SeedRead[] = [
   ['the-midnight-library', '2026-04-05', '2026-04-11', 3.75],
   ['circe', '2026-05-01', '2026-05-19', 4.5],
   ['project-hail-mary', '2026-06-02', '2026-06-10', 5, true],
-  ['the-silent-patient', '2026-07-01', '2026-07-04', 3.5],
   ['people-we-meet-on-vacation', '2026-07-15', '2026-07-24', 4],
   ['six-of-crows', '2026-08-03', '2026-08-14', 4.25],
   ['the-song-of-achilles', '2026-08-20', '2026-08-27', 5, true, 1],
-  ['book-lovers', '2026-09-05', '2026-09-11', 3.5],
   ['throne-of-glass', '2026-09-22', '2026-10-01', 3],
+  ['the-silent-patient', '2026-10-02', '2026-10-06', 3.5],
+  ['book-lovers', '2026-10-05', '2026-10-12', 4],
 ]
+
+// Sofía's own reviews (mock), shown on her profile
+const SEED_REVIEWS: Record<string, string> = {
+  'the-song-of-achilles':
+    "Reread it and it wrecked me all over again. Miller makes a story you already know feel like it might end differently this time.",
+  'project-hail-mary': 'Pure joy from start to finish. The friendship at the center of this book is the best thing I read all year.',
+  'beach-read': 'Two writers trading genres for a summer. Funnier and sadder than I expected, in a good way.',
+}
 
 const SEED_WANT: [id: string, added: string][] = [
   ['iron-flame', '2026-05-30'],
@@ -205,7 +226,18 @@ export const LIBRARY_SEED: Record<string, LibraryEntry> = {
   ...Object.fromEntries(
     SEED_READ.map(([id, started, finished, rating, loved = false, rereads = 0]) => [
       id,
-      { ...EMPTY_ENTRY, status: 'read', rating, loved, rereads, everRead: true, addedAt: started, startedAt: started, finishedAt: finished },
+      {
+        ...EMPTY_ENTRY,
+        status: 'read',
+        rating,
+        loved,
+        rereads,
+        everRead: true,
+        addedAt: started,
+        startedAt: started,
+        finishedAt: finished,
+        reviewText: SEED_REVIEWS[id] ?? null,
+      },
     ]),
   ),
   'the-name-of-the-wind': {
@@ -244,6 +276,16 @@ export const SHELVES_SEED: Shelf[] = [
 ]
 
 export const WANT_ORDER_SEED = SEED_WANT.map(([id]) => id)
+
+export const PROFILE_SEED: Profile = {
+  displayName: 'Sofía Herrera',
+  handle: 'sofiareads',
+  city: 'Bogotá',
+  bio: 'Romantasy era with thriller side quests. Currently surviving Basgiath one chapter at a time.',
+  // From her Read shelf (all rated 4.5+, two of them loved)
+  favorites: ['the-song-of-achilles', 'project-hail-mary', 'circe', 'the-martian'],
+  publicSections: { reviews: true, lists: true, journal: true, stats: true },
+}
 
 const newShelfId = (name: string) =>
   `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'shelf'}-${Date.now().toString(36)}`
@@ -303,6 +345,8 @@ export const useLibrary = create<LibraryState>()(
         dismissedRecommendations: [],
         recentSearches: [],
         libraryView: 'grid',
+        profile: PROFILE_SEED,
+        themeMode: getStoredTheme(),
 
         dismiss: (bookId) =>
           set((state) =>
@@ -331,6 +375,26 @@ export const useLibrary = create<LibraryState>()(
         clearRecentSearches: () => set({ recentSearches: [] }),
 
         setLibraryView: (view) => set({ libraryView: view }),
+
+        updateProfile: (patch) =>
+          set((state) => {
+            const profile = { ...state.profile, ...patch }
+            return { profile: { ...profile, favorites: normalizeFavorites(profile.favorites), bio: profile.bio.slice(0, 160) } }
+          }),
+
+        addFavorite: (bookId) =>
+          set((state) => ({ profile: { ...state.profile, favorites: addFavorite(state.profile.favorites, bookId) } })),
+
+        removeFavorite: (bookId) =>
+          set((state) => ({ profile: { ...state.profile, favorites: removeFavorite(state.profile.favorites, bookId) } })),
+
+        moveFavorite: (bookId, toIndex) =>
+          set((state) => ({ profile: { ...state.profile, favorites: moveFavorite(state.profile.favorites, bookId, toIndex) } })),
+
+        setThemeMode: (mode) => {
+          setTheme(mode)
+          set({ themeMode: mode })
+        },
 
         setStatus: (bookId, status) => {
           // "Remove from shelves": drop the whole entry (callers snapshot it for Undo)
@@ -476,14 +540,16 @@ export const useLibrary = create<LibraryState>()(
     {
       name: 'goodreads-library',
       // v2 everRead/review/DNF; v3 dismissedRecommendations; v4 recentSearches;
-      // v5 history, shelves, wantOrder, addedAt, libraryView
-      version: 5,
+      // v5 history, shelves, wantOrder, addedAt, libraryView; v6 profile, themeMode
+      version: 6,
       migrate: (persisted, version) => {
         const state = persisted as Partial<LibrarySnapshot> & {
           entries?: Record<string, Partial<LibraryEntry>>
           dismissedRecommendations?: string[]
           recentSearches?: string[]
           libraryView?: LibraryView
+          profile?: Profile
+          themeMode?: ThemeMode
         }
         const entries: Record<string, LibraryEntry> = {}
         for (const [id, entry] of Object.entries(state.entries ?? {})) {
@@ -503,6 +569,8 @@ export const useLibrary = create<LibraryState>()(
           dismissedRecommendations: state.dismissedRecommendations ?? [],
           recentSearches: state.recentSearches ?? [],
           libraryView: state.libraryView ?? 'grid',
+          profile: state.profile ?? PROFILE_SEED,
+          themeMode: state.themeMode ?? getStoredTheme(),
         }
       },
       storage: createJSONStorage(() => localStorage),
@@ -514,6 +582,8 @@ export const useLibrary = create<LibraryState>()(
         dismissedRecommendations: state.dismissedRecommendations,
         recentSearches: state.recentSearches,
         libraryView: state.libraryView,
+        profile: state.profile,
+        themeMode: state.themeMode,
       }),
     },
   ),

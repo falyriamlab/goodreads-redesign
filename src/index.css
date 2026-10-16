@@ -85,7 +85,9 @@
  *   Never use it for text either.
  * - States must never be told apart by hue alone: pair color with weight, fill, shape or a label.
  */
-:root {
+/* .theme-light / .theme-dark force a palette on a subtree (e.g. share cards), regardless of the app theme */
+:root,
+.theme-light {
     --background: oklch(0.9824 0.0013 286.3757);
     --foreground: oklch(0.3211 0 0);
     --card: oklch(1.0000 0 0);
@@ -142,7 +144,8 @@
     --tracking-normal: 0em;
 }
 
-.dark {
+.dark,
+.theme-dark {
     --background: oklch(0.2303 0.0125 264.2926);
     --foreground: oklch(0.9219 0 0);
     --card: oklch(0.3210 0.0078 223.6661);

@@ -56,7 +56,7 @@ function BookDetails({ book }: { book: Book }) {
           <TopBarIconButton
             label={`Share ${book.title}`}
             icon={<Share2 aria-hidden="true" />}
-            onClick={() => navigate(`/share?book=${book.id}`)}
+            onClick={() => navigate(`/share?type=book&book=${book.id}`)}
           />
         }
       />

@@ -22,6 +22,8 @@ export function RootLayout() {
             toast: 'cn-toast font-sans',
             // Undo needs a real touch target (sonner's default button is 24px tall)
             actionButton: 'h-11! min-w-11! px-4! text-sm! font-semibold!',
+            // Second action (e.g. "Change shelf"): theme tokens, same 44px target
+            cancelButton: 'h-11! min-w-11! px-4! text-sm! font-semibold! bg-muted! text-foreground! border! border-border!',
           },
         }}
       />

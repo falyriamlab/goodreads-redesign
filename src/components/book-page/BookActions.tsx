@@ -13,7 +13,7 @@ import type { Book } from '@/types/book'
 
 export function BookActions({ book }: { book: Book }) {
   const entry = useLibraryEntry(book.id)
-  const changeStatus = useShelfActions()
+  const { changeStatus, quickAdd } = useShelfActions()
   const toggleLoved = useLibrary((s) => s.toggleLoved)
   const setRating = useLibrary((s) => s.setRating)
   const logSheet = useLogSheet()
@@ -39,6 +39,7 @@ export function BookActions({ book }: { book: Book }) {
           label={isReading ? `Reading · p. ${entry.currentPage}` : undefined}
           isPublished={book.isPublished}
           onStatusChange={(status) => changeStatus(book.id, status)}
+      onQuickAdd={(openMenu) => quickAdd(book.id, openMenu)}
           onRequestLog={(bookId, intent, trigger) => logSheet.open(bookId, { intent, returnFocus: trigger })}
           className="flex-1"
         />

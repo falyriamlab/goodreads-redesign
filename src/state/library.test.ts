@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { getChallengeProgress } from '@/lib/challenge'
 import { todayISO } from '@/lib/date'
-import { LIBRARY_SEED, useLibrary, type LogPayload } from './library'
+import { HISTORY_SEED, LIBRARY_SEED, SHELVES_SEED, useLibrary, WANT_ORDER_SEED, type LogPayload } from './library'
 
 const basePayload: LogPayload = {
   status: 'read',
@@ -21,7 +21,12 @@ const entry = (id: string) => store().entries[id]
 
 beforeEach(() => {
   localStorage.clear()
-  useLibrary.setState({ entries: structuredClone(LIBRARY_SEED) })
+  useLibrary.setState({
+    entries: structuredClone(LIBRARY_SEED),
+    history: structuredClone(HISTORY_SEED),
+    shelves: structuredClone(SHELVES_SEED),
+    wantOrder: [...WANT_ORDER_SEED],
+  })
 })
 
 describe('library store', () => {

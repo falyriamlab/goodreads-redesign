@@ -27,6 +27,8 @@ type BookCardProps = {
   authorContent?: ReactNode
   /** Small line under the card, e.g. why it matched the filters */
   caption?: string
+  /** Row variant: replaces the series line (e.g. rating + "Read Mar 12") */
+  details?: ReactNode
   /** Called when the book link is followed (e.g. save a recent search) */
   onOpen?: () => void
   className?: string
@@ -48,11 +50,12 @@ export function BookCard({
   titleContent,
   authorContent,
   caption,
+  details,
   onOpen,
   className,
 }: BookCardProps) {
   const entry = useLibraryEntry(book.id)
-  const changeStatus = useShelfActions()
+  const { changeStatus, quickAdd } = useShelfActions()
   const logSheet = useLogSheet()
   const href = `/book/${book.id}`
 
@@ -62,6 +65,7 @@ export function BookCard({
       bookTitle={book.title}
       status={entry.status}
       onStatusChange={(status) => changeStatus(book.id, status)}
+      onQuickAdd={(openMenu) => quickAdd(book.id, openMenu)}
       onRequestLog={
         onRequestLog ?? ((bookId, intent, trigger) => logSheet.open(bookId, { intent, returnFocus: trigger }))
       }
@@ -83,11 +87,12 @@ export function BookCard({
             </Link>
           </h3>
           <p className="truncate text-xs text-muted-foreground">{authorContent ?? book.author}</p>
-          {book.series && (
-            <p className="truncate text-xs text-muted-foreground">
-              {book.series} #{book.seriesNumber}
-            </p>
-          )}
+          {details ??
+            (book.series && (
+              <p className="truncate text-xs text-muted-foreground">
+                {book.series} #{book.seriesNumber}
+              </p>
+            ))}
         </div>
         {chip}
       </article>
@@ -108,7 +113,7 @@ export function BookCard({
           </span>
         </Link>
         <div className="mt-6 flex h-4 justify-center">
-          {entry.rating !== null && <StarRating value={entry.rating} size="sm" />}
+          {entry.rating !== null && <StarRating value={entry.rating} size="xs" />}
         </div>
       </article>
     )

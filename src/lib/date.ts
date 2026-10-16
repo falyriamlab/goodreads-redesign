@@ -20,3 +20,10 @@ export function formatRelative(iso: string, now = new Date()): string {
 export function formatDate(iso: string): string {
   return new Date(`${iso}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
+
+/** "Mar 12" (adds the year when it isn't the current one: "Mar 12, 2025") */
+export function formatShortDate(iso: string, now = new Date()): string {
+  const d = new Date(`${iso}T00:00:00`)
+  const sameYear = d.getFullYear() === now.getFullYear()
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', ...(sameYear ? {} : { year: 'numeric' }) })
+}

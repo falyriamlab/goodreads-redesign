@@ -9,6 +9,7 @@ export type LibraryEntry = {
   loved: boolean
   currentPage: number
   /** ISO dates (YYYY-MM-DD) */
+  addedAt: string | null
   startedAt: string | null
   finishedAt: string | null
   rereads: number
@@ -18,4 +19,25 @@ export type LibraryEntry = {
   containsSpoilers: boolean
   dnfPage: number | null
   dnfReason: DnfReason | null
+}
+
+/** One line in the reading journal */
+export type ReadingEvent = {
+  id: string
+  bookId: string
+  type: 'started' | 'finished' | 'dnf'
+  /** ISO date */
+  date: string
+  /** Rating at the time it was finished */
+  rating?: number | null
+  /** Page where a DNF stopped */
+  dnfPage?: number | null
+  isReread: boolean
+}
+
+/** User-made shelf ("Kindle", "Borrowed"…). A book can be on many. */
+export type Shelf = {
+  id: string
+  name: string
+  bookIds: string[]
 }

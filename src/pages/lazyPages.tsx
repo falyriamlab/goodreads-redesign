@@ -6,6 +6,7 @@ export const HomePage = lazy(() => import('./HomePage').then((m) => ({ default: 
 export const DiscoverPage = lazy(() => import('./DiscoverPage').then((m) => ({ default: m.DiscoverPage })))
 export const ResultsPage = lazy(() => import('./ResultsPage').then((m) => ({ default: m.ResultsPage })))
 export const SearchPage = lazy(() => import('./SearchPage').then((m) => ({ default: m.SearchPage })))
+export const JournalPage = lazy(() => import('./JournalPage').then((m) => ({ default: m.JournalPage })))
 export const LibraryPage = lazy(() => import('./LibraryPage').then((m) => ({ default: m.LibraryPage })))
 export const CommunityPage = lazy(() => import('./CommunityPage').then((m) => ({ default: m.CommunityPage })))
 export const ProfilePage = lazy(() => import('./ProfilePage').then((m) => ({ default: m.ProfilePage })))

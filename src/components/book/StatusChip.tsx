@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react'
 import { ChevronDown, Plus, Trash2 } from 'lucide-react'
 import type { ReadingStatus } from '@/types/library'
 import {
@@ -35,6 +35,11 @@ type StatusChipProps = {
    * primary: full-width primary button (book page)
    */
   variant?: 'chip' | 'compact' | 'primary'
+  /**
+   * Unshelved books: one tap adds straight to Want to read instead of opening the menu.
+   * Receives a function that opens this chip's menu (for the toast's "Change shelf").
+   */
+  onQuickAdd?: (openMenu: () => void) => void
   /** Replaces the visible label, e.g. "Reading · p. 312" */
   label?: string
   className?: string
@@ -48,12 +53,16 @@ export function StatusChip({
   status,
   onStatusChange,
   onRequestLog,
+  onQuickAdd,
   isPublished = true,
   variant = 'chip',
   label,
   className,
 }: StatusChipProps) {
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const [open, setOpen] = useState(false)
+  const quick = status === null && onQuickAdd !== undefined
+  const openMenu = () => setOpen(true)
   // Read/DNF hand off to the log sheet, but only once the menu has fully closed:
   // otherwise the closing menu pulls focus back to its trigger, outside the sheet
   const pendingLogRef = useRef<'read' | 'dnf' | null>(null)
@@ -63,6 +72,22 @@ export function StatusChip({
   const ariaLabel = status
     ? `${label ?? fullLabel}, change shelf for ${bookTitle}`
     : `Add ${bookTitle} to Want to read`
+
+  // Quick add intercepts the trigger before Radix opens the menu (preventDefault skips its handler)
+  const quickHandlers = quick
+    ? {
+        onPointerDown: (e: PointerEvent) => e.preventDefault(),
+        onClick: (e: MouseEvent) => {
+          // detail 0 = keyboard-generated click, already handled in onKeyDown
+          if (e.detail !== 0) onQuickAdd(openMenu)
+        },
+        onKeyDown: (e: KeyboardEvent) => {
+          if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'ArrowDown') return
+          e.preventDefault()
+          onQuickAdd(openMenu)
+        },
+      }
+    : {}
 
   function choose(next: string) {
     const value = next as ReadingStatus
@@ -74,9 +99,10 @@ export function StatusChip({
   }
 
   return (
-    <DropdownMenu modal={false}>
+    <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
         ref={triggerRef}
+        {...quickHandlers}
         aria-label={ariaLabel}
         className={cn(
           'relative inline-flex max-w-full min-w-11 items-center justify-center font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50',

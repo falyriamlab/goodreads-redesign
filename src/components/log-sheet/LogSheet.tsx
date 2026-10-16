@@ -73,7 +73,8 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
   const book = getBookById(bookId) as Book
   const navigate = useNavigate()
   const logBook = useLibrary((s) => s.logBook)
-  const restoreEntry = useLibrary((s) => s.restoreEntry)
+  const takeSnapshot = useLibrary((s) => s.takeSnapshot)
+  const restoreSnapshot = useLibrary((s) => s.restoreSnapshot)
   const setStatusInStore = useLibrary((s) => s.setStatus)
   const entries = useLibrary((s) => s.entries)
 
@@ -140,7 +141,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
 
   function save(share: boolean) {
     if (dateError) return
-    const snapshot = useLibrary.getState().entries[bookId]
+    const snapshot = takeSnapshot()
     logBook(bookId, {
       status,
       startedAt: startedAt || null,
@@ -154,7 +155,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
       isReread,
     })
     if (reviewAllowed) writeDraft(bookId, null)
-    toast('Logged.', { action: { label: 'Undo', onClick: () => restoreEntry(bookId, snapshot) } })
+    toast('Logged.', { action: { label: 'Undo', onClick: () => restoreSnapshot(snapshot) } })
 
     if (share) {
       onOpenChange(false)

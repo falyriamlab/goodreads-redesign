@@ -1,6 +1,7 @@
 import type { Book } from '@/types/book'
 
-// Page counts are approximate (they vary by edition).
+// Page counts are approximate (they vary by edition). Editions are illustrative, not exhaustive.
+// Synopses are short neutral summaries written for this project (no quoted book text).
 // Ratings and ratings counts stay null on purpose: no made-up numbers.
 export const books: Book[] = [
   {
@@ -13,6 +14,15 @@ export const books: Book[] = [
     moods: ['adventurous', 'dark', 'tense'],
     pace: 'fast',
     tropes: ['dragons', 'military academy', 'enemies to lovers', 'forced proximity'],
+    synopsis:
+      "Violet Sorrengail expected a quiet life as a scribe, until she is ordered into Basgiath War College to train as a dragon rider, where cadets either bond with a dragon or don't make it out.",
+    contentWarnings: ['violence', 'death', 'war', 'sexual content'],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+      { language: 'Spanish', format: 'paperback' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,
@@ -28,6 +38,15 @@ export const books: Book[] = [
     moods: ['adventurous', 'dark', 'emotional'],
     pace: 'fast',
     tropes: ['dragons', 'military academy', 'secret rebellion', 'established couple'],
+    synopsis:
+      "Violet returns to Basgiath for her second year, where new leadership, harder training and dangerous secrets put every alliance she has made to the test.",
+    contentWarnings: ['violence', 'death', 'war', 'sexual content'],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+      { language: 'Spanish', format: 'paperback' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,
@@ -43,6 +62,15 @@ export const books: Book[] = [
     moods: ['adventurous', 'dark', 'tense'],
     pace: 'fast',
     tropes: ['dragons', 'quest', 'found family', 'war'],
+    synopsis:
+      "With war closing in, Violet leaves Basgiath to look for allies beyond Navarre's borders, racing to find a way to protect everyone she loves.",
+    contentWarnings: ['violence', 'death', 'war', 'sexual content'],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+      { language: 'Spanish', format: 'paperback' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,
@@ -58,6 +86,13 @@ export const books: Book[] = [
     moods: ['adventurous', 'dark', 'mysterious'],
     pace: 'medium',
     tropes: ['fae', 'beauty and the beast retelling', 'curse'],
+    synopsis: null,
+    contentWarnings: [],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,
@@ -73,6 +108,13 @@ export const books: Book[] = [
     moods: ['adventurous', 'dark', 'tense'],
     pace: 'medium',
     tropes: ['heist', 'found family', 'morally grey characters', 'multiple POV'],
+    synopsis: null,
+    contentWarnings: [],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,
@@ -88,6 +130,13 @@ export const books: Book[] = [
     moods: ['adventurous', 'dark', 'mysterious'],
     pace: 'medium',
     tropes: ['fae', 'enemies to lovers', 'court intrigue'],
+    synopsis: null,
+    contentWarnings: [],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,
@@ -103,6 +152,13 @@ export const books: Book[] = [
     moods: ['adventurous', 'dark', 'tense'],
     pace: 'fast',
     tropes: ['mechs', 'revenge', 'polyamory', 'historical reimagining'],
+    synopsis: null,
+    contentWarnings: [],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+    ],
     coverUrl: null,
     // TEST FIXTURE: Iron Widow is actually published (2021). Flipped to false
     // to exercise the unpublished-book review rule until we have a real upcoming title.
@@ -120,6 +176,13 @@ export const books: Book[] = [
     moods: ['challenging', 'dark', 'reflective'],
     pace: 'slow',
     tropes: ['dark academia', 'magic system', 'colonialism'],
+    synopsis: null,
+    contentWarnings: [],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,
@@ -135,6 +198,13 @@ export const books: Book[] = [
     moods: ['emotional', 'reflective', 'sad'],
     pace: 'medium',
     tropes: ['greek mythology retelling', 'friends to lovers', 'tragedy'],
+    synopsis: null,
+    contentWarnings: [],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,
@@ -150,6 +220,13 @@ export const books: Book[] = [
     moods: ['emotional', 'reflective', 'mysterious'],
     pace: 'medium',
     tropes: ['old hollywood', 'secret relationship', 'dual timeline'],
+    synopsis: null,
+    contentWarnings: [],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,
@@ -165,6 +242,13 @@ export const books: Book[] = [
     moods: ['funny', 'lighthearted', 'emotional'],
     pace: 'medium',
     tropes: ['enemies to lovers', 'royalty', 'secret relationship'],
+    synopsis: null,
+    contentWarnings: [],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,
@@ -180,6 +264,13 @@ export const books: Book[] = [
     moods: ['funny', 'lighthearted', 'emotional'],
     pace: 'medium',
     tropes: ['rivals to lovers', 'small town', 'publishing world'],
+    synopsis: null,
+    contentWarnings: [],
+    editions: [
+      { language: 'English', format: 'hardcover' },
+      { language: 'English', format: 'ebook' },
+      { language: 'English', format: 'audiobook' },
+    ],
     coverUrl: null,
     isPublished: true,
     avgRating: null,

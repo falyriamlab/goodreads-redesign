@@ -26,8 +26,6 @@ const brokenImage: Book = {
   coverUrl: 'https://covers.openlibrary.org/b/isbn/0000000000-M.jpg?default=false',
 }
 
-const logRequest = (bookId: string) => console.log('[onRequestLog]', bookId)
-
 function Section({ title, note, children }: { title: string; note?: string; children: ReactNode }) {
   return (
     <section className="space-y-3 border-b border-border px-4 py-6">
@@ -49,17 +47,25 @@ function Labeled({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-function ChipDemo({ initial, published = true }: { initial: ReadingStatus | null; published?: boolean }) {
+function ChipDemo({
+  initial,
+  published = true,
+  variant = 'chip',
+}: {
+  initial: ReadingStatus | null
+  published?: boolean
+  variant?: 'chip' | 'compact' | 'primary'
+}) {
   const [status, setStatus] = useState(initial)
   return (
-    <Labeled label={`${initial ?? 'null'}${published ? '' : ' · unpublished'}`}>
+    <Labeled label={`${variant} · ${initial ?? 'null'}${published ? '' : ' · unpublished'}`}>
       <StatusChip
         bookId="fourth-wing"
         bookTitle="Fourth Wing"
         status={status}
         onStatusChange={setStatus}
-        onRequestLog={logRequest}
         isPublished={published}
+        variant={variant}
       />
     </Labeled>
   )
@@ -112,7 +118,7 @@ export function ComponentsPage() {
         </div>
       </Section>
 
-      <Section title="StatusChip" note="Tap to open the menu. Read / DNF fire onRequestLog (see console).">
+      <Section title="StatusChip" note="Local state only. In BookCard and the book page, Read / DNF open the log sheet.">
         <div className="flex flex-wrap gap-x-4 gap-y-5">
           <ChipDemo initial={null} />
           <ChipDemo initial="want" />
@@ -120,13 +126,18 @@ export function ComponentsPage() {
           <ChipDemo initial="read" />
           <ChipDemo initial="dnf" />
           <ChipDemo initial="want" published={false} />
+          <ChipDemo initial={null} variant="compact" />
+          <ChipDemo initial="reading" variant="compact" />
+        </div>
+        <div className="w-full">
+          <ChipDemo initial="reading" variant="primary" />
         </div>
       </Section>
 
       <Section title="BookCard · default" note="Connected to the library store (persisted).">
         <div className="flex gap-4 overflow-x-auto pb-2">
           {['fourth-wing', 'six-of-crows', 'iron-flame', 'onyx-storm'].map((id) => (
-            <BookCard key={id} book={book(id)} onRequestLog={logRequest} />
+            <BookCard key={id} book={book(id)} />
           ))}
         </div>
       </Section>
@@ -134,7 +145,7 @@ export function ComponentsPage() {
       <Section title="BookCard · grid" note="Library: cover, chip and stars.">
         <div className="grid grid-cols-3 gap-x-3 gap-y-4">
           {['fourth-wing', 'six-of-crows', 'the-song-of-achilles', 'book-lovers', 'babel', 'iron-widow'].map((id) => (
-            <BookCard key={id} book={book(id)} variant="grid" onRequestLog={logRequest} />
+            <BookCard key={id} book={book(id)} variant="grid" />
           ))}
         </div>
       </Section>
@@ -142,7 +153,7 @@ export function ComponentsPage() {
       <Section title="BookCard · row" note="Search results.">
         <div className="divide-y divide-border">
           {['fourth-wing', 'babel', 'red-white-and-royal-blue', 'iron-widow'].map((id) => (
-            <BookCard key={id} book={book(id)} variant="row" onRequestLog={logRequest} />
+            <BookCard key={id} book={book(id)} variant="row" />
           ))}
         </div>
         <Button variant="outline" size="lg" className="min-h-11" onClick={() => useLibrary.setState({ entries: LIBRARY_SEED })}>

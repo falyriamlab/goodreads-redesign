@@ -4,32 +4,34 @@ import { cn } from '@/lib/utils'
 type LovedButtonProps = {
   pressed: boolean
   onPressedChange: (pressed: boolean) => void
-  /** Icon-only version; the label then lives in aria-label */
+  /** Icon-only version */
   iconOnly?: boolean
   className?: string
 }
 
+/**
+ * Toggle button: the accessible name stays "Love it" and aria-pressed carries the state
+ * (WAI-ARIA: a toggle's label shouldn't change). "Obsessed" is visual-only flavor text.
+ */
 export function LovedButton({ pressed, onPressedChange, iconOnly = false, className }: LovedButtonProps) {
-  const label = pressed ? 'Obsessed' : 'Love it'
-
   return (
     <button
       type="button"
       aria-pressed={pressed}
-      aria-label={iconOnly ? label : undefined}
+      aria-label="Love it"
       onClick={() => onPressedChange(!pressed)}
       className={cn(
-        'inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
+        'inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full text-sm text-foreground transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
         !iconOnly && 'border px-4',
-        // Pressed state = filled heart + bold label + filled surface (not hue alone)
+        // Pressed = filled heart + bold label + filled surface (not hue alone)
         pressed
-          ? cn('font-semibold text-foreground', !iconOnly && 'border-foreground bg-muted')
-          : cn('font-medium text-foreground', !iconOnly && 'border-input bg-background hover:bg-muted'),
+          ? cn('font-semibold', !iconOnly && 'border-foreground bg-muted')
+          : cn('font-medium', iconOnly ? 'hover:bg-muted' : 'border-input bg-background hover:bg-muted'),
         className,
       )}
     >
       <Heart className={cn('size-5', pressed && 'fill-current')} strokeWidth={2} aria-hidden="true" />
-      {!iconOnly && <span>{label}</span>}
+      {!iconOnly && <span aria-hidden="true">{pressed ? 'Obsessed' : 'Love it'}</span>}
     </button>
   )
 }

@@ -1,0 +1,110 @@
+import { useId, useState } from 'react'
+import { PenLine } from 'lucide-react'
+import { ReviewCard } from '@/components/book/ReviewCard'
+import { useLogSheet } from '@/components/log-sheet/context'
+import { Button } from '@/components/ui/button'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { getReviewsForBook } from '@/mocks/reviews'
+import { useLibraryEntry } from '@/state/library'
+import type { Book } from '@/types/book'
+
+type Filter = 'friends' | 'popular' | 'recent' | 'no-spoilers'
+
+const filters: { value: Filter; label: string }[] = [
+  { value: 'friends', label: 'Friends' },
+  { value: 'popular', label: 'Popular' },
+  { value: 'recent', label: 'Recent' },
+  { value: 'no-spoilers', label: 'No spoilers' },
+]
+
+const PREVIEW_COUNT = 3
+
+const toggleOnClass =
+  'min-h-11 border-muted-foreground px-3 font-medium data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:font-semibold data-[state=on]:text-background'
+
+export function ReviewsSection({ book }: { book: Book }) {
+  const headingId = useId()
+  const listId = useId()
+  const logSheet = useLogSheet()
+  const entry = useLibraryEntry(book.id)
+  const [active, setActive] = useState<Filter[]>(['popular'])
+  const [showAll, setShowAll] = useState(false)
+
+  const all = getReviewsForBook(book.id)
+  let list = all
+  if (active.includes('friends')) list = list.filter((r) => r.author.isFriend)
+  if (active.includes('no-spoilers')) list = list.filter((r) => !r.containsSpoilers)
+  if (active.includes('popular')) list = [...list].sort((a, b) => b.likes - a.likes)
+  if (active.includes('recent')) list = [...list].sort((a, b) => b.postedAt.localeCompare(a.postedAt))
+  const visible = showAll ? list : list.slice(0, PREVIEW_COUNT)
+
+  function onFiltersChange(next: string[]) {
+    const added = next.filter((v) => !active.includes(v as Filter))
+    // Popular and Recent are both sort orders: picking one drops the other
+    let result = next as Filter[]
+    if (added.includes('popular')) result = result.filter((v) => v !== 'recent')
+    if (added.includes('recent')) result = result.filter((v) => v !== 'popular')
+    setActive(result)
+  }
+
+  return (
+    <section aria-labelledby={headingId} className="space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <h2 id={headingId} className="text-lg font-bold tracking-tight">
+          Reviews
+        </h2>
+        <Button
+          variant="outline"
+          className="min-h-11 border-muted-foreground"
+          onClick={(e) =>
+            logSheet.open(book.id, {
+              focus: 'review',
+              intent: entry.status ?? undefined,
+              returnFocus: e.currentTarget,
+            })
+          }
+        >
+          <PenLine aria-hidden="true" />
+          Write a review
+        </Button>
+      </div>
+
+      <ToggleGroup
+        type="multiple"
+        variant="outline"
+        aria-label="Filter and sort reviews"
+        value={active}
+        onValueChange={onFiltersChange}
+        className="flex w-full flex-wrap"
+      >
+        {filters.map((f) => (
+          <ToggleGroupItem key={f.value} value={f.value} className={toggleOnClass}>
+            {f.label}
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
+
+      <div id={listId} className="space-y-3">
+        {visible.length === 0 ? (
+          <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+            No reviews match these filters. Try loosening them up.
+          </p>
+        ) : (
+          visible.map((review) => <ReviewCard key={review.id} review={review} />)
+        )}
+      </div>
+
+      {list.length > PREVIEW_COUNT && (
+        <Button
+          variant="outline"
+          className="min-h-11 w-full border-muted-foreground"
+          aria-expanded={showAll}
+          aria-controls={listId}
+          onClick={() => setShowAll((v) => !v)}
+        >
+          {showAll ? 'Show fewer reviews' : `See all ${list.length} reviews`}
+        </Button>
+      )}
+    </section>
+  )
+}

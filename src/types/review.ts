@@ -4,6 +4,8 @@ export type Review = {
   author: {
     name: string
     avatarUrl: string | null
+    /** Followed by the current user (powers the Friends filter) */
+    isFriend: boolean
   }
   /** Reviewer's own rating, 0–5 in 0.25 steps */
   rating: number | null
@@ -13,6 +15,6 @@ export type Review = {
   verifiedRead: boolean
   likes: number
   replies: number
-  /** Relative label for now, e.g. "2d" */
-  postedAgo: string
+  /** ISO date */
+  postedAt: string
 }

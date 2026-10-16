@@ -5,23 +5,25 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 type TopBarProps = {
-  /** Rendered as the page's <h1> */
-  title: string
+  /** Rendered as the page's <h1>. Omit when the page has its own <h1> (e.g. the book hero). */
+  title?: string
   /** Right-aligned slot, e.g. icon buttons */
   actions?: ReactNode
   /** Shows a back button (for screens outside the bottom nav, like Search or a book) */
   back?: boolean
+  /** Where Back goes on a direct visit with no history */
+  backFallback?: string
   className?: string
 }
 
-export function TopBar({ title, actions, back = false, className }: TopBarProps) {
+export function TopBar({ title, actions, back = false, backFallback = '/', className }: TopBarProps) {
   const navigate = useNavigate()
 
   function goBack() {
-    // react-router stores the history index; fall back to Home on a direct visit
+    // react-router stores the history index; fall back on a direct visit
     const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
     if (idx > 0) navigate(-1)
-    else navigate('/', { replace: true })
+    else navigate(backFallback, { replace: true })
   }
 
   return (
@@ -37,9 +39,13 @@ export function TopBar({ title, actions, back = false, className }: TopBarProps)
             <ChevronLeft className="size-6" aria-hidden="true" />
           </Button>
         )}
-        <h1 className={cn('min-w-0 flex-1 truncate font-heading text-xl font-bold tracking-tight', !back && 'pl-2')}>
-          {title}
-        </h1>
+        {title ? (
+          <h1 className={cn('min-w-0 flex-1 truncate font-heading text-xl font-bold tracking-tight', !back && 'pl-2')}>
+            {title}
+          </h1>
+        ) : (
+          <div className="flex-1" />
+        )}
         {actions && <div className="flex shrink-0 items-center gap-1">{actions}</div>}
       </div>
     </header>

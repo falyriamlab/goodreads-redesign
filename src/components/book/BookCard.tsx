@@ -1,10 +1,12 @@
 import { Link } from 'react-router'
 import type { Book } from '@/types/book'
-import { useLibrary, useLibraryEntry } from '@/state/library'
+import { useLogSheet } from '@/components/log-sheet/context'
+import { useLibraryEntry } from '@/state/library'
+import { useShelfActions } from '@/state/useShelfActions'
 import { cn } from '@/lib/utils'
 import { BookCover } from './BookCover'
 import { StarRating } from './StarRating'
-import { StatusChip } from './StatusChip'
+import { StatusChip, type LogRequest } from './StatusChip'
 
 type BookCardProps = {
   book: Book
@@ -14,7 +16,8 @@ type BookCardProps = {
    * row:     small cover + text + chip on the right (Search)
    */
   variant?: 'default' | 'grid' | 'row'
-  onRequestLog?: (bookId: string) => void
+  /** Defaults to opening the LogSheet */
+  onRequestLog?: LogRequest
   className?: string
 }
 
@@ -26,11 +29,10 @@ type BookCardProps = {
 const stretchedLink =
   "outline-none after:absolute after:inset-0 after:z-0 after:rounded-lg after:content-[''] focus-visible:after:ring-3 focus-visible:after:ring-ring/50"
 
-const defaultLog = (bookId: string) => console.log('[onRequestLog]', bookId)
-
-export function BookCard({ book, variant = 'default', onRequestLog = defaultLog, className }: BookCardProps) {
+export function BookCard({ book, variant = 'default', onRequestLog, className }: BookCardProps) {
   const entry = useLibraryEntry(book.id)
-  const setStatus = useLibrary((s) => s.setStatus)
+  const changeStatus = useShelfActions()
+  const logSheet = useLogSheet()
   const href = `/book/${book.id}`
 
   const chip = (
@@ -38,8 +40,12 @@ export function BookCard({ book, variant = 'default', onRequestLog = defaultLog,
       bookId={book.id}
       bookTitle={book.title}
       status={entry.status}
-      onStatusChange={(status) => setStatus(book.id, status)}
-      onRequestLog={onRequestLog}
+      onStatusChange={(status) => changeStatus(book.id, status)}
+      onRequestLog={
+        onRequestLog ?? ((bookId, intent, trigger) => logSheet.open(bookId, { intent, returnFocus: trigger }))
+      }
+      // Carousels and grids: the chip can never be wider than the cover
+      variant={variant === 'row' ? 'chip' : 'compact'}
       isPublished={book.isPublished}
       className="relative z-10 shrink-0"
     />

@@ -1,8 +1,10 @@
-import { useId, useLayoutEffect, useRef, useState } from 'react'
+import { useId, useState } from 'react'
 import { BadgeCheck, EyeOff, Heart, MessageCircle, ThumbsUp } from 'lucide-react'
 import type { Review } from '@/types/review'
+import { ClampText } from '@/components/common/ClampText'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { formatRelative } from '@/lib/date'
 import { cn } from '@/lib/utils'
 import { StarRating } from './StarRating'
 
@@ -22,21 +24,7 @@ const initials = (name: string) =>
 export function ReviewCard({ review, className }: ReviewCardProps) {
   const textId = useId()
   const [revealed, setRevealed] = useState(!review.containsSpoilers)
-  const [expanded, setExpanded] = useState(false)
-  const [overflowing, setOverflowing] = useState(false)
   const [liked, setLiked] = useState(false)
-  const textRef = useRef<HTMLParagraphElement>(null)
-
-  // Only offer "Read more" when the 4-line clamp actually cuts text off
-  useLayoutEffect(() => {
-    const el = textRef.current
-    if (!el || expanded) return
-    const measure = () => setOverflowing(el.scrollHeight > el.clientHeight + 1)
-    measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [expanded, revealed])
 
   return (
     <article className={cn('space-y-3 rounded-lg border border-border bg-card p-4 text-card-foreground', className)}>
@@ -48,7 +36,10 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex items-center gap-2">
             <h3 className="truncate text-sm font-semibold">{review.author.name}</h3>
-            <span className="text-xs text-muted-foreground">· {review.postedAgo}</span>
+            {review.author.isFriend && <span className="text-xs font-medium">· Friend</span>}
+            <span className="text-xs text-muted-foreground">
+              · <time dateTime={review.postedAt}>{formatRelative(review.postedAt)}</time>
+            </span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <StarRating value={review.rating} size="sm" showValue />
@@ -82,22 +73,9 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
       )}
 
       <div id={textId} hidden={!revealed}>
-        <p
-          ref={textRef}
-          className={cn('font-serif text-[0.9375rem] leading-relaxed whitespace-pre-line', !expanded && 'line-clamp-4')}
-        >
+        <ClampText clamp="line-clamp-4" className="font-serif text-[0.9375rem] leading-relaxed">
           {review.text}
-        </p>
-        {(overflowing || expanded) && (
-          <button
-            type="button"
-            aria-expanded={expanded}
-            onClick={() => setExpanded((v) => !v)}
-            className="mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-foreground underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
-            {expanded ? 'Show less' : 'Read more'}
-          </button>
-        )}
+        </ClampText>
       </div>
 
       <footer className="flex items-center gap-1 text-sm text-muted-foreground">

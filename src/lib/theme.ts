@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from 'react'
+
 export type ThemeMode = 'light' | 'dark' | 'system'
 
 const STORAGE_KEY = 'theme'
@@ -17,4 +19,15 @@ export function setTheme(mode: ThemeMode) {
 
 export function isDarkTheme() {
   return document.documentElement.classList.contains('dark')
+}
+
+/** Re-renders when the .dark class on <html> changes (OS change or manual switch) */
+export function useIsDark(): boolean {
+  return useSyncExternalStore(subscribeToThemeClass, isDarkTheme, () => false)
+}
+
+function subscribeToThemeClass(onChange: () => void) {
+  const observer = new MutationObserver(onChange)
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+  return () => observer.disconnect()
 }

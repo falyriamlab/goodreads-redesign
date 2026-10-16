@@ -36,3 +36,14 @@ coverage
 
 # OS files
 Thumbs.db
+
+# Test artifacts, screenshots & temp files
+screenshots/
+*.screenshot.png
+test-results/
+playwright-report/
+blob-report/
+tmp/
+.tmp/
+*.tmp
+*.temp

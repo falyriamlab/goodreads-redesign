@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { Link } from 'react-router'
 import type { Book } from '@/types/book'
@@ -21,6 +22,13 @@ type BookCardProps = {
   onRequestLog?: LogRequest
   /** Adds a "Not my vibe" button over the cover (default variant only) */
   onDismiss?: () => void
+  /** Replaces the plain title/author text, e.g. with <mark> highlights (search) */
+  titleContent?: ReactNode
+  authorContent?: ReactNode
+  /** Small line under the card, e.g. why it matched the filters */
+  caption?: string
+  /** Called when the book link is followed (e.g. save a recent search) */
+  onOpen?: () => void
   className?: string
 }
 
@@ -32,7 +40,17 @@ type BookCardProps = {
 const stretchedLink =
   "outline-none after:absolute after:inset-0 after:z-0 after:rounded-lg after:content-[''] focus-visible:after:ring-3 focus-visible:after:ring-ring/50"
 
-export function BookCard({ book, variant = 'default', onRequestLog, onDismiss, className }: BookCardProps) {
+export function BookCard({
+  book,
+  variant = 'default',
+  onRequestLog,
+  onDismiss,
+  titleContent,
+  authorContent,
+  caption,
+  onOpen,
+  className,
+}: BookCardProps) {
   const entry = useLibraryEntry(book.id)
   const changeStatus = useShelfActions()
   const logSheet = useLogSheet()
@@ -60,11 +78,11 @@ export function BookCard({ book, variant = 'default', onRequestLog, onDismiss, c
         <BookCover book={book} size="sm" />
         <div className="min-w-0 flex-1">
           <h3 className="line-clamp-2 text-sm leading-snug font-semibold">
-            <Link to={href} className={stretchedLink}>
-              {book.title}
+            <Link to={href} onClick={onOpen} className={stretchedLink}>
+              {titleContent ?? book.title}
             </Link>
           </h3>
-          <p className="truncate text-xs text-muted-foreground">{book.author}</p>
+          <p className="truncate text-xs text-muted-foreground">{authorContent ?? book.author}</p>
           {book.series && (
             <p className="truncate text-xs text-muted-foreground">
               {book.series} #{book.seriesNumber}
@@ -84,7 +102,7 @@ export function BookCard({ book, variant = 'default', onRequestLog, onDismiss, c
           <div className="absolute inset-x-0 -bottom-4 flex justify-center">{chip}</div>
         </div>
         {/* Title isn't visible in the grid, but the link still needs a name */}
-        <Link to={href} className={stretchedLink}>
+        <Link to={href} onClick={onOpen} className={stretchedLink}>
           <span className="sr-only">
             {book.title} by {book.author}
           </span>
@@ -116,11 +134,12 @@ export function BookCard({ book, variant = 'default', onRequestLog, onDismiss, c
         )}
       </div>
       <h3 className="mt-6 line-clamp-2 text-sm leading-snug font-semibold">
-        <Link to={href} className={stretchedLink}>
-          {book.title}
+        <Link to={href} onClick={onOpen} className={stretchedLink}>
+          {titleContent ?? book.title}
         </Link>
       </h3>
-      <p className="truncate text-xs text-muted-foreground">{book.author}</p>
+      <p className="truncate text-xs text-muted-foreground">{authorContent ?? book.author}</p>
+      {caption && <p className="mt-1 line-clamp-2 text-xs leading-snug">{caption}</p>}
     </article>
   )
 }

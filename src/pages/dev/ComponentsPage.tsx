@@ -94,7 +94,24 @@ export function ComponentsPage() {
         </label>
       </header>
 
-      <p className="px-4 pt-4 text-sm text-muted-foreground">Every state on one page. Give it a vibe check before step 3.</p>
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 pt-4">
+        <p className="text-sm text-muted-foreground">Every state on one page. Give it a vibe check before step 3.</p>
+        {/* Clean slate for recording demos: wipes the persisted library, drafts and theme choice */}
+        <Button
+          variant="outline"
+          className="min-h-11 border-muted-foreground"
+          onClick={() => {
+            try {
+              localStorage.clear()
+            } catch {
+              // Storage blocked: a reload still resets in-memory state
+            }
+            window.location.reload()
+          }}
+        >
+          Reset demo data
+        </Button>
+      </div>
 
       <Section title="BookCover" note="sm 56px · md 104px · lg 132px. Placeholder when coverUrl is null.">
         <div className="flex items-end gap-3">

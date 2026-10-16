@@ -16,11 +16,15 @@ export type Book = {
   /** Position in the series; null for standalones */
   seriesNumber: number | null
   pages: number
+  /** A real English edition; the cover URL is built from it */
+  isbn13: string | null
   genres: string[]
   moods: string[]
   pace: Pace
   tropes: string[]
   coverUrl: string | null
+  /** Mock flag for "Trending this week" */
+  trending: boolean
   /** Short neutral summary; null until written */
   synopsis: string | null
   contentWarnings: string[]

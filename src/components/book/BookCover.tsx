@@ -13,10 +13,11 @@ type BookCoverProps = {
   reserveBottom?: boolean
 }
 
-const sizes: Record<BookCoverSize, { width: string; title: string; author: string; padding: string }> = {
-  sm: { width: 'w-14', title: 'text-[0.5rem] leading-tight line-clamp-4', author: 'hidden', padding: 'p-1 pl-1.5' },
-  md: { width: 'w-26', title: 'text-sm leading-snug line-clamp-4', author: 'text-[0.625rem]', padding: 'p-2 pl-3' },
-  lg: { width: 'w-33', title: 'text-base leading-snug line-clamp-4', author: 'text-xs', padding: 'p-2.5 pl-3.5' },
+// px: intrinsic size for <img width/height> (2:3), so the layout never jumps while covers load
+const sizes: Record<BookCoverSize, { width: string; px: number; title: string; author: string; padding: string }> = {
+  sm: { width: 'w-14', px: 56, title: 'text-[0.5rem] leading-tight line-clamp-4', author: 'hidden', padding: 'p-1 pl-1.5' },
+  md: { width: 'w-26', px: 104, title: 'text-sm leading-snug line-clamp-4', author: 'text-[0.625rem]', padding: 'p-2 pl-3' },
+  lg: { width: 'w-33', px: 132, title: 'text-base leading-snug line-clamp-4', author: 'text-xs', padding: 'p-2.5 pl-3.5' },
 }
 
 export function BookCover({ book, size = 'md', className, reserveBottom = false }: BookCoverProps) {
@@ -37,6 +38,8 @@ export function BookCover({ book, size = 'md', className, reserveBottom = false 
         <img
           src={book.coverUrl!}
           alt={alt}
+          width={s.px}
+          height={s.px * 1.5}
           loading="lazy"
           decoding="async"
           onError={() => setFailed(true)}

@@ -4,6 +4,7 @@ import { PageSkeleton } from '@/components/layout/PageSkeleton'
 // Each page is its own chunk. Pages use named exports, so map them to `default` for React.lazy.
 export const HomePage = lazy(() => import('./HomePage').then((m) => ({ default: m.HomePage })))
 export const DiscoverPage = lazy(() => import('./DiscoverPage').then((m) => ({ default: m.DiscoverPage })))
+export const ResultsPage = lazy(() => import('./ResultsPage').then((m) => ({ default: m.ResultsPage })))
 export const SearchPage = lazy(() => import('./SearchPage').then((m) => ({ default: m.SearchPage })))
 export const LibraryPage = lazy(() => import('./LibraryPage').then((m) => ({ default: m.LibraryPage })))
 export const CommunityPage = lazy(() => import('./CommunityPage').then((m) => ({ default: m.CommunityPage })))

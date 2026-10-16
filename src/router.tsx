@@ -11,6 +11,7 @@ import {
   LibraryPage,
   NotFoundPage,
   ProfilePage,
+  ResultsPage,
   SearchPage,
   SharePage,
 } from '@/pages/lazyPages'
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
           { path: '/', element: <LazyPage page={HomePage} /> },
           { path: '/discover', element: <LazyPage page={DiscoverPage} /> },
           { path: '/discover/search', element: <LazyPage page={SearchPage} /> },
+          { path: '/discover/results', element: <LazyPage page={ResultsPage} /> },
           { path: '/library', element: <LazyPage page={LibraryPage} /> },
           { path: '/community', element: <LazyPage page={CommunityPage} /> },
           { path: '/profile', element: <LazyPage page={ProfilePage} /> },

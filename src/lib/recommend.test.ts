@@ -50,9 +50,12 @@ describe('recommend', () => {
 
   it('gives a genre-era reason for user taste and a "loved" reason for a base book', () => {
     const { entries } = useLibrary.getState()
-    const [top] = recommend({ entries, dismissed: [], user })
-    expect(top.book.id).toBe('a-court-of-thorns-and-roses')
-    expect(top.reason).toBe("Because you're in your Romantasy era")
+    const recs = recommend({ entries, dismissed: [], user })
+    // Romantasy + fast: the full reason
+    expect(recs[0].book.id).toBe('from-blood-and-ash')
+    expect(recs[0].reason).toBe("Because you're in your Romantasy era and love a fast read")
+    // Romantasy at a medium pace: no "fast read" clause
+    expect(recs.find((r) => r.book.id === 'a-court-of-thorns-and-roses')?.reason).toBe("Because you're in your Romantasy era")
 
     const base = getBookById('fourth-wing') as Book
     const similar = recommend({ entries, dismissed: [], base })

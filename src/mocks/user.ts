@@ -5,7 +5,7 @@ export const currentUser: User = {
   name: 'Sofía Herrera',
   challenge: {
     year: 2026,
-    goal: 60,
+    goal: 46,
     read: 38,
   },
   currentlyReading: [

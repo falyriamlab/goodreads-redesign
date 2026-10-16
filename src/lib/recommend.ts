@@ -32,7 +32,7 @@ const WEIGHTS = { genre: 3, mood: 1, pace: 1, trope: 1 }
 
 const overlap = (a: string[], b: string[]) => a.filter((x) => b.includes(x))
 
-function score(book: Book, taste: Taste): number {
+export function score(book: Book, taste: Taste): number {
   return (
     overlap(book.genres, taste.genres).length * WEIGHTS.genre +
     overlap(book.moods, taste.moods).length * WEIGHTS.mood +
@@ -54,16 +54,27 @@ function isExcluded(bookId: string, entries: Record<string, LibraryEntry>, dismi
   return entries[bookId]?.status != null || dismissed.includes(bookId)
 }
 
+/** Sofía's onboarding picks + tropes from books she loved */
+export function userTaste(
+  entries: Record<string, LibraryEntry>,
+  user: { genres: string[]; moods: string[]; pace: Pace },
+  books: Book[] = catalog,
+): Taste {
+  return {
+    genres: user.genres,
+    moods: user.moods,
+    pace: user.pace,
+    tropes: [...new Set(lovedBooks(entries, books).flatMap((b) => b.tropes))],
+  }
+}
+
 export function recommend({ entries, dismissed, base, user, limit = 10, books = catalog }: RecommendInput): Recommendation[] {
   const loved = lovedBooks(entries, books)
   const taste: Taste = base
     ? { genres: base.genres, moods: base.moods, pace: base.pace, tropes: base.tropes }
-    : {
-        genres: user?.genres ?? [],
-        moods: user?.moods ?? [],
-        pace: user?.pace ?? null,
-        tropes: [...new Set(loved.flatMap((b) => b.tropes))],
-      }
+    : user
+      ? userTaste(entries, user, books)
+      : { genres: [], moods: [], pace: null, tropes: [] }
 
   return books
     .filter((b) => b.id !== base?.id && !isExcluded(b.id, entries, dismissed))

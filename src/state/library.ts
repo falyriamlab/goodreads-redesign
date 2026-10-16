@@ -61,13 +61,20 @@ export type LogPayload = {
   isReread: boolean
 }
 
+const MAX_RECENT_SEARCHES = 5
+
 type LibraryState = {
   entries: Record<string, LibraryEntry>
   /** Book ids hidden from recommendations ("Not my vibe") */
   dismissedRecommendations: string[]
   dismiss: (bookId: string) => void
   undoDismiss: (bookId: string) => void
-  setStatus: (bookId: string, status: ReadingStatus | null) => void
+  /** Most recent first, max 5, no duplicates (case-insensitive) */
+  recentSearches: string[]
+  addRecentSearch: (query: string) => void
+  removeRecentSearch: (query: string) => void
+  clearRecentSearches: () => void
+  setStatus:(bookId: string, status: ReadingStatus | null) => void
   setRating: (bookId: string, rating: number | null) => void
   toggleLoved: (bookId: string) => void
   setProgress: (bookId: string, currentPage: number) => void
@@ -141,6 +148,24 @@ export const useLibrary = create<LibraryState>()(
         undoDismiss: (bookId) =>
           set((state) => ({ dismissedRecommendations: state.dismissedRecommendations.filter((id) => id !== bookId) })),
 
+        recentSearches: [],
+
+        addRecentSearch: (query) => {
+          const q = query.trim()
+          if (!q) return
+          set((state) => ({
+            recentSearches: [q, ...state.recentSearches.filter((r) => r.toLowerCase() !== q.toLowerCase())].slice(
+              0,
+              MAX_RECENT_SEARCHES,
+            ),
+          }))
+        },
+
+        removeRecentSearch: (query) =>
+          set((state) => ({ recentSearches: state.recentSearches.filter((r) => r !== query) })),
+
+        clearRecentSearches: () => set({ recentSearches: [] }),
+
         setStatus: (bookId, status) => {
           // "Remove from shelves": drop the whole entry (callers snapshot it for Undo)
           if (status === null) return remove(bookId)
@@ -198,21 +223,30 @@ export const useLibrary = create<LibraryState>()(
     },
     {
       name: 'goodreads-library',
-      // v2 adds everRead, review and DNF fields; v3 adds dismissedRecommendations
-      version: 3,
+      // v2 adds everRead, review and DNF fields; v3 dismissedRecommendations; v4 recentSearches
+      version: 4,
       migrate: (persisted) => {
         const state = persisted as {
           entries?: Record<string, Partial<LibraryEntry>>
           dismissedRecommendations?: string[]
+          recentSearches?: string[]
         }
         const entries: Record<string, LibraryEntry> = {}
         for (const [id, entry] of Object.entries(state.entries ?? {})) {
           entries[id] = { ...EMPTY_ENTRY, ...entry, everRead: entry.everRead ?? entry.status === 'read' }
         }
-        return { entries, dismissedRecommendations: state.dismissedRecommendations ?? [] }
+        return {
+          entries,
+          dismissedRecommendations: state.dismissedRecommendations ?? [],
+          recentSearches: state.recentSearches ?? [],
+        }
       },
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ entries: state.entries, dismissedRecommendations: state.dismissedRecommendations }),
+      partialize: (state) => ({
+        entries: state.entries,
+        dismissedRecommendations: state.dismissedRecommendations,
+        recentSearches: state.recentSearches,
+      }),
     },
   ),
 )

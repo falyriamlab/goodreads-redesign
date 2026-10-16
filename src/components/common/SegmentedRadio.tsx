@@ -8,6 +8,8 @@ type SegmentedRadioProps<T extends string> = {
   value: T
   onChange: (value: T) => void
   labelledBy: string
+  /** id of helper text */
+  describedBy?: string
   className?: string
 }
 
@@ -15,7 +17,14 @@ type SegmentedRadioProps<T extends string> = {
  * Segmented control with radiogroup semantics (WAI-ARIA APG radio pattern):
  * one tab stop, arrows move focus AND select, Home/End jump, disabled options are skipped.
  */
-export function SegmentedRadio<T extends string>({ options, value, onChange, labelledBy, className }: SegmentedRadioProps<T>) {
+export function SegmentedRadio<T extends string>({
+  options,
+  value,
+  onChange,
+  labelledBy,
+  describedBy,
+  className,
+}: SegmentedRadioProps<T>) {
   const refs = useRef<(HTMLButtonElement | null)[]>([])
   const enabled = options.map((o, i) => (o.disabled ? -1 : i)).filter((i) => i >= 0)
 
@@ -43,6 +52,7 @@ export function SegmentedRadio<T extends string>({ options, value, onChange, lab
     <div
       role="radiogroup"
       aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
       className={cn('grid grid-flow-col auto-cols-fr overflow-hidden rounded-lg border border-muted-foreground', className)}
     >
       {options.map((option, i) => {

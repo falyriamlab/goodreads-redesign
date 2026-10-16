@@ -5,6 +5,7 @@ import { ClampText } from '@/components/common/ClampText'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { formatRelative } from '@/lib/date'
+import { initials } from '@/lib/initials'
 import { cn } from '@/lib/utils'
 import { StarRating } from './StarRating'
 
@@ -12,14 +13,6 @@ type ReviewCardProps = {
   review: Review
   className?: string
 }
-
-const initials = (name: string) =>
-  name
-    .split(' ')
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
 
 export function ReviewCard({ review, className }: ReviewCardProps) {
   const textId = useId()

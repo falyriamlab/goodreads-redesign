@@ -35,7 +35,14 @@ export function LogSheetProvider({ children }: { children: ReactNode }) {
           onCloseAutoFocus={(event) => {
             event.preventDefault()
             const target = returnFocusRef.current
-            if (target?.isConnected) target.focus()
+            if (target?.isConnected) return target.focus()
+            // The opener can disappear (e.g. "Finished it" leaves Currently reading):
+            // fall back to the page heading so focus never drops to <body>
+            const heading = document.querySelector<HTMLElement>('main h1')
+            if (heading) {
+              heading.tabIndex = -1
+              heading.focus()
+            }
           }}
         />
       )}

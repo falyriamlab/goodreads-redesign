@@ -16,6 +16,7 @@ export type Book = {
   /** Position in the series; null for standalones */
   seriesNumber: number | null
   pages: number
+  genres: string[]
   moods: string[]
   pace: Pace
   tropes: string[]

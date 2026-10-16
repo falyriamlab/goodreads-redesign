@@ -1,6 +1,6 @@
-import { useId, useState, type ReactNode } from 'react'
+import { useEffect, useId, useState, type ReactNode } from 'react'
 import { BookMarked, ChevronRight, Headphones, Landmark, MessagesSquare, Share2, Store, Tablet } from 'lucide-react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { BookCard } from '@/components/book/BookCard'
 import { BookCover } from '@/components/book/BookCover'
 import { BookActions } from '@/components/book-page/BookActions'
@@ -9,7 +9,7 @@ import { ClampText } from '@/components/common/ClampText'
 import { TopBar, TopBarIconButton } from '@/components/layout/TopBar'
 import { formatDate } from '@/lib/date'
 import { formatRating } from '@/lib/rating'
-import { similarBooks } from '@/lib/recommend'
+import { recommend } from '@/lib/recommend'
 import { getBookById } from '@/mocks/books'
 import { useLibrary, useLibraryEntry } from '@/state/library'
 import type { Book } from '@/types/book'
@@ -32,6 +32,19 @@ export function BookPage() {
 
 function BookDetails({ book }: { book: Book }) {
   const navigate = useNavigate()
+  const { hash } = useLocation()
+
+  // Deep links like /book/:id#reviews: scroll to the section and move focus to its heading
+  useEffect(() => {
+    if (!hash) return
+    const frame = requestAnimationFrame(() => {
+      const target = document.getElementById(decodeURIComponent(hash.slice(1)))
+      if (!target) return
+      target.scrollIntoView({ block: 'start' })
+      target.querySelector<HTMLElement>('h2[tabindex]')?.focus({ preventScroll: true })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [hash, book.id])
 
   return (
     <>
@@ -266,7 +279,9 @@ function Discussions() {
 /* 11. More books with this energy */
 function MoreLikeThis({ book }: { book: Book }) {
   const entries = useLibrary((s) => s.entries)
-  const similar = similarBooks(book, entries)
+  const dismissed = useLibrary((s) => s.dismissedRecommendations)
+  // Same recommender as Home's "For you", matched against this book
+  const similar = recommend({ entries, dismissed, base: book, limit: 6 }).map((r) => r.book)
   if (similar.length === 0) return null
 
   return (

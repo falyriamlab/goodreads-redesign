@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router'
+import { Outlet, ScrollRestoration } from 'react-router'
 import { LogSheetProvider } from '@/components/log-sheet/LogSheetProvider'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -11,6 +11,8 @@ export function RootLayout() {
   return (
     <LogSheetProvider>
       <Outlet />
+      {/* New pages start at the top; back/forward restores the previous position */}
+      <ScrollRestoration />
       <Toaster
         position="top-center"
         offset={toastOffset}

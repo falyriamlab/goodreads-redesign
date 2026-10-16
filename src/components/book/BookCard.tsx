@@ -1,3 +1,4 @@
+import { X } from 'lucide-react'
 import { Link } from 'react-router'
 import type { Book } from '@/types/book'
 import { useLogSheet } from '@/components/log-sheet/context'
@@ -18,6 +19,8 @@ type BookCardProps = {
   variant?: 'default' | 'grid' | 'row'
   /** Defaults to opening the LogSheet */
   onRequestLog?: LogRequest
+  /** Adds a "Not my vibe" button over the cover (default variant only) */
+  onDismiss?: () => void
   className?: string
 }
 
@@ -29,7 +32,7 @@ type BookCardProps = {
 const stretchedLink =
   "outline-none after:absolute after:inset-0 after:z-0 after:rounded-lg after:content-[''] focus-visible:after:ring-3 focus-visible:after:ring-ring/50"
 
-export function BookCard({ book, variant = 'default', onRequestLog, className }: BookCardProps) {
+export function BookCard({ book, variant = 'default', onRequestLog, onDismiss, className }: BookCardProps) {
   const entry = useLibraryEntry(book.id)
   const changeStatus = useShelfActions()
   const logSheet = useLogSheet()
@@ -98,6 +101,19 @@ export function BookCard({ book, variant = 'default', onRequestLog, className }:
       <div className="relative">
         <BookCover book={book} size="md" reserveBottom />
         <div className="absolute inset-x-0 -bottom-4 flex justify-center">{chip}</div>
+        {onDismiss && (
+          // Sibling of the stretched link, raised above it: 44px hit area, smaller visual circle
+          <button
+            type="button"
+            aria-label={`Not my vibe: hide ${book.title}`}
+            onClick={onDismiss}
+            className="group/dismiss absolute -top-5 -right-5 z-10 flex size-11 items-center justify-center rounded-full outline-none"
+          >
+            <span className="flex size-7 items-center justify-center rounded-full border border-muted-foreground bg-background text-foreground shadow-sm transition-colors group-hover/dismiss:bg-muted group-focus-visible/dismiss:ring-3 group-focus-visible/dismiss:ring-ring/50">
+              <X className="size-4" strokeWidth={2.5} aria-hidden="true" />
+            </span>
+          </button>
+        )}
       </div>
       <h3 className="mt-6 line-clamp-2 text-sm leading-snug font-semibold">
         <Link to={href} className={stretchedLink}>

@@ -48,9 +48,10 @@ export function ReviewsSection({ book }: { book: Book }) {
   }
 
   return (
-    <section aria-labelledby={headingId} className="space-y-4">
+    // id="reviews": target of /book/:id#reviews; scroll-mt clears the sticky TopBar
+    <section id="reviews" aria-labelledby={headingId} className="scroll-mt-16 space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 id={headingId} className="text-lg font-bold tracking-tight">
+        <h2 id={headingId} tabIndex={-1} className="text-lg font-bold tracking-tight outline-none">
           Reviews
         </h2>
         <Button

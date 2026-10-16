@@ -3,9 +3,10 @@ import { Star } from 'lucide-react'
 import { RATING_MAX as MAX, RATING_STEP as STEP, formatRating, normalizeRating } from '@/lib/rating'
 import { cn } from '@/lib/utils'
 
-type StarSize = 'sm' | 'md' | 'lg'
+type StarSize = 'xs' | 'sm' | 'md' | 'lg'
 
 const starSize: Record<StarSize, string> = {
+  xs: 'size-3',
   sm: 'size-4',
   md: 'size-5',
   lg: 'size-9',

@@ -1,3 +1,5 @@
+import type { Pace } from './book'
+
 export type ReadingChallenge = {
   year: number
   goal: number
@@ -14,4 +16,8 @@ export type User = {
   name: string
   challenge: ReadingChallenge
   currentlyReading: CurrentlyReading[]
+  /** Onboarding picks: drive "For you" recommendations */
+  favoriteGenres: string[]
+  favoriteMoods: string[]
+  preferredPace: Pace
 }

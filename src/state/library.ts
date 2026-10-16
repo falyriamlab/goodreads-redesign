@@ -63,6 +63,10 @@ export type LogPayload = {
 
 type LibraryState = {
   entries: Record<string, LibraryEntry>
+  /** Book ids hidden from recommendations ("Not my vibe") */
+  dismissedRecommendations: string[]
+  dismiss: (bookId: string) => void
+  undoDismiss: (bookId: string) => void
   setStatus: (bookId: string, status: ReadingStatus | null) => void
   setRating: (bookId: string, rating: number | null) => void
   toggleLoved: (bookId: string) => void
@@ -101,8 +105,12 @@ export const LIBRARY_SEED: Record<string, LibraryEntry> = {
     startedAt: '2026-09-05',
     finishedAt: '2026-09-11',
   },
+  'the-cruel-prince': { ...EMPTY_ENTRY, status: 'reading', currentPage: 140, startedAt: '2026-10-09' },
   'iron-flame': { ...EMPTY_ENTRY, status: 'want' },
   babel: { ...EMPTY_ENTRY, status: 'want' },
+  'onyx-storm': { ...EMPTY_ENTRY, status: 'want' },
+  'red-white-and-royal-blue': { ...EMPTY_ENTRY, status: 'want' },
+  'the-seven-husbands-of-evelyn-hugo': { ...EMPTY_ENTRY, status: 'want' },
 }
 
 export const useLibrary = create<LibraryState>()(
@@ -121,6 +129,17 @@ export const useLibrary = create<LibraryState>()(
 
       return {
         entries: LIBRARY_SEED,
+        dismissedRecommendations: [],
+
+        dismiss: (bookId) =>
+          set((state) =>
+            state.dismissedRecommendations.includes(bookId)
+              ? state
+              : { dismissedRecommendations: [...state.dismissedRecommendations, bookId] },
+          ),
+
+        undoDismiss: (bookId) =>
+          set((state) => ({ dismissedRecommendations: state.dismissedRecommendations.filter((id) => id !== bookId) })),
 
         setStatus: (bookId, status) => {
           // "Remove from shelves": drop the whole entry (callers snapshot it for Undo)
@@ -179,18 +198,21 @@ export const useLibrary = create<LibraryState>()(
     },
     {
       name: 'goodreads-library',
-      // v2 adds everRead, review and DNF fields
-      version: 2,
+      // v2 adds everRead, review and DNF fields; v3 adds dismissedRecommendations
+      version: 3,
       migrate: (persisted) => {
-        const state = persisted as { entries?: Record<string, Partial<LibraryEntry>> }
+        const state = persisted as {
+          entries?: Record<string, Partial<LibraryEntry>>
+          dismissedRecommendations?: string[]
+        }
         const entries: Record<string, LibraryEntry> = {}
         for (const [id, entry] of Object.entries(state.entries ?? {})) {
           entries[id] = { ...EMPTY_ENTRY, ...entry, everRead: entry.everRead ?? entry.status === 'read' }
         }
-        return { entries }
+        return { entries, dismissedRecommendations: state.dismissedRecommendations ?? [] }
       },
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ entries: state.entries }),
+      partialize: (state) => ({ entries: state.entries, dismissedRecommendations: state.dismissedRecommendations }),
     },
   ),
 )

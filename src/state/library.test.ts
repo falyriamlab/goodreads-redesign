@@ -44,12 +44,12 @@ describe('library store', () => {
   })
 
   it('Undo of a log on a previously unshelved book removes it again', () => {
-    const snapshot = store().entries['onyx-storm']
+    const snapshot = store().entries['a-court-of-thorns-and-roses']
     expect(snapshot).toBeUndefined()
-    store().logBook('onyx-storm', { ...basePayload, status: 'reading' })
-    expect(entry('onyx-storm').status).toBe('reading')
-    store().restoreEntry('onyx-storm', snapshot)
-    expect(entry('onyx-storm')).toBeUndefined()
+    store().logBook('a-court-of-thorns-and-roses', { ...basePayload, status: 'reading' })
+    expect(entry('a-court-of-thorns-and-roses').status).toBe('reading')
+    store().restoreEntry('a-court-of-thorns-and-roses', snapshot)
+    expect(entry('a-court-of-thorns-and-roses')).toBeUndefined()
   })
 
   describe('rule H5: review text', () => {

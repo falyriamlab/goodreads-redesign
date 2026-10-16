@@ -1,32 +1,50 @@
-# React + TypeScript + Vite
+# Goodreads Redesign
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A mobile-first redesign of the Goodreads app, built as a UX/UI case study. The focus is a faster way to track what you read, with clearer shelves, quarter-star ratings and spoiler-safe reviews, and the core theme color pairs checked against WCAG AA.
 
-Currently, two official plugins are available:
+> This is a design exercise, not affiliated with Goodreads or Amazon. All data is mock data.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- [Vite](https://vite.dev) + [React](https://react.dev) + TypeScript
+- [Tailwind CSS v4](https://tailwindcss.com) with theme tokens only (no hard-coded colors)
+- [shadcn/ui](https://ui.shadcn.com) (Radix) for primitives
+- [zustand](https://zustand.docs.pmnd.rs) for the library state, persisted to `localStorage`
+- React Router and lucide-react icons
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Requirements
 
-## Expanding the Oxlint configuration
+Node **22.22 or newer** (pinned in [`.nvmrc`](.nvmrc)). With nvm, run `nvm use`.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Getting started
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Other scripts:
+
+| Command | What it does |
+| --- | --- |
+| `npm run build` | Type-check and build for production |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | Lint with oxlint |
+
+## Reviewing components
+
+Open **`/dev/components`** while the dev server is running (e.g. http://localhost:5173/dev/components). It shows every book component in all of its states: covers, status chips, cards, star ratings, the loved button and review cards. A switch at the top toggles light and dark mode.
+
+## Project structure
+
+```
+src/
+  components/ui/      shadcn primitives
+  components/layout/  AppShell, BottomNav, TopBar
+  components/book/    BookCover, BookCard, StatusChip, StarRating, LovedButton, ReviewCard
+  pages/              one file per route (+ pages/dev for the component lab)
+  state/              zustand stores
+  mocks/              mock books, user and reviews
+  types/              shared types
+  lib/                helpers (cn, theme, rating)
+```

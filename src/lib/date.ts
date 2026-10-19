@@ -1,13 +1,15 @@
+import { now as clockNow } from './clock'
+
 const DAY = 24 * 60 * 60 * 1000
 
 /** Local date as YYYY-MM-DD (what <input type="date"> uses) */
-export function todayISO(now = new Date()): string {
+export function todayISO(now = clockNow()): string {
   const offset = now.getTimezoneOffset() * 60 * 1000
   return new Date(now.getTime() - offset).toISOString().slice(0, 10)
 }
 
 /** "today", "3d", "2w", "4mo", "1y" */
-export function formatRelative(iso: string, now = new Date()): string {
+export function formatRelative(iso: string, now = clockNow()): string {
   const days = Math.floor((now.getTime() - new Date(`${iso}T00:00:00`).getTime()) / DAY)
   if (days < 1) return 'today'
   if (days < 7) return `${days}d`
@@ -22,14 +24,14 @@ export function formatDate(iso: string): string {
 }
 
 /** "Mar 12" (adds the year when it isn't the current one: "Mar 12, 2025") */
-export function formatShortDate(iso: string, now = new Date()): string {
+export function formatShortDate(iso: string, now = clockNow()): string {
   const d = new Date(`${iso}T00:00:00`)
   const sameYear = d.getFullYear() === now.getFullYear()
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', ...(sameYear ? {} : { year: 'numeric' }) })
 }
 
 /** ISO date-time without a zone is read as local time. Future times (clock skew) read as "just now". */
-export function formatTimeAgo(iso: string, now = new Date()): string {
+export function formatTimeAgo(iso: string, now = clockNow()): string {
   const minutes = Math.floor((now.getTime() - new Date(iso).getTime()) / 60_000)
   if (minutes < 1) return 'just now'
   if (minutes < 60) return `${minutes}m ago`
@@ -42,7 +44,7 @@ export function formatTimeAgo(iso: string, now = new Date()): string {
 }
 
 /** Message list time: "8:25 AM" today, "Yesterday", "Mon" this week, else "Oct 12" */
-export function formatMessageTime(iso: string, now = new Date()): string {
+export function formatMessageTime(iso: string, now = clockNow()): string {
   const d = new Date(iso)
   const startOfDay = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime()
   const days = Math.round((startOfDay(now) - startOfDay(d)) / DAY)
@@ -53,7 +55,7 @@ export function formatMessageTime(iso: string, now = new Date()): string {
 }
 
 /** Local date-time as an ISO string without a zone, like the mock data */
-export function nowISO(now = new Date()): string {
+export function nowISO(now = clockNow()): string {
   const offset = now.getTimezoneOffset() * 60 * 1000
   return new Date(now.getTime() - offset).toISOString().slice(0, 19)
 }

@@ -14,6 +14,7 @@ import { parseShareParams, shareSearch, type ShareStyle, type ShareTarget } from
 import { monthStats, topRatedOfYear, yearStats } from '@/lib/stats'
 import { getBookById } from '@/mocks/books'
 import { useChallengeProgress, useLibrary } from '@/state/library'
+import { now as clockNow } from '@/lib/clock'
 import type { Book } from '@/types/book'
 
 /* ---------- Cover CORS check: covers that can't be read cross-origin become placeholders ---------- */
@@ -250,7 +251,7 @@ export function SharePage() {
         <Tabs
           value={target.type}
           onValueChange={(v) => {
-            const now = new Date()
+            const now = clockNow()
             const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
             go(
               v === 'book' && bookId

@@ -1,3 +1,4 @@
+import { now as clockNow } from '@/lib/clock'
 import { currentUser } from '@/mocks/user'
 import type { LibraryEntry, ReadingEvent } from '@/types/library'
 
@@ -61,7 +62,7 @@ function dayOfYear(date: Date): number {
 }
 
 /** `now` is injectable so tests can pin the date */
-export function getChallengePace(progress: Pick<ChallengeProgress, 'year' | 'goal' | 'read'>, now = new Date()): ChallengePace {
+export function getChallengePace(progress: Pick<ChallengeProgress, 'year' | 'goal' | 'read'>, now = clockNow()): ChallengePace {
   const days = isLeap(progress.year) ? 366 : 365
   // Before/after the challenge year, clamp to its first/last day
   const day =

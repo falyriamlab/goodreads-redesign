@@ -12,6 +12,7 @@ import {
   FindFriendsPage,
   GroupPage,
   HomePage,
+  InvitePage,
   JournalPage,
   LazyPage,
   LibraryPage,
@@ -34,6 +35,8 @@ export const router = createBrowserRouter([
     children: [
       // Dev-only playground, outside the app shell (no bottom nav)
       { path: '/dev/components', element: <LazyPage page={ComponentsPage} /> },
+      // Invite landing: for people who aren't members yet, so no app shell
+      { path: '/invite/:handle', element: <LazyPage page={InvitePage} /> },
       {
         element: <AppShell />,
         children: [

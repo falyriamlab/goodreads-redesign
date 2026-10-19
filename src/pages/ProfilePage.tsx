@@ -5,7 +5,7 @@ import { TopBar, TopBarIconButton } from '@/components/layout/TopBar'
 import { FavoritePickerDrawer } from '@/components/profile/FavoritePickerDrawer'
 import { ProfileView, type ProfileViewData } from '@/components/profile/ProfileView'
 import { detailNote } from '@/lib/challenge'
-import { monthStats, yearStats } from '@/lib/stats'
+import { currentMonthRecap, yearStats } from '@/lib/stats'
 import { books, getBookById } from '@/mocks/books'
 import { getReaderByHandle, groups } from '@/mocks/community'
 import type { FriendActivity } from '@/mocks/friends'
@@ -30,10 +30,6 @@ export function ProfilePage() {
 
   const challenge = useChallengeProgress()
   const stats = yearStats(history, challenge.year)
-  const [now] = useState(() => new Date())
-  const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-  const monthName = now.toLocaleDateString('en-US', { month: 'long' })
-  const hasMonthFinishes = monthStats(history, month).books > 0
 
   const data: ProfileViewData = {
     isOwner: true,
@@ -60,7 +56,7 @@ export function ProfilePage() {
       topGenres: stats.topGenres,
       vibe: stats.topMoods.map((m) => m.label),
       note: detailNote(stats.books, challenge.countOnly),
-      monthRecap: hasMonthFinishes ? { monthName, href: `/share?type=month&month=${month}` } : null,
+      monthRecap: currentMonthRecap(history),
     },
   }
 

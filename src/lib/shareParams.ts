@@ -1,3 +1,5 @@
+import { now as clockNow } from './clock'
+
 export type ShareStyle = 'light' | 'dark' | 'brand'
 
 export type ShareTarget =
@@ -22,7 +24,7 @@ const thisMonth = (now: Date) => `${now.getFullYear()}-${String(now.getMonth() +
  * /share?type=book&book={id} | month&month=2026-10 | year(&year=2026) | top4, plus &style=light|dark|brand.
  * Unknown or incomplete params fall back sensibly: a bare ?book= means a book card; a bad month means this month.
  */
-export function parseShareParams(params: URLSearchParams, now = new Date()): ShareParams {
+export function parseShareParams(params: URLSearchParams, now = clockNow()): ShareParams {
   const bookId = params.get('book') || null
   const style = STYLES.includes(params.get('style') as ShareStyle) ? (params.get('style') as ShareStyle) : 'brand'
   const type = params.get('type') ?? (bookId ? 'book' : 'month')

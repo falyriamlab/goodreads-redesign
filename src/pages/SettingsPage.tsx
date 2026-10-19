@@ -6,6 +6,7 @@ import { TopBar } from '@/components/layout/TopBar'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { setDemoClock, useDemoClock } from '@/lib/clock'
 import { downloadText, exportLibraryCsv } from '@/lib/exportCsv'
 import { todayISO } from '@/lib/date'
 import type { ThemeMode } from '@/lib/theme'
@@ -19,6 +20,7 @@ const NOTIFICATIONS = [
 ]
 
 export function SettingsPage() {
+  const demoClock = useDemoClock()
   const themeMode = useLibrary((s) => s.themeMode)
   const setThemeMode = useLibrary((s) => s.setThemeMode)
   const entries = useLibrary((s) => s.entries)
@@ -89,6 +91,15 @@ export function SettingsPage() {
         </Group>
 
         <Group title="Data">
+          <div className="flex min-h-11 items-center justify-between gap-3">
+            <Label htmlFor="demo-clock" className="min-h-11 flex-1 text-base font-normal">
+              Demo clock (Oct 16, 2026)
+            </Label>
+            <Switch id="demo-clock" checked={demoClock} onCheckedChange={setDemoClock} aria-describedby="demo-clock-hint" />
+          </div>
+          <p id="demo-clock-hint" className="text-xs text-muted-foreground">
+            Keeps the sample data fresh: "2h ago" stays 2h ago. Turn it off to use today's date.
+          </p>
           <Button variant="outline" className="min-h-11 w-full justify-start border-muted-foreground" onClick={exportCsv}>
             <Download aria-hidden="true" />
             Export my library (CSV)

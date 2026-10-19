@@ -16,6 +16,7 @@ export const FindFriendsPage = lazy(() => import('./FindFriendsPage').then((m) =
 export const NotificationsPage = lazy(() => import('./NotificationsPage').then((m) => ({ default: m.NotificationsPage })))
 export const MessagesPage = lazy(() => import('./MessagesPage').then((m) => ({ default: m.MessagesPage })))
 export const ConversationPage = lazy(() => import('./ConversationPage').then((m) => ({ default: m.ConversationPage })))
+export const InvitePage = lazy(() => import('./InvitePage').then((m) => ({ default: m.InvitePage })))
 export const ProfilePage = lazy(() => import('./ProfilePage').then((m) => ({ default: m.ProfilePage })))
 export const VisitorProfilePage = lazy(() => import('./ProfilePage').then((m) => ({ default: m.VisitorProfilePage })))
 export const EditProfilePage = lazy(() => import('./EditProfilePage').then((m) => ({ default: m.EditProfilePage })))

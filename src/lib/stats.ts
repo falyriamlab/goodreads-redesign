@@ -1,3 +1,4 @@
+import { now as clockNow } from '@/lib/clock'
 import { books as catalog } from '@/mocks/books'
 import type { Book, Pace } from '@/types/book'
 import type { ReadingEvent } from '@/types/library'
@@ -129,4 +130,11 @@ export function topRatedOfYear(history: ReadingEvent[], year: number, limit = 4,
   return [...finishedInYear(history, year, books)]
     .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0) || b.date.localeCompare(a.date))
     .slice(0, limit)
+}
+
+/** Profile's "Share your {Month} recap" link: only when the current month has finished books */
+export function currentMonthRecap(history: ReadingEvent[], now = clockNow()): { monthName: string; href: string } | null {
+  const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  if (monthStats(history, month).books === 0) return null
+  return { monthName: now.toLocaleDateString('en-US', { month: 'long' }), href: `/share?type=month&month=${month}` }
 }

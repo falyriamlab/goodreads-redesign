@@ -319,9 +319,12 @@ export const useLibrary = create<LibraryState>()(
             events.push(...eventsFor(bookId, state.entries[bookId], next))
             entries[bookId] = next
           }
+          // Removing a book also drops its journal events, so it stops counting toward the challenge.
+          // Callers snapshot first, so Undo brings both back.
+          const kept = removed.length ? state.history.filter((e) => !removed.includes(e.bookId)) : state.history
           return {
             entries,
-            history: events.length ? [...state.history, ...events] : state.history,
+            history: events.length ? [...kept, ...events] : kept,
             wantOrder: reconcileWantOrder(entries, state.wantOrder),
             shelves: removed.length
               ? state.shelves.map((s) => ({ ...s, bookIds: s.bookIds.filter((id) => !removed.includes(id)) }))

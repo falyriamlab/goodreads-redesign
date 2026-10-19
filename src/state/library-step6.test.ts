@@ -137,12 +137,16 @@ describe('bulk actions + Undo', () => {
 
     store().bulkRemove(['fourth-wing', 'circe'])
     expect(store().entries['fourth-wing']).toBeUndefined()
+    // ...and their journal events, so Circe (read in 2026) leaves the challenge
+    expect(store().history.some((e) => e.bookId === 'fourth-wing' || e.bookId === 'circe')).toBe(false)
+    expect(getChallengeProgress(store().history, IMPORTED_COUNT_ONLY_SEED).read).toBe(37)
     // Removed books also leave custom shelves
     expect(store().shelves.some((s) => s.bookIds.includes('fourth-wing') || s.bookIds.includes('circe'))).toBe(false)
 
     store().restoreSnapshot(snapshot)
     expect(store().shelves).toEqual(SHELVES_SEED)
     expect(store().entries['fourth-wing']).toEqual(LIBRARY_SEED['fourth-wing'])
+    expect(store().history).toEqual(HISTORY_SEED)
   })
 })
 

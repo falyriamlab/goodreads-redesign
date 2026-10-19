@@ -40,12 +40,19 @@ describe('library store', () => {
     const before = entry('the-song-of-achilles')
     expect(before).toMatchObject({ status: 'read', rating: 5, loved: true, finishedAt: '2026-08-27' })
 
-    const snapshot = store().entries['the-song-of-achilles']
+    const snapshot = store().takeSnapshot()
+    const challenge = () => getChallengeProgress(store().history, store().importedCountOnly).read
+    expect(challenge()).toBe(38)
     store().setStatus('the-song-of-achilles', null)
     expect(entry('the-song-of-achilles')).toBeUndefined()
+    // Its journal events go too, so it no longer counts toward the challenge
+    expect(store().history.some((e) => e.bookId === 'the-song-of-achilles')).toBe(false)
+    expect(challenge()).toBe(37)
 
-    store().restoreEntry('the-song-of-achilles', snapshot)
+    store().restoreSnapshot(snapshot)
     expect(entry('the-song-of-achilles')).toEqual(before)
+    expect(store().history).toEqual(HISTORY_SEED)
+    expect(challenge()).toBe(38)
   })
 
   it('Undo of a log on a previously unshelved book removes it again', () => {

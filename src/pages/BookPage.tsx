@@ -4,10 +4,13 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { BookCard } from '@/components/book/BookCard'
 import { BookCover } from '@/components/book/BookCover'
 import { BookActions } from '@/components/book-page/BookActions'
+import { BookActionsA, BookHeroA } from '@/components/directions/a/BookHeroA'
+import { BookHeroB } from '@/components/directions/b/BookHeroB'
 import { ReviewsSection } from '@/components/book-page/ReviewsSection'
 import { ClampText } from '@/components/common/ClampText'
 import { TopBar, TopBarIconButton } from '@/components/layout/TopBar'
 import { formatDate } from '@/lib/date'
+import { useDirection } from '@/lib/direction'
 import { formatRating } from '@/lib/rating'
 import { recommend } from '@/lib/recommend'
 import { buddyReaderCount, spanLabel } from '@/lib/community'
@@ -35,6 +38,7 @@ export function BookPage() {
 function BookDetails({ book }: { book: Book }) {
   const navigate = useNavigate()
   const { hash } = useLocation()
+  const direction = useDirection()
 
   // Deep links like /book/:id#reviews: scroll to the section and move focus to its heading
   useEffect(() => {
@@ -52,6 +56,7 @@ function BookDetails({ book }: { book: Book }) {
     <>
       {/* 1. No title here: the book title is the page's <h1> in the hero */}
       <TopBar
+        className={direction === 'b' ? 'dark border-transparent text-foreground' : undefined}
         back
         backFallback="/discover"
         actions={
@@ -64,8 +69,20 @@ function BookDetails({ book }: { book: Book }) {
       />
 
       <div className="space-y-8 px-4 pt-4 pb-8">
-        <Hero book={book} />
-        <BookActions book={book} />
+        {/* visual-pass exploration: ?direction=a | b (dev toggle) */}
+        {direction === 'a' ? (
+          <>
+            <BookHeroA book={book} />
+            <BookActionsA book={book} />
+          </>
+        ) : direction === 'b' ? (
+          <BookHeroB book={book} />
+        ) : (
+          <>
+            <Hero book={book} />
+            <BookActions book={book} />
+          </>
+        )}
         <Vibes book={book} />
         <ContentWarnings book={book} />
         <Section title="Synopsis">

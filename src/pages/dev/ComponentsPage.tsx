@@ -1,11 +1,14 @@
 import { useState, type ReactNode } from 'react'
+import { Link } from 'react-router'
 import { BookCard } from '@/components/book/BookCard'
 import { BookCover } from '@/components/book/BookCover'
 import { LovedButton } from '@/components/book/LovedButton'
 import { ReviewCard } from '@/components/book/ReviewCard'
 import { StarRating } from '@/components/book/StarRating'
 import { StatusChip } from '@/components/book/StatusChip'
+import { SegmentedRadio } from '@/components/common/SegmentedRadio'
 import { Button } from '@/components/ui/button'
+import { DIRECTIONS, setDirection, useDirection } from '@/lib/direction'
 import { Switch } from '@/components/ui/switch'
 import { getBookById } from '@/mocks/books'
 import { reviews } from '@/mocks/reviews'
@@ -75,6 +78,7 @@ export function ComponentsPage() {
   // Theme lives in the store (Settings → Appearance); this switch is a shortcut
   const dark = useIsDark()
   const setThemeMode = useLibrary((s) => s.setThemeMode)
+  const direction = useDirection()
   const [rating, setRating] = useState<number | null>(4.25)
   const [unrated, setUnrated] = useState<number | null>(null)
   const [loved, setLoved] = useState(true)
@@ -112,6 +116,32 @@ export function ComponentsPage() {
         >
           Reset demo data
         </Button>
+      </div>
+
+      {/* visual-pass: pick a direction for Home and the book page (same as ?direction=a|b|current) */}
+      <div className="space-y-2 px-4 pt-4">
+        <p id="direction-label" className="text-sm font-semibold">
+          Visual direction
+        </p>
+        <SegmentedRadio
+          labelledBy="direction-label"
+          describedBy="direction-hint"
+          value={direction}
+          onChange={setDirection}
+          options={DIRECTIONS.map((d) => ({ value: d.value, label: d.name }))}
+          className="[&>button]:text-xs"
+        />
+        <p id="direction-hint" className="text-xs text-muted-foreground">
+          {DIRECTIONS.find((d) => d.value === direction)?.summary}. Applies to Home and the book page only.
+        </p>
+        <div className="flex gap-4">
+          <Link to="/" className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">
+            Open Home
+          </Link>
+          <Link to="/book/fourth-wing" className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">
+            Open Fourth Wing
+          </Link>
+        </div>
       </div>
 
       <Section title="BookCover" note="sm 56px · md 104px · lg 132px. Placeholder when coverUrl is null.">

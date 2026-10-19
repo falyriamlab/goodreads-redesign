@@ -73,6 +73,14 @@
     --color-shadow-color: var(--shadow-color);
     --color-destructive-foreground: var(--destructive-foreground);
     --color-rating: var(--rating);
+    /* Visual directions (visual-pass) */
+    --color-band: var(--band);
+    --color-band-foreground: var(--band-foreground);
+    --color-band-muted-foreground: var(--band-muted-foreground);
+    --color-scrim: var(--scrim);
+    --color-on-scrim: var(--on-scrim);
+    --color-on-scrim-muted: var(--on-scrim-muted);
+    --shadow-cover: var(--shadow-cover);
 }
 
 /*
@@ -84,6 +92,13 @@
  * - --rating (stars) is a non-text graphic: it needs 3:1 vs --background (3.57 light / 8.87 dark).
  *   Never use it for text either.
  * - States must never be told apart by hue alone: pair color with weight, fill, shape or a label.
+ *
+ * Visual-direction tokens (contrast computed in sRGB, worst case):
+ * - --band: full-bleed paper band (direction A). fg 10.77 / 11.89; --band-muted-foreground 5.57 / 5.94.
+ *   Plain --muted-foreground on the light band is only 4.35, so never use it there.
+ * - --scrim: dark overlay over covers (direction B), the same in both modes.
+ *   Text may only sit where the scrim is at least 90% opaque. Worst point = a pure white cover:
+ *   --on-scrim 9.96:1, --on-scrim-muted 4.98:1, stars 6.61:1 (needs 3:1).
  */
 /* .theme-light / .theme-dark force a palette on a subtree (e.g. share cards), regardless of the app theme */
 :root,
@@ -122,6 +137,13 @@
     --sidebar-ring: oklch(0.6487 0.1538 150.3071);
     --destructive-foreground: oklch(1.0000 0 0);
     --rating: oklch(0.62 0.16 70);
+    --band: oklch(0.945 0.018 95);
+    --band-foreground: oklch(0.3211 0 0);
+    --band-muted-foreground: oklch(0.48 0 0);
+    --scrim: oklch(0.2303 0.0125 264.2926);
+    --on-scrim: oklch(0.9219 0 0);
+    --on-scrim-muted: oklch(0.7155 0 0);
+    --shadow-cover: 0 1px 2px oklch(0 0 0 / 0.12), 0 10px 24px -8px oklch(0 0 0 / 0.35);
     --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
     --font-serif: "Source Serif 4", ui-serif, Georgia, serif;
     --font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -179,6 +201,13 @@
     --sidebar-ring: oklch(0.6487 0.1538 150.3071);
     --destructive-foreground: oklch(1.0000 0 0);
     --rating: oklch(0.80 0.16 80);
+    --band: oklch(0.272 0.014 264);
+    --band-foreground: oklch(0.9219 0 0);
+    --band-muted-foreground: oklch(0.7155 0 0);
+    --scrim: oklch(0.2303 0.0125 264.2926);
+    --on-scrim: oklch(0.9219 0 0);
+    --on-scrim-muted: oklch(0.7155 0 0);
+    --shadow-cover: 0 1px 2px oklch(0 0 0 / 0.4), 0 12px 28px -8px oklch(0 0 0 / 0.7);
     --radius: 0.5rem;
     --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
     --font-serif: "Source Serif 4", ui-serif, Georgia, serif;
@@ -217,4 +246,14 @@
     @apply bg-background text-foreground antialiased;
     letter-spacing: var(--tracking-normal);
   }
+}
+
+/* Directions: entrance + progress fill. Both are off with prefers-reduced-motion (motion-safe: only). */
+@keyframes cover-rise {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fill-in {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }

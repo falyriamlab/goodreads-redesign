@@ -1,7 +1,8 @@
 import { useId, useState } from 'react'
-import { BadgeCheck, EyeOff, Heart, MessageCircle, ThumbsUp } from 'lucide-react'
+import { BadgeCheck, EyeOff, Heart, MessageCircle } from 'lucide-react'
 import type { Review } from '@/types/review'
 import { ClampText } from '@/components/common/ClampText'
+import { LikeButton } from '@/components/community/LikeButton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { formatRelative } from '@/lib/date'
@@ -17,7 +18,6 @@ type ReviewCardProps = {
 export function ReviewCard({ review, className }: ReviewCardProps) {
   const textId = useId()
   const [revealed, setRevealed] = useState(!review.containsSpoilers)
-  const [liked, setLiked] = useState(false)
 
   return (
     <article className={cn('space-y-3 rounded-lg border border-border bg-card p-4 text-card-foreground', className)}>
@@ -72,23 +72,8 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
       </div>
 
       <footer className="flex items-center gap-1 text-sm text-muted-foreground">
-        <button
-          type="button"
-          aria-pressed={liked}
-          onClick={() => setLiked((v) => !v)}
-          className={cn(
-            'inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50',
-            liked && 'font-semibold text-foreground',
-          )}
-        >
-          <ThumbsUp className={cn('size-4', liked && 'fill-current')} aria-hidden="true" />
-          <span>Like</span>
-          <span aria-hidden="true">·</span>
-          <span className="tabular-nums">
-            {review.likes + (liked ? 1 : 0)}
-            <span className="sr-only"> likes</span>
-          </span>
-        </button>
+        {/* Likes live in the store, shared with the same review in the Community feed */}
+        <LikeButton kind="review" id={review.id} base={review.likes} className="mr-2" />
         <button
           type="button"
           className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"

@@ -1,25 +1,46 @@
 import { currentUser } from '@/mocks/user'
-import { LIBRARY_SEED } from '@/state/library'
-import type { LibraryEntry } from '@/types/library'
+import type { LibraryEntry, ReadingEvent } from '@/types/library'
 
 /** Books marked Read with a finish date in `year`. DNFs never count. */
 export function countReadInYear(entries: Record<string, LibraryEntry>, year: number): number {
   return Object.values(entries).filter((e) => e.status === 'read' && e.finishedAt?.startsWith(String(year))).length
 }
 
-const { year, goal, read } = currentUser.challenge
+/** Finishes logged in the journal for `year` (a reread finished on another day counts again; DNFs never count) */
+export function countFinishedInYear(history: ReadingEvent[], year: number): number {
+  const keys = new Set(
+    history.filter((e) => e.type === 'finished' && e.date.startsWith(`${year}-`)).map((e) => `${e.bookId}-${e.date}`),
+  )
+  return keys.size
+}
+
+const { year, goal } = currentUser.challenge
+
+export type ChallengeProgress = {
+  year: number
+  goal: number
+  read: number
+  /** Finishes with full details (journal) */
+  detailed: number
+  /** Imported from another app as a number only (no books attached) */
+  countOnly: number
+}
 
 /**
- * Sofía's 38 reads include books outside our 12-book mock catalog.
- * Those stay fixed; catalog books are counted live from the store.
+ * Challenge = journal finishes this year + reads imported as a count only.
+ * Same selector everywhere (Home, LogSheet, Profile, Stats, Share).
  */
-const OFF_CATALOG_READS = read - countReadInYear(LIBRARY_SEED, year)
+export function getChallengeProgress(history: ReadingEvent[], importedCountOnly: number): ChallengeProgress {
+  const detailed = countFinishedInYear(history, year)
+  return { year, goal, read: detailed + importedCountOnly, detailed, countOnly: importedCountOnly }
+}
 
-export type ChallengeProgress = { year: number; goal: number; read: number }
-
-/** Same selector the LogSheet uses for "That's {n} of {goal}" */
-export function getChallengeProgress(entries: Record<string, LibraryEntry>): ChallengeProgress {
-  return { year, goal, read: OFF_CATALOG_READS + countReadInYear(entries, year) }
+/** "Based on 12 books with full details · 26 imported as count only." */
+export function detailNote(detailed: number, countOnly: number): string {
+  const books = (n: number) => `${n} ${n === 1 ? 'book' : 'books'}`
+  return countOnly > 0
+    ? `Based on ${books(detailed)} with full details · ${countOnly} imported as count only.`
+    : `Based on ${books(detailed)} with full details.`
 }
 
 export type ChallengePace = {
@@ -40,7 +61,7 @@ function dayOfYear(date: Date): number {
 }
 
 /** `now` is injectable so tests can pin the date */
-export function getChallengePace(progress: ChallengeProgress, now = new Date()): ChallengePace {
+export function getChallengePace(progress: Pick<ChallengeProgress, 'year' | 'goal' | 'read'>, now = new Date()): ChallengePace {
   const days = isLeap(progress.year) ? 366 : 365
   // Before/after the challenge year, clamp to its first/last day
   const day =

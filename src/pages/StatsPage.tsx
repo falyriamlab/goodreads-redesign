@@ -2,12 +2,13 @@ import { useId, useState } from 'react'
 import { Link } from 'react-router'
 import { TopBar } from '@/components/layout/TopBar'
 import { ChartCard } from '@/components/stats/ChartCard'
+import { detailNote } from '@/lib/challenge'
 import { capitalize } from '@/lib/filters'
 import { formatRating } from '@/lib/rating'
 import { MONTHS_SHORT, statYears, yearStats } from '@/lib/stats'
 import { books } from '@/mocks/books'
 import { currentUser } from '@/mocks/user'
-import { useLibrary } from '@/state/library'
+import { useChallengeProgress, useLibrary } from '@/state/library'
 
 const MONTHS_LONG = MONTHS_SHORT.map((_, i) => new Date(2026, i, 1).toLocaleDateString('en-US', { month: 'long' }))
 const compact = (n: number) => (n >= 1000 ? `${Math.round(n / 100) / 10}k` : String(n))
@@ -18,6 +19,9 @@ export function StatsPage() {
   const [year, setYear] = useState(years[0])
   const yearId = useId()
   const s = yearStats(history, year, books, 6)
+  const challenge = useChallengeProgress()
+  // Count-only imports have no books attached, so they only show up in the challenge total
+  const note = detailNote(s.books, year === challenge.year ? challenge.countOnly : 0)
 
   return (
     <>
@@ -109,6 +113,7 @@ export function StatsPage() {
                 display: `${s.pace[p].percent}% · ${s.pace[p].count}`,
               }))}
             />
+            <p className="text-xs text-muted-foreground">{note}</p>
           </>
         )}
       </div>

@@ -10,7 +10,9 @@ import { TopBar, TopBarIconButton } from '@/components/layout/TopBar'
 import { formatDate } from '@/lib/date'
 import { formatRating } from '@/lib/rating'
 import { recommend } from '@/lib/recommend'
+import { buddyReaderCount, spanLabel } from '@/lib/community'
 import { getBookById } from '@/mocks/books'
+import { buddyReads } from '@/mocks/community'
 import { useLibrary, useLibraryEntry } from '@/state/library'
 import type { Book } from '@/types/book'
 
@@ -78,7 +80,7 @@ function BookDetails({ book }: { book: Book }) {
         <WhereToGetIt />
         <ReviewsSection book={book} />
         <YourHistory book={book} />
-        <Discussions />
+        <Discussions book={book} />
         <MoreLikeThis book={book} />
         <Editions book={book} />
       </div>
@@ -257,21 +259,43 @@ function YourHistory({ book }: { book: Book }) {
   )
 }
 
-/* 10. Discussions (mock) */
-function Discussions() {
+/* 10. Discussions: this book's buddy reads */
+function Discussions({ book }: { book: Book }) {
+  const joined = useLibrary((s) => s.joinedBuddyReads)
+  const list = buddyReads.filter((br) => br.bookId === book.id)
   return (
     <Section title="Discussions">
-      <a
-        href="#"
-        className="flex min-h-14 items-center gap-3 rounded-lg border border-border px-3 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
-      >
-        <MessagesSquare className="size-5 shrink-0" aria-hidden="true" />
-        <span className="flex-1">
-          <span className="block text-sm font-semibold">Buddy read · ch. 1–10</span>
-          <span className="block text-xs text-muted-foreground">Spoiler-free zone. Pull up a chair.</span>
-        </span>
-        <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
-      </a>
+      {list.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          No buddy reads for this one yet.{' '}
+          <Link to="/community?tab=buddy-reads" className="inline-flex min-h-11 items-center font-semibold text-foreground underline underline-offset-4">
+            Browse buddy reads
+          </Link>
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {list.map((br) => (
+            <li key={br.id}>
+              <Link
+                to={`/community/buddy/${br.id}`}
+                className="flex min-h-14 items-center gap-3 rounded-lg border border-border px-3 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+              >
+                <MessagesSquare className="size-5 shrink-0" aria-hidden="true" />
+                <span className="flex-1">
+                  <span className="block text-sm font-semibold">
+                    Buddy read · {spanLabel(br.currentSpan)}
+                    {joined.includes(br.id) && ' · Joined'}
+                  </span>
+                  <span className="block text-xs text-muted-foreground">
+                    {buddyReaderCount(br, joined.includes(br.id))} readers · Spoiler-free zone. Pull up a chair.
+                  </span>
+                </span>
+                <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </Section>
   )
 }

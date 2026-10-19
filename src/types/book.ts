@@ -16,6 +16,8 @@ export type Book = {
   /** Position in the series; null for standalones */
   seriesNumber: number | null
   pages: number
+  /** Only for books with buddy reads (approximate, English edition) */
+  chapterCount?: number
   /** A real English edition; the cover URL is built from it */
   isbn13: string | null
   genres: string[]

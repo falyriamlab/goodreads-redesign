@@ -8,13 +8,12 @@ import { TopBar } from '@/components/layout/TopBar'
 import { CARD_HEIGHT, CARD_WIDTH, ShareCard, type ShareCardContent } from '@/components/share/ShareCard'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { getChallengeProgress } from '@/lib/challenge'
 import { formatDate } from '@/lib/date'
 import { formatRating } from '@/lib/rating'
 import { parseShareParams, shareSearch, type ShareStyle, type ShareTarget } from '@/lib/shareParams'
 import { monthStats, topRatedOfYear, yearStats } from '@/lib/stats'
 import { getBookById } from '@/mocks/books'
-import { useLibrary } from '@/state/library'
+import { useChallengeProgress, useLibrary } from '@/state/library'
 import type { Book } from '@/types/book'
 
 /* ---------- Cover CORS check: covers that can't be read cross-origin become placeholders ---------- */
@@ -74,6 +73,8 @@ export function SharePage() {
   const profile = useLibrary((s) => s.profile)
   const entries = useLibrary((s) => s.entries)
   const history = useLibrary((s) => s.history)
+  // Primitives, so the memo below doesn't recompute (and re-check covers) on every render
+  const { year: challengeYear, read: challengeRead } = useChallengeProgress()
   const cardRef = useRef<HTMLDivElement>(null)
   const [busy, setBusy] = useState(false)
   const styleId = useId()
@@ -108,8 +109,7 @@ export function SharePage() {
       }
       case 'year': {
         const s = yearStats(history, target.year)
-        const challenge = getChallengeProgress(entries)
-        const count = target.year === challenge.year ? challenge.read : s.books
+        const count = target.year === challengeYear ? challengeRead : s.books
         const vibe = s.topMoods.map((m) => m.label)
         return {
           title: `${target.year} recap`,
@@ -151,7 +151,7 @@ export function SharePage() {
       default:
         return top4()
     }
-  }, [target, entries, history, profile, firstName])
+  }, [target, entries, history, profile, firstName, challengeYear, challengeRead])
 
   const coverBooks =
     content.type === 'month'

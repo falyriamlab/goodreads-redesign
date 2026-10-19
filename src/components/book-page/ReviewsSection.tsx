@@ -4,8 +4,9 @@ import { ReviewCard } from '@/components/book/ReviewCard'
 import { useLogSheet } from '@/components/log-sheet/context'
 import { Button } from '@/components/ui/button'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { readers } from '@/mocks/community'
 import { getReviewsForBook } from '@/mocks/reviews'
-import { useLibraryEntry } from '@/state/library'
+import { useLibrary, useLibraryEntry } from '@/state/library'
 import type { Book } from '@/types/book'
 
 type Filter = 'friends' | 'popular' | 'recent' | 'no-spoilers'
@@ -30,7 +31,10 @@ export function ReviewsSection({ book }: { book: Book }) {
   const [active, setActive] = useState<Filter[]>(['popular'])
   const [showAll, setShowAll] = useState(false)
 
-  const all = getReviewsForBook(book.id)
+  const following = useLibrary((s) => s.following)
+  // "Friend" = someone you follow (same list as Community and profiles)
+  const followedNames = readers.filter((r) => following.includes(r.id)).map((r) => r.name)
+  const all = getReviewsForBook(book.id).map((r) => ({ ...r, author: { ...r.author, isFriend: followedNames.includes(r.author.name) } }))
   let list = all
   if (active.includes('friends')) list = list.filter((r) => r.author.isFriend)
   if (active.includes('no-spoilers')) list = list.filter((r) => !r.containsSpoilers)

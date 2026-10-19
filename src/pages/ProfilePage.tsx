@@ -4,16 +4,18 @@ import { Navigate, useNavigate, useParams } from 'react-router'
 import { TopBar, TopBarIconButton } from '@/components/layout/TopBar'
 import { FavoritePickerDrawer } from '@/components/profile/FavoritePickerDrawer'
 import { ProfileView, type ProfileViewData } from '@/components/profile/ProfileView'
-import { getChallengeProgress } from '@/lib/challenge'
-import { yearStats } from '@/lib/stats'
+import { detailNote } from '@/lib/challenge'
+import { monthStats, yearStats } from '@/lib/stats'
 import { books, getBookById } from '@/mocks/books'
-import { getFriendByHandle, type FriendActivity } from '@/mocks/friends'
+import { getReaderByHandle, groups } from '@/mocks/community'
+import type { FriendActivity } from '@/mocks/friends'
 import { reviews as communityReviews } from '@/mocks/reviews'
-import { useLibrary } from '@/state/library'
+import { useChallengeProgress, useLibrary } from '@/state/library'
 import type { LibraryEntry } from '@/types/library'
 
-// Mock social counts for Sofía
-const SOFIA_SOCIAL = { followers: 128, following: 96 }
+// Mock social counts for Sofía; "following" adds the readers she follows in the app
+const SOFIA_FOLLOWERS = 128
+const SOFIA_OTHER_FOLLOWING = 92
 
 export function ProfilePage() {
   const navigate = useNavigate()
@@ -22,10 +24,16 @@ export function ProfilePage() {
   const history = useLibrary((s) => s.history)
   const shelves = useLibrary((s) => s.shelves)
   const addFavorite = useLibrary((s) => s.addFavorite)
+  const following = useLibrary((s) => s.following)
+  const joinedGroups = useLibrary((s) => s.joinedGroups)
   const [pickerOpen, setPickerOpen] = useState(false)
 
-  const challenge = getChallengeProgress(entries)
+  const challenge = useChallengeProgress()
   const stats = yearStats(history, challenge.year)
+  const [now] = useState(() => new Date())
+  const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const monthName = now.toLocaleDateString('en-US', { month: 'long' })
+  const hasMonthFinishes = monthStats(history, month).books > 0
 
   const data: ProfileViewData = {
     isOwner: true,
@@ -33,12 +41,13 @@ export function ProfilePage() {
     handle: profile.handle,
     city: profile.city,
     bio: profile.bio,
-    counts: { read: challenge.read, ...SOFIA_SOCIAL },
+    counts: { read: challenge.read, followers: SOFIA_FOLLOWERS, following: SOFIA_OTHER_FOLLOWING + following.length },
     favorites: profile.favorites.filter((id) => getBookById(id)),
     currentlyReading: books.filter((b) => entries[b.id]?.status === 'reading').map((b) => b.id),
     publicSections: profile.publicSections,
     reviews: ownReviews(entries, profile.displayName),
     lists: shelves,
+    groups: groups.filter((g) => joinedGroups.includes(g.id)),
     journal: [...history]
       .sort((a, b) => b.date.localeCompare(a.date))
       .slice(0, 5)
@@ -50,6 +59,8 @@ export function ProfilePage() {
       avgRating: stats.avgRating,
       topGenres: stats.topGenres,
       vibe: stats.topMoods.map((m) => m.label),
+      note: detailNote(stats.books, challenge.countOnly),
+      monthRecap: hasMonthFinishes ? { monthName, href: `/share?type=month&month=${month}` } : null,
     },
   }
 
@@ -92,7 +103,7 @@ export function VisitorProfilePage() {
   const { handle = '' } = useParams()
   const ownHandle = useLibrary((s) => s.profile.handle)
   const entries = useLibrary((s) => s.entries)
-  const friend = getFriendByHandle(handle)
+  const friend = getReaderByHandle(handle)
 
   if (handle === ownHandle) return <Navigate to="/profile" replace />
   if (!friend) {
@@ -107,8 +118,9 @@ export function VisitorProfilePage() {
 }
 
 function FriendProfile({ friend, myEntries }: { friend: FriendActivity; myEntries: Record<string, LibraryEntry> }) {
-  // Mock: friends start followed
-  const [following, setFollowing] = useState(true)
+  const following = useLibrary((s) => s.following.includes(friend.id))
+  const follow = useLibrary((s) => s.follow)
+  const unfollow = useLibrary((s) => s.unfollow)
   const sharedLovedId = friend.loved.find((id) => myEntries[id]?.loved)
 
   // Their vibe: most common moods across their favorites
@@ -139,7 +151,7 @@ function FriendProfile({ friend, myEntries }: { friend: FriendActivity; myEntrie
   return (
     <>
       <TopBar back />
-      <ProfileView data={data} following={following} onToggleFollow={() => setFollowing((f) => !f)} />
+      <ProfileView data={data} following={following} onToggleFollow={() => (following ? unfollow(friend.id) : follow(friend.id))} />
     </>
   )
 }

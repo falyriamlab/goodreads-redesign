@@ -76,7 +76,7 @@ export const friends: FriendActivity[] = [
     following: 61,
     publicSections: { reviews: false, lists: true, journal: true, stats: true },
     lists: [{ id: 'l1', name: 'Fae season', bookIds: ['the-cruel-prince', 'a-court-of-thorns-and-roses', 'circe'] }],
-    recentlyFinished: [{ bookId: 'the-cruel-prince', date: '2026-10-01', rating: 4 }],
+    recentlyFinished: [{ bookId: 'the-cruel-prince', date: '2026-10-02', rating: 4 }],
   },
   {
     id: 'theo-park',

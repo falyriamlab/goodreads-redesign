@@ -28,6 +28,8 @@ export type ProfileViewData = {
   publicSections: Record<ProfileSection, boolean>
   reviews: Review[]
   lists: { id: string; name: string; bookIds: string[] }[]
+  /** Owner: groups you've joined */
+  groups?: { id: string; name: string; memberCount: number }[]
   journal: { event: ReadingEvent; loved: boolean }[]
   /** null = nothing to show */
   stats: {
@@ -37,6 +39,10 @@ export type ProfileViewData = {
     avgRating: number | null
     topGenres: Share[]
     vibe: string[]
+    /** Owner: "Based on 12 books with full details · 26 imported as count only." */
+    note?: string
+    /** Owner: shown when this month has finished books */
+    monthRecap?: { monthName: string; href: string } | null
   } | null
   /** Visitor mode: a loved book in common */
   sharedLoved?: Book | null
@@ -261,6 +267,15 @@ function YearSoFar({ data, privateLabel }: { data: ProfileViewData; privateLabel
           </p>
         )}
 
+        {s.note && <p className="text-xs text-muted-foreground">{s.note}</p>}
+
+        {s.monthRecap && (
+          <Link to={s.monthRecap.href} className={cn(linkClass, 'gap-2')}>
+            <Share2 className="size-4" aria-hidden="true" />
+            Share your {s.monthRecap.monthName} recap
+          </Link>
+        )}
+
         {data.isOwner && (
           <div className="flex gap-4">
             <Link to="/profile/stats" className={linkClass}>
@@ -394,7 +409,23 @@ function ProfileTabs({
         </TabsContent>
 
         <TabsContent value="groups">
-          <p className="text-sm text-muted-foreground">Coming soon.</p>
+          {!data.groups?.length ? (
+            <p className="text-sm text-muted-foreground">{data.isOwner ? 'No groups yet.' : 'Groups are private.'}</p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {data.groups.map((g) => (
+                <li key={g.id}>
+                  <Link
+                    to={`/community/groups/${g.id}`}
+                    className="flex min-h-14 flex-col justify-center outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+                  >
+                    <span className="text-sm font-semibold">{g.name}</span>
+                    <span className="text-xs text-muted-foreground">{(g.memberCount + 1).toLocaleString('en-US')} members</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </TabsContent>
       </div>
     </Tabs>

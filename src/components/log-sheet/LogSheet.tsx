@@ -21,11 +21,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { getChallengeProgress } from '@/lib/challenge'
 import { todayISO } from '@/lib/date'
 import { cn } from '@/lib/utils'
 import { books, getBookById } from '@/mocks/books'
-import { EMPTY_ENTRY, useLibrary } from '@/state/library'
+import { EMPTY_ENTRY, useChallengeProgress, useLibrary } from '@/state/library'
 import type { Book } from '@/types/book'
 import type { DnfReason, ReadingStatus } from '@/types/library'
 import type { LogSheetOptions } from './context'
@@ -129,7 +128,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
   }, [step])
 
   // Header copy
-  const challenge = getChallengeProgress(entries)
+  const challenge = useChallengeProgress()
   const alreadyCounted = initial.status === 'read' && initial.finishedAt?.startsWith(String(challenge.year))
   const n = challenge.read + (alreadyCounted ? 0 : 1)
   const header =

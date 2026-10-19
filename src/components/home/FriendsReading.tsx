@@ -6,11 +6,16 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { formatRating } from '@/lib/rating'
 import { initials } from '@/lib/initials'
 import { getBookById } from '@/mocks/books'
-import { friends } from '@/mocks/friends'
+import { readers } from '@/mocks/community'
+import { useLibrary } from '@/state/library'
 import type { Book } from '@/types/book'
 
 export function FriendsReading() {
   const headingId = useId()
+  const following = useLibrary((s) => s.following)
+  // People you follow (Community and profiles share the list)
+  const friends = readers.filter((r) => following.includes(r.id)).slice(0, 8)
+  if (friends.length === 0) return null
 
   return (
     <section aria-labelledby={headingId} className="space-y-3 px-4">

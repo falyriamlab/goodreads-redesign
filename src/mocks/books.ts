@@ -6,6 +6,7 @@ import type { Book, Edition } from '@/types/book'
 // - genres / moods / pace / tropes / contentWarnings: editorial tags for this prototype.
 // - Synopses only for The Empyrean (short neutral summaries written for this project, no quoted text).
 // - Ratings and ratings counts stay null on purpose: no made-up numbers.
+// - chapterCount: only on books with buddy reads; approximate, used to place comments by chapter.
 // - trending is a mock flag for "Trending this week", not real sales data.
 // - Editions are illustrative, not exhaustive.
 
@@ -41,6 +42,7 @@ export const books: Book[] = [
     series: 'The Empyrean',
     seriesNumber: 1,
     pages: 518,
+    chapterCount: 39,
     isbn13: '9780349437002',
     genres: ['Romantasy', 'Fantasy'],
     moods: ['adventurous', 'dark', 'tense'],
@@ -180,6 +182,7 @@ export const books: Book[] = [
     series: null,
     seriesNumber: null,
     pages: 400,
+    chapterCount: 70,
     isbn13: '9798212224604',
     genres: ['Historical Fiction', 'Romance'],
     moods: ['emotional', 'reflective', 'mysterious'],

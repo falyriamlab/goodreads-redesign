@@ -82,18 +82,18 @@ describe('library store', () => {
 
   describe('reading challenge', () => {
     it('starts at 38 for the seed', () => {
-      expect(getChallengeProgress(store().entries).read).toBe(38)
+      expect(getChallengeProgress(store().history, store().importedCountOnly).read).toBe(38)
     })
 
     it('does not count DNF', () => {
       store().logBook('fourth-wing', { ...basePayload, status: 'dnf', finishedAt: todayISO(), dnfPage: 312 })
       expect(entry('fourth-wing').status).toBe('dnf')
-      expect(getChallengeProgress(store().entries).read).toBe(38)
+      expect(getChallengeProgress(store().history, store().importedCountOnly).read).toBe(38)
     })
 
     it('counts a book finished this year', () => {
       store().logBook('fourth-wing', { ...basePayload, status: 'read', finishedAt: '2026-10-15', rating: 4.25 })
-      expect(getChallengeProgress(store().entries).read).toBe(39)
+      expect(getChallengeProgress(store().history, store().importedCountOnly).read).toBe(39)
       expect(entry('fourth-wing')).toMatchObject({ rating: 4.25, everRead: true })
     })
   })

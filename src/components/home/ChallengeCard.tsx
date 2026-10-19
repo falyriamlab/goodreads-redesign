@@ -1,15 +1,14 @@
 import { useId } from 'react'
 import { Link } from 'react-router'
-import { getChallengePace, getChallengeProgress } from '@/lib/challenge'
-import { useLibrary } from '@/state/library'
+import { getChallengePace } from '@/lib/challenge'
+import { useChallengeProgress } from '@/state/library'
 
 const linkClass =
   'inline-flex min-h-11 min-w-11 items-center justify-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50'
 
 export function ChallengeCard() {
   const headingId = useId()
-  const entries = useLibrary((s) => s.entries)
-  const progress = getChallengeProgress(entries)
+  const progress = useChallengeProgress()
   const pace = getChallengePace(progress)
   const percent = Math.min(100, Math.round((progress.read / progress.goal) * 100))
 

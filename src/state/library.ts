@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import { getChallengeProgress } from '@/lib/challenge'
 import { todayISO } from '@/lib/date'
 import { addFavorite, moveFavorite, normalizeFavorites, removeFavorite } from '@/lib/profile'
 import { normalizeRating } from '@/lib/rating'
@@ -7,6 +8,7 @@ import { getStoredTheme, setTheme, type ThemeMode } from '@/lib/theme'
 import { getBookById } from '@/mocks/books'
 import type { DnfReason, LibraryEntry, ReadingEvent, ReadingStatus, Shelf } from '@/types/library'
 import type { Profile } from '@/types/profile'
+import { COMMUNITY_SEED, createCommunitySlice, migrateCommunity, type CommunityData, type CommunityState } from './communitySlice'
 
 export const EMPTY_ENTRY: LibraryEntry = {
   status: null,
@@ -126,7 +128,9 @@ export type LibrarySnapshot = {
 
 const MAX_RECENT_SEARCHES = 5
 
-type LibraryState = LibrarySnapshot & {
+type LibraryState = LibrarySnapshot & CommunityState & {
+  /** This year's reads imported from another app as a number only (no books attached) */
+  importedCountOnly: number
   /** Book ids hidden from recommendations ("Not my vibe") */
   dismissedRecommendations: string[]
   dismiss: (bookId: string) => void
@@ -186,7 +190,7 @@ type LibraryState = LibrarySnapshot & {
 
 type SeedRead = [id: string, started: string, finished: string, rating: number, loved?: boolean, rereads?: number]
 
-// Finished in 2026. The challenge counts these + her off-catalog reads, and still totals 38.
+// Finished in 2026. The challenge counts these 12 + IMPORTED_COUNT_ONLY_SEED and totals 38.
 const SEED_READ: SeedRead[] = [
   ['gone-girl', '2026-01-03', '2026-01-14', 4],
   ['the-martian', '2026-02-01', '2026-02-09', 4.5, true],
@@ -277,6 +281,9 @@ export const SHELVES_SEED: Shelf[] = [
 
 export const WANT_ORDER_SEED = SEED_WANT.map(([id]) => id)
 
+/** 2026 reads imported as a count only (12 detailed + 26 = 38 for the challenge) */
+export const IMPORTED_COUNT_ONLY_SEED = 26
+
 export const PROFILE_SEED: Profile = {
   displayName: 'Sofía Herrera',
   handle: 'sofiareads',
@@ -347,6 +354,8 @@ export const useLibrary = create<LibraryState>()(
         libraryView: 'grid',
         profile: PROFILE_SEED,
         themeMode: getStoredTheme(),
+        importedCountOnly: IMPORTED_COUNT_ONLY_SEED,
+        ...createCommunitySlice(set),
 
         dismiss: (bookId) =>
           set((state) =>
@@ -540,8 +549,9 @@ export const useLibrary = create<LibraryState>()(
     {
       name: 'goodreads-library',
       // v2 everRead/review/DNF; v3 dismissedRecommendations; v4 recentSearches;
-      // v5 history, shelves, wantOrder, addedAt, libraryView; v6 profile, themeMode
-      version: 6,
+      // v5 history, shelves, wantOrder, addedAt, libraryView; v6 profile, themeMode;
+      // v7 importedCountOnly + community (follows, likes, comments, groups, messages, notifications)
+      version: 7,
       migrate: (persisted, version) => {
         const state = persisted as Partial<LibrarySnapshot> & {
           entries?: Record<string, Partial<LibraryEntry>>
@@ -550,7 +560,8 @@ export const useLibrary = create<LibraryState>()(
           libraryView?: LibraryView
           profile?: Profile
           themeMode?: ThemeMode
-        }
+          importedCountOnly?: number
+        } & Partial<CommunityData>
         const entries: Record<string, LibraryEntry> = {}
         for (const [id, entry] of Object.entries(state.entries ?? {})) {
           entries[id] = {
@@ -571,6 +582,8 @@ export const useLibrary = create<LibraryState>()(
           libraryView: state.libraryView ?? 'grid',
           profile: state.profile ?? PROFILE_SEED,
           themeMode: state.themeMode ?? getStoredTheme(),
+          importedCountOnly: state.importedCountOnly ?? IMPORTED_COUNT_ONLY_SEED,
+          ...migrateCommunity(state),
         }
       },
       storage: createJSONStorage(() => localStorage),
@@ -584,6 +597,8 @@ export const useLibrary = create<LibraryState>()(
         libraryView: state.libraryView,
         profile: state.profile,
         themeMode: state.themeMode,
+        importedCountOnly: state.importedCountOnly,
+        ...(Object.fromEntries(Object.keys(COMMUNITY_SEED).map((k) => [k, state[k as keyof CommunityData]])) as CommunityData),
       }),
     },
   ),
@@ -592,4 +607,11 @@ export const useLibrary = create<LibraryState>()(
 /** Entry for one book; returns a stable empty entry when the book isn't shelved */
 export function useLibraryEntry(bookId: string): LibraryEntry {
   return useLibrary((state) => state.entries[bookId] ?? EMPTY_ENTRY)
+}
+
+/** Reading challenge from the journal + count-only imports (same numbers on every screen) */
+export function useChallengeProgress() {
+  const history = useLibrary((state) => state.history)
+  const importedCountOnly = useLibrary((state) => state.importedCountOnly)
+  return getChallengeProgress(history, importedCountOnly)
 }

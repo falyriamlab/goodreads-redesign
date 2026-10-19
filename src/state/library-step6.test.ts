@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { getChallengeProgress } from '@/lib/challenge'
 import { sortBooks } from '@/lib/libraryView'
 import { books } from '@/mocks/books'
-import { HISTORY_SEED, LIBRARY_SEED, SHELVES_SEED, useLibrary, WANT_ORDER_SEED, type LogPayload } from './library'
+import { HISTORY_SEED, IMPORTED_COUNT_ONLY_SEED, LIBRARY_SEED, SHELVES_SEED, useLibrary, WANT_ORDER_SEED, type LogPayload } from './library'
 
 const store = () => useLibrary.getState()
 const eventsOf = (id: string) => store().history.filter((e) => e.bookId === id)
@@ -38,7 +38,7 @@ describe('seed', () => {
     expect(finished).toHaveLength(read.length)
     for (const [id, e] of read) expect(finished.find((f) => f.bookId === id)?.date).toBe(e.finishedAt)
     expect(HISTORY_SEED.filter((e) => e.type === 'dnf').map((e) => e.bookId)).toEqual(['the-name-of-the-wind'])
-    expect(getChallengeProgress(LIBRARY_SEED).read).toBe(38)
+    expect(getChallengeProgress(HISTORY_SEED, IMPORTED_COUNT_ONLY_SEED).read).toBe(38)
     expect(Object.values(LIBRARY_SEED).filter((e) => e.status === 'want')).toHaveLength(7)
     expect(Object.values(LIBRARY_SEED).filter((e) => e.status === 'reading')).toHaveLength(2)
   })

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { ChevronLeft } from 'lucide-react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -56,13 +56,51 @@ type TopBarIconButtonProps = {
   label: string
   icon: ReactNode
   onClick?: () => void
+  /** Renders a link instead of a button */
+  to?: string
 }
 
 /** Icon-only action for the TopBar: 44px touch target, accessible name via aria-label */
-export function TopBarIconButton({ label, icon, onClick }: TopBarIconButtonProps) {
+export function TopBarIconButton({ label, icon, onClick, to }: TopBarIconButtonProps) {
+  if (to) {
+    return (
+      <Button asChild variant="ghost" size="icon" className="size-11 [&_svg]:size-5">
+        <Link to={to} aria-label={label}>
+          {icon}
+        </Link>
+      </Button>
+    )
+  }
   return (
     <Button variant="ghost" size="icon" className="size-11 [&_svg]:size-5" aria-label={label} onClick={onClick}>
       {icon}
+    </Button>
+  )
+}
+
+type TopBarBadgeLinkProps = {
+  /** "Notifications": the accessible name becomes "Notifications, 3 unread" */
+  label: string
+  icon: ReactNode
+  to: string
+  count: number
+}
+
+/** Icon link with an unread badge. The badge shows the number (not just a colored dot). */
+export function TopBarBadgeLink({ label, icon, to, count }: TopBarBadgeLinkProps) {
+  return (
+    <Button asChild variant="ghost" size="icon" className="relative size-11 [&_svg]:size-5">
+      <Link to={to} aria-label={count > 0 ? `${label}, ${count} unread` : label}>
+        {icon}
+        {count > 0 && (
+          <span
+            aria-hidden="true"
+            className="absolute top-1 right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-[0.6875rem] leading-none font-bold text-background ring-2 ring-background tabular-nums"
+          >
+            {count > 9 ? '9+' : count}
+          </span>
+        )}
+      </Link>
     </Button>
   )
 }

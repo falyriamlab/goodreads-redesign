@@ -1,8 +1,10 @@
 # Goodreads Redesign
 
+> **Concept redesign for a UX case study. Not affiliated with Goodreads or Amazon. Book covers from Open Library.**
+
 A mobile-first redesign of the Goodreads app, built as a UX/UI case study. The focus is a faster way to track what you read, with clearer shelves, quarter-star ratings and spoiler-safe reviews, and the core theme color pairs checked against WCAG AA.
 
-> This is a design exercise, not affiliated with Goodreads or Amazon. All data is mock data.
+All data is mock data.
 
 ## Design docs
 
@@ -36,6 +38,13 @@ Other scripts:
 | `npm run build` | Type-check and build for production |
 | `npm run preview` | Serve the production build locally |
 | `npm run lint` | Lint with oxlint |
+
+## Deploy (Vercel)
+
+- `vercel.json` rewrites every route to `/index.html`, so deep links like `/book/fourth-wing` survive a reload.
+- Link previews use `public/og-image.png`. Its absolute URL comes from `VITE_SITE_URL`, or on Vercel from the production domain.
+- A first visit with empty storage loads the full demo (seed + demo clock on Oct 16, 2026).
+- `npm run capture` regenerates `case-study/`. `npm run assets` regenerates the OG image and the PNG favicons from it.
 
 ## Reviewing components
 

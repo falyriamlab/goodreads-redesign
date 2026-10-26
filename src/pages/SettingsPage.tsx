@@ -5,6 +5,7 @@ import { SegmentedRadio } from '@/components/common/SegmentedRadio'
 import { TopBar } from '@/components/layout/TopBar'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { ConceptNote } from '@/components/common/ConceptNote'
 import { Switch } from '@/components/ui/switch'
 import { setDemoClock, useDemoClock } from '@/lib/clock'
 import { downloadText, exportLibraryCsv } from '@/lib/exportCsv'
@@ -141,6 +142,8 @@ export function SettingsPage() {
             Sign out
           </Button>
         </Group>
+
+        <ConceptNote />
       </div>
     </>
   )

@@ -83,7 +83,7 @@
 /*
  * Color usage rules (WCAG AA, see contrast audit in step 2):
  * - Every *-foreground passes 4.5:1 on its own surface (primary, secondary, accent), light and dark.
- * - --primary (green) as TEXT on --background is only 4.30:1 (light) / 3.73:1 (dark).
+ * - --primary (green, L 0.54) as TEXT on --background is only 4.46:1 (light) / 3.60:1 (dark).
  *   Never use text-primary for small text. Use the green only for fills (bg-primary with
  *   text-primary-foreground), bars, indicators and borders. For text, use text-foreground.
  * - --rating (stars) is a non-text graphic: it needs 3:1 vs --background (3.57 light / 8.87 dark).
@@ -104,7 +104,7 @@
     --card-foreground: oklch(0.3211 0 0);
     --popover: oklch(1.0000 0 0);
     --popover-foreground: oklch(0.3211 0 0);
-    --primary: oklch(0.5507 0.1538 150.3071);
+    --primary: oklch(0.54 0.1538 150.3071);
     --primary-foreground: oklch(1.0000 0 0);
     --secondary: oklch(0.5721 0.1414 261.3380);
     --secondary-foreground: oklch(1.0000 0 0);
@@ -166,7 +166,7 @@
     --card-foreground: oklch(0.9219 0 0);
     --popover: oklch(0.3210 0.0078 223.6661);
     --popover-foreground: oklch(0.9219 0 0);
-    --primary: oklch(0.5507 0.1538 150.3071);
+    --primary: oklch(0.54 0.1538 150.3071);
     --primary-foreground: oklch(1.0000 0 0);
     --secondary: oklch(0.5125 0.0993 245.7394);
     --secondary-foreground: oklch(0.9219 0 0);

@@ -56,11 +56,11 @@ Exported by the app's own "Save image" button (1080×1920, Brand style): `share-
 | `--band-foreground` on `--band` | 10.77 | 11.89 | 4.5 |
 | `--band-muted-foreground` on `--band` | 5.57 | 5.94 | 4.5 |
 | `--muted-foreground` on `--band` (not allowed) | 4.35 | 5.94 | — |
-| `--primary-foreground` on `--primary` (brand band) | 4.50 | 4.50 | 4.5 |
-| Brand bar: white fill vs 20% white track | 3.27 | 3.27 | 3 |
+| `--primary-foreground` on `--primary` (brand band) | 4.69 | 4.69 | 4.5 |
+| Brand bar: white fill vs 20% white track | 3.37 | 3.37 | 3 |
 | Stars on `--band` | 3.19 | 7.88 | 3 |
-| Primary button on `--band` | 3.84 | 3.33 | 3 |
-| `--primary` as text on `--background` (never used for text) | 4.30 | 3.73 | — |
+| Primary button on `--band` | 4.00 | 3.19 | 3 |
+| `--primary` as text on `--background` (never used for text) | 4.46 | 3.60 | — |
 
 ## Audits: `audit.json`
 

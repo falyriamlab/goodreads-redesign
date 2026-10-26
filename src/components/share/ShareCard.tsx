@@ -192,8 +192,8 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
 
       <footer className="mt-12 flex shrink-0 items-end justify-between border-t-4 border-current pt-10">
         <span className="text-4xl font-semibold">@{handle}</span>
-        {/* Text wordmark (no image logo) */}
-        <span className="font-serif text-6xl font-bold tracking-tight">goodreads</span>
+        {/* Small text wordmark: this is a concept, not the real brand */}
+        <span className="font-serif text-4xl font-semibold tracking-tight">goodreads concept</span>
       </footer>
     </div>
   )

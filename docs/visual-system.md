@@ -12,11 +12,11 @@ Everything below uses theme tokens from `src/index.css`. Contrast is computed in
 | `--band-foreground` | `oklch(0.3211 0 0)` | `oklch(0.9219 0 0)` | Text on the band: **10.77:1 / 11.89:1** |
 | `--band-muted-foreground` | `oklch(0.48 0 0)` | `oklch(0.7155 0 0)` | Secondary text on the band: **5.57:1 / 5.94:1** |
 | `--cover-shadow` | 2 layers, 12% + 35% black | 2 layers, 40% + 70% black | Every cover (rule 4), as `shadow-cover` |
-| `--primary` / `--primary-foreground` | existing | existing | Brand band (rule 2): **4.50:1** (4.5006) |
+| `--primary` / `--primary-foreground` | existing | existing | Brand band (rule 2): **4.69:1** (`--primary` at L 0.54) |
 
 Never put plain `--muted-foreground` on the light band: it's only 4.35:1.
 
-Other checks on the band: stars (`--rating`, a graphic, needs 3:1) 3.19 / 7.88; the primary button fill 3.84 / 3.33; `border-muted-foreground` outlines 4.35 / 5.94.
+Other checks on the band: stars (`--rating`, a graphic, needs 3:1) 3.19 / 7.88; the primary button fill 4.00 / 3.19; `border-muted-foreground` outlines 4.35 / 5.94.
 
 ## Rules
 
@@ -32,8 +32,8 @@ Text on it uses `text-band-foreground` and `text-band-muted-foreground`, never `
 ### 2. Brand band (`bg-primary text-primary-foreground`): the challenge only
 - Used for the reading challenge (Home and the owner's Profile) and for the Brand share cards.
 - Big text is ≥ 24px: the h2 (`section-title`), the 72px number and "of 46 books".
-- The small lines (pace message, "See all") rely on the 4.5006:1 pair, so they stay medium or semibold.
-- The progress bar on the band is a white fill on a 20% white track (3.27:1 between fill and track); the numbers are always written next to it.
+- The small lines (pace message, "See all") rely on the 4.69:1 pair (medium or semibold, for extra margin).
+- The progress bar on the band is a white fill on a 20% white track (3.37:1 between fill and track); the numbers are always written next to it.
 - Focus rings on the band use `ring-primary-foreground`, because the green ring would disappear.
 
 ### 3. Display numbers (Source Serif 4, 56–72px): never more than 2 places per screen
@@ -83,4 +83,4 @@ Bands use `py-6` (24) or `py-8` (32, the brand band) of padding, so they read as
 - Touch targets ≥ 44px. Small visuals (chips, pills, dismiss) extend their hit area with `::after`.
 - Nothing interactive is nested. Cards use one stretched link plus sibling buttons raised above it.
 - States are never told by color alone: weight, fill, icon or a word goes with them.
-- Green (`--primary`) is never small text on the page background (4.30:1 light). It's used as a fill or a bar.
+- Green (`--primary`) is never small text on the page background (4.46:1 light, 3.60:1 dark). It's used as a fill or a bar.

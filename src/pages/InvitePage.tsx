@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router'
 import { toast } from 'sonner'
 import { BookCover } from '@/components/book/BookCover'
+import { ConceptNote } from '@/components/common/ConceptNote'
 import { Button } from '@/components/ui/button'
 import { initials } from '@/lib/initials'
 import { getBookById } from '@/mocks/books'
@@ -68,6 +69,7 @@ export function InvitePage() {
       >
         Back to the app
       </Link>
+      <ConceptNote className="text-center" />
     </main>
   )
 }

@@ -190,7 +190,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
             <DrawerHeader className="flex-row items-center gap-3 text-left">
               <BookCover book={book} size="sm" />
               <div className="min-w-0 space-y-0.5">
-                <DrawerTitle className="font-serif text-lg leading-snug font-semibold">{header.title}</DrawerTitle>
+                <DrawerTitle className="section-title">{header.title}</DrawerTitle>
                 <DrawerDescription>{header.subtitle}</DrawerDescription>
               </div>
             </DrawerHeader>
@@ -377,7 +377,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
           <>
             <DrawerHeader className="text-left">
               <DrawerTitle asChild>
-                <h2 ref={nextHeadingRef} tabIndex={-1} className="font-serif text-xl font-semibold outline-none">
+                <h2 ref={nextHeadingRef} tabIndex={-1} className="section-title outline-none">
                   What's next?
                 </h2>
               </DrawerTitle>

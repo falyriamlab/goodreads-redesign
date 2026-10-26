@@ -17,8 +17,8 @@ export function BuddyReads() {
   if (mine.length === 0) return null
 
   return (
-    <section aria-labelledby={headingId} className="space-y-3 px-4">
-      <h2 id={headingId} className="text-lg font-bold tracking-tight">
+    <section aria-labelledby={headingId} className="space-y-4 px-4">
+      <h2 id={headingId} className="section-title">
         Your buddy reads
       </h2>
       <ul className="space-y-2">

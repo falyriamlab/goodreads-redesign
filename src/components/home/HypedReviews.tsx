@@ -12,8 +12,8 @@ export function HypedReviews() {
   const top = [...reviews].sort((a, b) => b.likes - a.likes).slice(0, 2)
 
   return (
-    <section aria-labelledby={headingId} className="space-y-3 px-4">
-      <h2 id={headingId} className="text-lg font-bold tracking-tight">
+    <section aria-labelledby={headingId} className="space-y-4 px-4">
+      <h2 id={headingId} className="section-title">
         Reviews everyone's hyping this week
       </h2>
       <ul className="space-y-4">

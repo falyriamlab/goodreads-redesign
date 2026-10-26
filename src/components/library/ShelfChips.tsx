@@ -23,7 +23,7 @@ export function ShelfChips({ value, onChange }: { value: string | null; onChange
 
   return (
     <>
-      <div role="group" aria-label="Custom shelves" className="flex gap-2 overflow-x-auto px-4 py-1">
+      <div role="group" aria-label="Custom shelves" className="flex gap-2 relative overflow-x-auto px-4 py-1">
         <ShelfChip label="All" pressed={value === null} onPress={() => onChange(null)} />
         {shelves.map((s) => (
           <ShelfChip
@@ -139,7 +139,7 @@ function ShelvesDrawer({
         {state?.mode === 'create' ? (
           <form onSubmit={create}>
             <DrawerHeader className="text-left">
-              <DrawerTitle className="text-lg font-semibold">New shelf</DrawerTitle>
+              <DrawerTitle className="section-title">New shelf</DrawerTitle>
               <DrawerDescription>Group books your way. A book can be on as many shelves as you like.</DrawerDescription>
             </DrawerHeader>
             <div className="space-y-1.5 px-4">
@@ -165,7 +165,7 @@ function ShelvesDrawer({
         ) : (
           <>
             <DrawerHeader className="text-left">
-              <DrawerTitle className="text-lg font-semibold">Edit shelves</DrawerTitle>
+              <DrawerTitle className="section-title">Edit shelves</DrawerTitle>
               <DrawerDescription>Rename or delete. Deleting a shelf never removes its books.</DrawerDescription>
             </DrawerHeader>
             <ul data-vaul-no-drag className="flex-1 space-y-3 overflow-y-auto px-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">

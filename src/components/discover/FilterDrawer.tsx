@@ -43,7 +43,7 @@ export function FilterDrawer({ title, description, options, selected, onToggle, 
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent className="mx-auto max-h-[85dvh] w-full max-w-app">
         <DrawerHeader className="text-left">
-          <DrawerTitle className="text-lg font-semibold">{title}</DrawerTitle>
+          <DrawerTitle className="section-title">{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
 

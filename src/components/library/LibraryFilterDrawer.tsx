@@ -41,7 +41,7 @@ export function LibraryFilterDrawer({ value, onChange, genres, years, trigger }:
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent className="mx-auto max-h-[85dvh] w-full max-w-app">
         <DrawerHeader className="text-left">
-          <DrawerTitle className="text-lg font-semibold">Filter</DrawerTitle>
+          <DrawerTitle className="section-title">Filter</DrawerTitle>
           <DrawerDescription>Narrow down this shelf. Filters apply as you pick.</DrawerDescription>
         </DrawerHeader>
         <div data-vaul-no-drag className="flex-1 space-y-6 overflow-y-auto px-4 pb-2">

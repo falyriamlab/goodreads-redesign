@@ -2,16 +2,12 @@ import { useEffect, useId, useState, type ReactNode } from 'react'
 import { BookMarked, ChevronRight, Headphones, Landmark, MessagesSquare, Share2, Store, Tablet } from 'lucide-react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { BookCard } from '@/components/book/BookCard'
-import { BookCover } from '@/components/book/BookCover'
 import { BookActions } from '@/components/book-page/BookActions'
-import { BookActionsA, BookHeroA } from '@/components/directions/a/BookHeroA'
-import { BookHeroB } from '@/components/directions/b/BookHeroB'
+import { BookHero } from '@/components/book-page/BookHero'
 import { ReviewsSection } from '@/components/book-page/ReviewsSection'
 import { ClampText } from '@/components/common/ClampText'
 import { TopBar, TopBarIconButton } from '@/components/layout/TopBar'
 import { formatDate } from '@/lib/date'
-import { useDirection } from '@/lib/direction'
-import { formatRating } from '@/lib/rating'
 import { recommend } from '@/lib/recommend'
 import { buddyReaderCount, spanLabel } from '@/lib/community'
 import { getBookById } from '@/mocks/books'
@@ -38,7 +34,6 @@ export function BookPage() {
 function BookDetails({ book }: { book: Book }) {
   const navigate = useNavigate()
   const { hash } = useLocation()
-  const direction = useDirection()
 
   // Deep links like /book/:id#reviews: scroll to the section and move focus to its heading
   useEffect(() => {
@@ -56,7 +51,6 @@ function BookDetails({ book }: { book: Book }) {
     <>
       {/* 1. No title here: the book title is the page's <h1> in the hero */}
       <TopBar
-        className={direction === 'b' ? 'dark border-transparent text-foreground' : undefined}
         back
         backFallback="/discover"
         actions={
@@ -68,21 +62,9 @@ function BookDetails({ book }: { book: Book }) {
         }
       />
 
-      <div className="space-y-8 px-4 pt-4 pb-8">
-        {/* visual-pass exploration: ?direction=a | b (dev toggle) */}
-        {direction === 'a' ? (
-          <>
-            <BookHeroA book={book} />
-            <BookActionsA book={book} />
-          </>
-        ) : direction === 'b' ? (
-          <BookHeroB book={book} />
-        ) : (
-          <>
-            <Hero book={book} />
-            <BookActions book={book} />
-          </>
-        )}
+      <div className="space-y-10 px-4 pt-4 pb-10">
+        <BookHero book={book} />
+        <BookActions book={book} />
         <Vibes book={book} />
         <ContentWarnings book={book} />
         <Section title="Synopsis">
@@ -108,44 +90,15 @@ function BookDetails({ book }: { book: Book }) {
 function Section({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) {
   const id = useId()
   return (
-    <section aria-labelledby={id} className="space-y-3">
+    <section aria-labelledby={id} className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 id={id} className="text-lg font-bold tracking-tight">
+        <h2 id={id} className="section-title">
           {title}
         </h2>
         {action}
       </div>
       {children}
     </section>
-  )
-}
-
-/* 2. Hero */
-function Hero({ book }: { book: Book }) {
-  return (
-    <div className="flex gap-4">
-      <BookCover book={book} size="lg" />
-      <div className="min-w-0 flex-1 space-y-2 pt-1">
-        <h1 className="font-serif text-2xl leading-tight font-semibold text-balance">{book.title}</h1>
-        <p className="text-sm">
-          {book.author}
-          {book.series && (
-            <span className="text-muted-foreground">
-              {' '}
-              · {book.series} #{book.seriesNumber}
-            </span>
-          )}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {book.avgRating !== null && book.ratingsCount !== null
-            ? `${formatRating(book.avgRating)} avg · ${book.ratingsCount.toLocaleString('en-US')} ratings`
-            : 'No ratings yet'}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {book.pages} pages{!book.isPublished && ' · Not out yet'}
-        </p>
-      </div>
-    </div>
   )
 }
 
@@ -327,7 +280,7 @@ function MoreLikeThis({ book }: { book: Book }) {
 
   return (
     <Section title="More books with this energy">
-      <ul className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2">
+      <ul className="-mx-4 flex gap-4 relative overflow-x-auto px-4 pb-2">
         {similar.map((b) => (
           <li key={b.id} className="shrink-0">
             <BookCard book={b} />

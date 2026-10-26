@@ -192,8 +192,8 @@ function ChapterSection({
   const n = group.comments.length
 
   return (
-    <section id={chapterId(group.chapter)} aria-labelledby={headingId} className="scroll-mt-16 space-y-3">
-      <h2 id={headingId} tabIndex={-1} className="flex items-center gap-2 text-base font-bold outline-none">
+    <section id={chapterId(group.chapter)} aria-labelledby={headingId} className="scroll-mt-16 space-y-4">
+      <h2 id={headingId} tabIndex={-1} className="section-title flex items-center gap-2 outline-none">
         {group.ahead && <Lock className="size-4" aria-hidden="true" />}
         Ch. {group.chapter}
         {group.ahead && <span className="font-medium"> · You're not there yet</span>}

@@ -5,7 +5,7 @@ import { useLibrary, useLibraryEntry } from '@/state/library'
 import { useShelfActions } from '@/state/useShelfActions'
 import type { Book } from '@/types/book'
 
-/** Same behavior as the shipped BookActions, for the directions' own layouts */
+/** Shelf actions for the book page: status, love, lists and rating (rating an unfinished book opens the log) */
 export function useBookActions(book: Book) {
   const entry = useLibraryEntry(book.id)
   const { changeStatus, quickAdd } = useShelfActions()

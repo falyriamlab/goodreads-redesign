@@ -40,7 +40,7 @@ export function ShareBookDrawer({ open, onOpenChange, recipientName, onPick }: P
     >
       <DrawerContent className="mx-auto max-h-[85dvh] w-full max-w-app">
         <DrawerHeader className="text-left">
-          <DrawerTitle className="text-lg font-semibold">Share a book</DrawerTitle>
+          <DrawerTitle className="section-title">Share a book</DrawerTitle>
           <DrawerDescription>Send it to {recipientName}. It goes out as soon as you pick it.</DrawerDescription>
         </DrawerHeader>
         <div className="relative px-4 pb-2">

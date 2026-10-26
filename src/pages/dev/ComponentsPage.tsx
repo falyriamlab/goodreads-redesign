@@ -1,14 +1,11 @@
 import { useState, type ReactNode } from 'react'
-import { Link } from 'react-router'
 import { BookCard } from '@/components/book/BookCard'
 import { BookCover } from '@/components/book/BookCover'
 import { LovedButton } from '@/components/book/LovedButton'
 import { ReviewCard } from '@/components/book/ReviewCard'
 import { StarRating } from '@/components/book/StarRating'
 import { StatusChip } from '@/components/book/StatusChip'
-import { SegmentedRadio } from '@/components/common/SegmentedRadio'
 import { Button } from '@/components/ui/button'
-import { DIRECTIONS, setDirection, useDirection } from '@/lib/direction'
 import { Switch } from '@/components/ui/switch'
 import { getBookById } from '@/mocks/books'
 import { reviews } from '@/mocks/reviews'
@@ -31,9 +28,9 @@ const brokenImage: Book = {
 
 function Section({ title, note, children }: { title: string; note?: string; children: ReactNode }) {
   return (
-    <section className="space-y-3 border-b border-border px-4 py-6">
+    <section className="space-y-4 border-b border-border px-4 py-6">
       <div>
-        <h2 className="text-lg font-bold tracking-tight">{title}</h2>
+        <h2 className="section-title">{title}</h2>
         {note && <p className="text-sm text-muted-foreground">{note}</p>}
       </div>
       {children}
@@ -78,7 +75,6 @@ export function ComponentsPage() {
   // Theme lives in the store (Settings → Appearance); this switch is a shortcut
   const dark = useIsDark()
   const setThemeMode = useLibrary((s) => s.setThemeMode)
-  const direction = useDirection()
   const [rating, setRating] = useState<number | null>(4.25)
   const [unrated, setUnrated] = useState<number | null>(null)
   const [loved, setLoved] = useState(true)
@@ -87,7 +83,7 @@ export function ComponentsPage() {
   return (
     <div className="mx-auto min-h-dvh w-full max-w-app bg-background pb-16 sm:border-x sm:border-border">
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/95 px-4 backdrop-blur">
-        <h1 className="text-xl font-bold tracking-tight">Component lab</h1>
+        <h1 className="font-serif text-2xl font-semibold tracking-tight">Component lab</h1>
         <label className="flex min-h-11 items-center gap-2 text-sm font-medium">
           Dark mode
           <Switch
@@ -116,32 +112,6 @@ export function ComponentsPage() {
         >
           Reset demo data
         </Button>
-      </div>
-
-      {/* visual-pass: pick a direction for Home and the book page (same as ?direction=a|b|current) */}
-      <div className="space-y-2 px-4 pt-4">
-        <p id="direction-label" className="text-sm font-semibold">
-          Visual direction
-        </p>
-        <SegmentedRadio
-          labelledBy="direction-label"
-          describedBy="direction-hint"
-          value={direction}
-          onChange={setDirection}
-          options={DIRECTIONS.map((d) => ({ value: d.value, label: d.name }))}
-          className="[&>button]:text-xs"
-        />
-        <p id="direction-hint" className="text-xs text-muted-foreground">
-          {DIRECTIONS.find((d) => d.value === direction)?.summary}. Applies to Home and the book page only.
-        </p>
-        <div className="flex gap-4">
-          <Link to="/" className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">
-            Open Home
-          </Link>
-          <Link to="/book/fourth-wing" className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">
-            Open Fourth Wing
-          </Link>
-        </div>
       </div>
 
       <Section title="BookCover" note="sm 56px · md 104px · lg 132px. Placeholder when coverUrl is null.">
@@ -183,7 +153,7 @@ export function ComponentsPage() {
       </Section>
 
       <Section title="BookCard · default" note="Connected to the library store (persisted).">
-        <div className="flex gap-4 overflow-x-auto pb-2">
+        <div className="flex gap-4 relative overflow-x-auto pb-2">
           {['fourth-wing', 'six-of-crows', 'iron-flame', 'onyx-storm'].map((id) => (
             <BookCard key={id} book={book(id)} />
           ))}

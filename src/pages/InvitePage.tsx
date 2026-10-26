@@ -35,8 +35,8 @@ export function InvitePage() {
           </div>
 
           {inviter.favorites.length > 0 && (
-            <section aria-labelledby="invite-top4" className="space-y-3">
-              <h2 id="invite-top4" className="text-center text-sm font-semibold">
+            <section aria-labelledby="invite-top4" className="space-y-4">
+              <h2 id="invite-top4" className="section-title text-center">
                 {inviter.name.split(' ')[0]}'s top {inviter.favorites.length}
               </h2>
               <ul className="grid grid-cols-4 gap-3">

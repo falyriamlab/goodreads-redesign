@@ -89,7 +89,7 @@ export function ImportDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
     >
       <DrawerContent className="mx-auto max-h-[92dvh] w-full max-w-app">
         <DrawerHeader className="text-left">
-          <DrawerTitle className="text-lg font-semibold">Import your library</DrawerTitle>
+          <DrawerTitle className="section-title">Import your library</DrawerTitle>
           <DrawerDescription>Bring your history from Goodreads or StoryGraph. Upload the CSV export.</DrawerDescription>
         </DrawerHeader>
 
@@ -125,12 +125,15 @@ export function ImportDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
           </div>
         ) : (
           <>
-            <div data-vaul-no-drag className="flex-1 space-y-5 overflow-y-auto px-4 pb-4">
-              <div>
-                <p className="text-lg font-bold" aria-live="polite">
-                  Matched {parsed.matched.length} of {parsed.total}
+            <div data-vaul-no-drag className="flex-1 space-y-6 overflow-y-auto px-4 pb-4">
+              {/* Rule 1: the import result is this screen's paper band, with the match count as its display number */}
+              <div className="-mx-4 bg-band px-4 py-5 text-band-foreground">
+                <p aria-live="polite" className="flex items-baseline gap-2">
+                  <span className="sr-only">Matched </span>
+                  <span className="display-lg">{parsed.matched.length}</span>
+                  <span className="font-serif text-2xl">of {parsed.total} matched</span>
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="mt-1 text-sm text-band-muted-foreground">
                   {FORMAT_LABEL[parsed.format]} export · {parsed.fileName}
                 </p>
               </div>
@@ -157,7 +160,7 @@ export function ImportDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
                 </div>
               )}
 
-              <section aria-labelledby="import-matched" className="space-y-2">
+              <section aria-labelledby="import-matched" className="space-y-4">
                 <h3 id="import-matched" className="text-sm font-semibold">
                   Matches
                 </h3>
@@ -184,7 +187,7 @@ export function ImportDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
               </section>
 
               {parsed.unmatched.length > 0 && (
-                <section aria-labelledby="import-unmatched" className="space-y-2 rounded-lg bg-muted p-3">
+                <section aria-labelledby="import-unmatched" className="space-y-4 rounded-lg bg-muted p-3">
                   <h3 id="import-unmatched" className="text-sm font-semibold">
                     Couldn't match ({parsed.unmatched.length})
                   </h3>

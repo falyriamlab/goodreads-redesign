@@ -149,8 +149,8 @@ export function SettingsPage() {
 function Group({ title, children }: { title: string; children: ReactNode }) {
   const id = useId()
   return (
-    <section aria-labelledby={id} className="space-y-2">
-      <h2 id={id} className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+    <section aria-labelledby={id} className="space-y-4">
+      <h2 id={id} className="section-title">
         {title}
       </h2>
       <div className="space-y-2 rounded-xl border border-border bg-card p-3 text-card-foreground">{children}</div>

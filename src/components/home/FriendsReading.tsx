@@ -18,8 +18,8 @@ export function FriendsReading() {
   if (friends.length === 0) return null
 
   return (
-    <section aria-labelledby={headingId} className="space-y-3 px-4">
-      <h2 id={headingId} className="text-lg font-bold tracking-tight">
+    <section aria-labelledby={headingId} className="space-y-4 px-4">
+      <h2 id={headingId} className="section-title">
         Your friends are reading
       </h2>
       <ul className="grid grid-cols-4 gap-3">

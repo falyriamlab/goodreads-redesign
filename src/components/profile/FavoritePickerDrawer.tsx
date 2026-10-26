@@ -38,7 +38,7 @@ export function FavoritePickerDrawer({ open, onOpenChange, exclude, onPick }: Pr
     >
       <DrawerContent className="mx-auto max-h-[85dvh] w-full max-w-app">
         <DrawerHeader className="text-left">
-          <DrawerTitle className="text-lg font-semibold">Add a favorite</DrawerTitle>
+          <DrawerTitle className="section-title">Add a favorite</DrawerTitle>
           <DrawerDescription>Choose from books you've read.</DrawerDescription>
         </DrawerHeader>
         <div className="relative px-4 pb-2">

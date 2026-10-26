@@ -6,7 +6,7 @@ import { books } from '@/mocks/books'
 import { currentUser } from '@/mocks/user'
 import { useChallengeProgress, useLibrary } from '@/state/library'
 
-/** Everything both directions' Home needs (same data as the shipped Home, different layout) */
+/** Home's data: reading list, recommendations, challenge and pace */
 export function useHomeData() {
   const entries = useLibrary((s) => s.entries)
   const dismissed = useLibrary((s) => s.dismissedRecommendations)

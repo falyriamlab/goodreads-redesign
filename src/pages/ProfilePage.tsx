@@ -4,13 +4,14 @@ import { Navigate, useNavigate, useParams } from 'react-router'
 import { TopBar, TopBarIconButton } from '@/components/layout/TopBar'
 import { FavoritePickerDrawer } from '@/components/profile/FavoritePickerDrawer'
 import { ProfileView, type ProfileViewData } from '@/components/profile/ProfileView'
-import { detailNote } from '@/lib/challenge'
+import { detailNote, getChallengePace } from '@/lib/challenge'
 import { currentMonthRecap, yearStats } from '@/lib/stats'
 import { books, getBookById } from '@/mocks/books'
 import { getReaderByHandle, groups } from '@/mocks/community'
 import type { FriendActivity } from '@/mocks/friends'
 import { reviews as communityReviews } from '@/mocks/reviews'
 import { useChallengeProgress, useLibrary } from '@/state/library'
+import { ChallengeCard } from '@/components/home/ChallengeCard'
 import type { LibraryEntry } from '@/types/library'
 
 // Mock social counts for Sofía; "following" adds the readers she follows in the app
@@ -65,7 +66,17 @@ export function ProfilePage() {
       <TopBar
         actions={<TopBarIconButton label="Settings" icon={<Settings aria-hidden="true" />} onClick={() => navigate('/settings')} />}
       />
-      <ProfileView data={data} onAddFavorite={() => setPickerOpen(true)} />
+      <ProfileView
+        data={data}
+        challengeBand={
+          <ChallengeCard
+            challenge={challenge}
+            pace={getChallengePace(challenge)}
+            percent={Math.min(100, Math.round((challenge.read / challenge.goal) * 100))}
+          />
+        }
+        onAddFavorite={() => setPickerOpen(true)}
+      />
       <FavoritePickerDrawer open={pickerOpen} onOpenChange={setPickerOpen} exclude={profile.favorites} onPick={addFavorite} />
     </>
   )

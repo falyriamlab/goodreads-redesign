@@ -24,11 +24,34 @@ export function JournalPage() {
   const [filter, setFilter] = useState<Filter>('all')
   const events = filter === 'all' ? history : history.filter((e) => e.type === filter)
   const months = groupByMonth(events)
+  const count = (type: Filter) => history.filter((e) => e.type === type).length
 
   return (
     <>
       <TopBar title="Journal" back backFallback="/library" />
-      <div className="space-y-6 px-4 pt-3 pb-8">
+      {history.length > 0 && (
+        // Rule 1: the journal summary is this screen's one paper band; its totals are the display numbers
+        <section aria-labelledby="journal-totals" className="space-y-4 bg-band px-4 py-6 text-band-foreground">
+          <h2 id="journal-totals" className="section-title">
+            All time
+          </h2>
+          <dl className="grid grid-cols-3 gap-2">
+            {(
+              [
+                ['Finished', count('finished')],
+                ['Started', count('started')],
+                ['DNF', count('dnf')],
+              ] as const
+            ).map(([label, n]) => (
+              <div key={label} className="flex flex-col-reverse">
+                <dt className="text-sm text-band-muted-foreground">{label}</dt>
+                <dd className="display-lg">{n}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+      <div className="space-y-6 px-4 pt-6 pb-10">
         {history.length === 0 ? (
           <div className="space-y-1 rounded-xl border border-dashed border-muted-foreground p-4">
             <p className="font-semibold">Your journal is empty.</p>
@@ -57,9 +80,9 @@ export function JournalPage() {
             )}
 
             {months.map((month) => (
-              <section key={month.key} aria-labelledby={`month-${month.key}`} className="space-y-2">
+              <section key={month.key} aria-labelledby={`month-${month.key}`} className="space-y-4">
                 <div className="flex items-baseline justify-between gap-3 border-b border-border pb-1">
-                  <h2 id={`month-${month.key}`} className="text-lg font-bold tracking-tight">
+                  <h2 id={`month-${month.key}`} className="section-title">
                     {month.label}
                   </h2>
                   <p className="text-sm text-muted-foreground">{monthSummary(month)}</p>

@@ -37,7 +37,7 @@ export function NewThreadDrawer({ open, onOpenChange, groupName, onSubmit }: Pro
     >
       <DrawerContent className="mx-auto max-h-[90dvh] w-full max-w-app">
         <DrawerHeader className="text-left">
-          <DrawerTitle className="text-lg font-semibold">New thread</DrawerTitle>
+          <DrawerTitle className="section-title">New thread</DrawerTitle>
           <DrawerDescription>Posting in {groupName}.</DrawerDescription>
         </DrawerHeader>
         <form

@@ -70,7 +70,7 @@ export function LibraryPage() {
       />
 
       <Tabs value={tab} onValueChange={(v) => setParams({ shelf: v }, { replace: true })} className="gap-0">
-        <TabsList variant="line" aria-label="Shelves" className="h-auto w-full justify-between gap-0 overflow-x-auto border-b border-border px-1">
+        <TabsList variant="line" aria-label="Shelves" className="h-auto w-full justify-between gap-0 relative overflow-x-auto border-b border-border px-1">
           {SHELF_TABS.map((t) => (
             <TabsTrigger
               key={t.value}

@@ -2,39 +2,36 @@ import { useId } from 'react'
 import { Link } from 'react-router'
 import { BookCover } from '@/components/book/BookCover'
 import { UpdateProgress } from '@/components/book/UpdateProgress'
+import { ProgressBar } from '@/components/common/ProgressBar'
+import { SectionHeader } from '@/components/common/SectionHeader'
 import { useLogSheet } from '@/components/log-sheet/context'
 import { Button } from '@/components/ui/button'
-import { books } from '@/mocks/books'
-import { useLibrary } from '@/state/library'
+import { readingProgress } from '@/lib/readingProgress'
+import { textLinkClass } from '@/lib/ui'
 import type { Book } from '@/types/book'
+import type { useHomeData } from './useHomeData'
 
-export function CurrentlyReading() {
-  const headingId = useId()
-  const entries = useLibrary((s) => s.entries)
-  const reading = books.filter((b) => entries[b.id]?.status === 'reading')
+type Reading = ReturnType<typeof useHomeData>['reading']
 
+/** Display-number place #1 on Home (the carousel counts as one place) */
+export function CurrentlyReading({ reading }: { reading: Reading }) {
+  const id = useId()
   return (
-    <section aria-labelledby={headingId} className="space-y-3">
-      <h2 id={headingId} className="px-4 text-lg font-bold tracking-tight">
-        Currently reading
-      </h2>
+    <section aria-labelledby={id} className="space-y-4">
+      <SectionHeader id={id} kicker="On your nightstand" title="Now reading" className="px-4" />
       {reading.length === 0 ? (
         <div className="mx-4 space-y-1 rounded-xl border border-dashed border-muted-foreground p-4">
           <p className="text-sm text-muted-foreground">Nothing on the go right now.</p>
-          <Link
-            to="/discover"
-            className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
+          <Link to="/discover" className={textLinkClass}>
             Find your next read
           </Link>
         </div>
       ) : (
-        // Scroll-snap carousel, no autoplay. Cards are 85% wide so the next one peeks in.
-        // Keyboard: every card has buttons, and focusing one scrolls it into view.
-        <ul className="flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-2">
-          {reading.map((book) => (
-            <li key={book.id} className={reading.length > 1 ? 'w-[85%] shrink-0 snap-start' : 'w-full'}>
-              <ReadingCard book={book} currentPage={entries[book.id].currentPage} />
+        // Scroll-snap carousel, no autoplay: the next card peeks in at 88%
+        <ul className="flex snap-x snap-mandatory scroll-px-4 gap-4 relative overflow-x-auto px-4 pb-2">
+          {reading.map(({ book, currentPage }) => (
+            <li key={book.id} className={reading.length > 1 ? 'w-[88%] shrink-0 snap-start' : 'w-full'}>
+              <ReadingCard book={book} currentPage={currentPage} />
             </li>
           ))}
         </ul>
@@ -45,51 +42,36 @@ export function CurrentlyReading() {
 
 function ReadingCard({ book, currentPage }: { book: Book; currentPage: number }) {
   const logSheet = useLogSheet()
-  const percent = Math.min(100, Math.round((currentPage / book.pages) * 100))
-
+  const p = readingProgress(book, currentPage)
   return (
-    <article className="flex h-full gap-3 rounded-xl border border-border bg-card p-3 text-card-foreground">
-      <BookCover book={book} size="md" />
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div className="min-w-0">
-          <h3 className="leading-snug font-semibold">
+    // relative: contains the sr-only span, which would otherwise escape the carousel and widen the page
+    <article className="relative h-full space-y-4 rounded-2xl border border-border bg-card p-4 text-card-foreground">
+      <div className="flex gap-4">
+        <BookCover book={book} className="w-24" />
+        <div className="min-w-0 flex-1">
+          <h3 className="font-serif text-xl leading-tight font-semibold">
             <Link
               to={`/book/${book.id}`}
-              className="flex min-h-11 items-center outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="inline-flex min-h-11 items-center outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               <span className="line-clamp-2">{book.title}</span>
             </Link>
           </h3>
-          <p className="truncate text-xs text-muted-foreground">{book.author}</p>
-        </div>
-
-        <div className="space-y-1">
-          <div
-            role="progressbar"
-            aria-label={`Progress in ${book.title}`}
-            aria-valuemin={0}
-            aria-valuemax={book.pages}
-            aria-valuenow={currentPage}
-            aria-valuetext={`Page ${currentPage} of ${book.pages}`}
-            className="h-1.5 overflow-hidden rounded-full bg-muted"
-          >
-            <div className="h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
-          </div>
-          <p aria-hidden="true" className="text-xs">
-            <span className="font-semibold">p. {currentPage}</span>
-            <span className="text-muted-foreground"> · {percent}%</span>
+          <p className="truncate text-sm text-muted-foreground">{book.author}</p>
+          <p className="mt-2 flex items-baseline gap-1">
+            <span className="display-lg">{p.percent}</span>
+            <span className="font-serif text-xl">%</span>
+            <span className="sr-only"> read</span>
           </p>
+          <p className="text-xs text-muted-foreground">{p.detail}</p>
         </div>
-
-        <div className="mt-auto flex flex-wrap gap-2">
-          <UpdateProgress book={book} currentPage={currentPage} className="flex-1 px-2" />
-          <Button
-            className="min-h-11 flex-1 px-2"
-            onClick={(e) => logSheet.open(book.id, { intent: 'read', returnFocus: e.currentTarget })}
-          >
-            Finished it
-          </Button>
-        </div>
+      </div>
+      <ProgressBar percent={p.percent} label={`Progress in ${book.title}`} valueText={p.detail} />
+      <div className="flex gap-2">
+        <UpdateProgress book={book} currentPage={currentPage} className="flex-1 px-2" />
+        <Button className="min-h-11 flex-1 px-2" onClick={(e) => logSheet.open(book.id, { intent: 'read', returnFocus: e.currentTarget })}>
+          Finished it
+        </Button>
       </div>
     </article>
   )

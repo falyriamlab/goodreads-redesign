@@ -6,7 +6,7 @@ import { useLibraryEntry } from '@/state/library'
 import { useShelfActions } from '@/state/useShelfActions'
 import type { Book } from '@/types/book'
 
-/** The compact status chip used by both directions' cards (a sibling button above the card's stretched link) */
+/** Compact status chip for cover cards: a sibling button raised above the card's stretched link */
 export function CardChip({ book, className }: { book: Book; className?: string }) {
   const entry = useLibraryEntry(book.id)
   const { changeStatus, quickAdd } = useShelfActions()
@@ -39,40 +39,5 @@ export function DismissButton({ book, onDismiss, className }: { book: Book; onDi
         <X className="size-4" strokeWidth={2.5} aria-hidden="true" />
       </span>
     </button>
-  )
-}
-
-/**
- * Progress bar. Motion #1 in both directions: the fill grows in on mount (motion-safe only).
- * The numbers are always written next to it, so the bar is never the only carrier.
- */
-export function ProgressBar({
-  percent,
-  label,
-  valueText,
-  className,
-  trackClassName = 'bg-muted',
-}: {
-  percent: number
-  label: string
-  valueText: string
-  className?: string
-  trackClassName?: string
-}) {
-  return (
-    <div
-      role="progressbar"
-      aria-label={label}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={percent}
-      aria-valuetext={valueText}
-      className={cn('h-2 overflow-hidden rounded-full', trackClassName, className)}
-    >
-      <div
-        className="h-full origin-left rounded-full bg-primary motion-safe:animate-[fill-in_700ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
-        style={{ width: `${percent}%` }}
-      />
-    </div>
   )
 }

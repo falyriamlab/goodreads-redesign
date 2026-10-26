@@ -1,50 +1,36 @@
 import { useId } from 'react'
 import { Link } from 'react-router'
-import { getChallengePace } from '@/lib/challenge'
-import { useChallengeProgress } from '@/state/library'
+import { ProgressBar } from '@/components/common/ProgressBar'
+import type { ChallengePace, ChallengeProgress } from '@/lib/challenge'
 
-const linkClass =
-  'inline-flex min-h-11 min-w-11 items-center justify-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50'
+type Props = { challenge: ChallengeProgress; pace: ChallengePace; percent: number; to?: string }
 
-export function ChallengeCard() {
-  const headingId = useId()
-  const progress = useChallengeProgress()
-  const pace = getChallengePace(progress)
-  const percent = Math.min(100, Math.round((progress.read / progress.goal) * 100))
-
+/**
+ * Marginalia rule 2: the challenge lives on the brand band (bg-primary + text-primary-foreground, 4.50:1).
+ * Big text is ≥ 24px; the small lines (kicker, pace, link) still pass 4.5:1. Used on Home and Profile.
+ */
+export function ChallengeCard({ challenge, pace, percent, to = '/profile/stats' }: Props) {
+  const id = useId()
   return (
-    <section aria-labelledby={headingId} className="mx-4 space-y-3 rounded-xl border border-border bg-card p-4 text-card-foreground">
+    <section aria-labelledby={id} className="space-y-4 bg-primary px-4 py-8 text-primary-foreground">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <h2 id={headingId} className="font-bold tracking-tight">
-            {progress.year} Reading Challenge
-          </h2>
-          <p className="text-2xl font-bold tracking-tight">
-            {progress.read} <span className="text-base font-medium text-muted-foreground">of {progress.goal} books</span>
-          </p>
-        </div>
-        {pace.goalMet ? (
-          <Link to="/profile" className={linkClass}>
-            Raise your goal
-          </Link>
-        ) : (
-          <Link to="/profile" className={linkClass}>
-            View<span className="sr-only"> reading challenge</span>
-          </Link>
-        )}
+        <h2 id={id} className="section-title">
+          {challenge.year} reading challenge
+        </h2>
+        <Link
+          to={to}
+          className="inline-flex min-h-11 min-w-11 items-center justify-end text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-primary-foreground"
+        >
+          See all<span className="sr-only"> reading stats</span>
+        </Link>
       </div>
-      <div
-        role="progressbar"
-        aria-labelledby={headingId}
-        aria-valuemin={0}
-        aria-valuemax={progress.goal}
-        aria-valuenow={Math.min(progress.read, progress.goal)}
-        aria-valuetext={`${progress.read} of ${progress.goal} books`}
-        className="h-2.5 overflow-hidden rounded-full bg-muted"
-      >
-        <div className="h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
-      </div>
-      <p className="text-sm text-muted-foreground">{pace.message}</p>
+      {/* Display number */}
+      <p className="flex items-baseline gap-3">
+        <span className="display-xl">{challenge.read}</span>
+        <span className="font-serif text-2xl">of {challenge.goal} books</span>
+      </p>
+      <ProgressBar tone="brand" percent={percent} labelledBy={id} valueText={`${challenge.read} of ${challenge.goal} books`} />
+      <p className="text-base font-medium">{pace.message}</p>
     </section>
   )
 }

@@ -61,9 +61,10 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
   const soft = brand ? '' : 'text-muted-foreground'
   const panel = brand ? 'border-4 border-primary-foreground' : 'bg-card text-card-foreground'
   const cover = (b: Book) => ({ ...b, coverUrl: coverUrls.get(b.id) ?? null })
-  // A render helper (not a nested component) so covers don't remount on every render
+  // A render helper (not a nested component) so covers don't remount on every render.
+  // Same treatment as the app (rule 4): cover shadow token, small radius, nothing on top.
   const renderCover = (book: Book, className?: string) => (
-    <BookCover key={book.id} book={cover(book)} size="xl" crossOrigin="anonymous" className={cn('rounded-xl shadow-xl ring-0', className)} />
+    <BookCover key={book.id} book={cover(book)} size="xl" crossOrigin="anonymous" className={cn('rounded-lg shadow-cover', className)} />
   )
 
   return (
@@ -199,7 +200,8 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
 })
 
 function Kicker({ children, className }: { children: ReactNode; className?: string }) {
-  return <p className={cn('text-3xl font-semibold tracking-[0.18em] uppercase', className)}>{children}</p>
+  // The app's kicker (0.16em tracking, uppercase), scaled ×2.5 for the 1080px card
+  return <p className={cn('text-3xl font-semibold tracking-[0.16em] uppercase', className)}>{children}</p>
 }
 
 function Headline({ children }: { children: ReactNode }) {

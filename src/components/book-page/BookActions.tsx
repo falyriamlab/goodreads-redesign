@@ -1,88 +1,49 @@
-import { useId } from 'react'
 import { ListPlus } from 'lucide-react'
-import { toast } from 'sonner'
 import { LovedButton } from '@/components/book/LovedButton'
 import { StarRating } from '@/components/book/StarRating'
 import { StatusChip } from '@/components/book/StatusChip'
 import { UpdateProgress } from '@/components/book/UpdateProgress'
-import { useLogSheet } from '@/components/log-sheet/context'
+import { ProgressBar } from '@/components/common/ProgressBar'
 import { Button } from '@/components/ui/button'
-import { useLibrary, useLibraryEntry } from '@/state/library'
-import { useShelfActions } from '@/state/useShelfActions'
+import { readingProgress } from '@/lib/readingProgress'
 import type { Book } from '@/types/book'
+import { useBookActions } from './useBookActions'
 
+/** "Your shelf" under the hero: status first, then progress (display number), rating, love and lists */
 export function BookActions({ book }: { book: Book }) {
-  const entry = useLibraryEntry(book.id)
-  const { changeStatus, quickAdd } = useShelfActions()
-  const toggleLoved = useLibrary((s) => s.toggleLoved)
-  const setRating = useLibrary((s) => s.setRating)
-  const logSheet = useLogSheet()
-  const ratingLabelId = useId()
-
-  const isReading = entry.status === 'reading'
-  const percent = Math.min(100, Math.round((entry.currentPage / book.pages) * 100))
-
-  function rate(value: number, slider: HTMLElement | null) {
-    if (entry.status === 'read') return setRating(book.id, value)
-    // Rating a book you haven't finished = you finished it: log it with the rating prefilled
-    logSheet.open(book.id, { intent: 'read', rating: value, returnFocus: slider })
-  }
+  const a = useBookActions(book)
+  const p = readingProgress(book, a.entry.currentPage)
 
   return (
-    <section aria-label="Your shelf" className="space-y-4 rounded-xl border border-border bg-card p-4 text-card-foreground">
-      <div className="flex items-center gap-2">
-        <StatusChip
-          variant="primary"
-          bookId={book.id}
-          bookTitle={book.title}
-          status={entry.status}
-          label={isReading ? `Reading · p. ${entry.currentPage}` : undefined}
-          isPublished={book.isPublished}
-          onStatusChange={(status) => changeStatus(book.id, status)}
-      onQuickAdd={(openMenu) => quickAdd(book.id, openMenu)}
-          onRequestLog={(bookId, intent, trigger) => logSheet.open(bookId, { intent, returnFocus: trigger })}
-          className="flex-1"
-        />
-        <LovedButton iconOnly pressed={entry.loved} onPressedChange={() => toggleLoved(book.id)} />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-11 [&_svg]:size-5"
-          aria-label={`Add ${book.title} to a list`}
-          onClick={() => toast('Lists drop soon.')}
-        >
-          <ListPlus aria-hidden="true" />
-        </Button>
-      </div>
+    <section aria-label="Your shelf" className="space-y-4">
+      <StatusChip variant="primary" {...a.chipProps} className="h-12 w-full text-base" />
 
-      {isReading && (
+      {a.isReading && (
         <div className="space-y-2">
-          <div className="flex items-center justify-between gap-3 text-sm">
-            <span>
-              <span className="font-semibold">p. {entry.currentPage}</span>
-              <span className="text-muted-foreground">
-                {' '}
-                of {book.pages} · {percent}%
-              </span>
-            </span>
-            <UpdateProgress book={book} currentPage={entry.currentPage} />
+          <div className="flex items-end justify-between gap-3">
+            <p className="flex items-baseline gap-1">
+              <span className="display-lg">{p.percent}</span>
+              <span className="font-serif text-xl">%</span>
+              <span className="sr-only"> read</span>
+            </p>
+            <p className="pb-1 text-sm text-muted-foreground">{p.detail}</p>
           </div>
-          <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
-          </div>
+          <ProgressBar percent={p.percent} label={`Progress in ${book.title}`} valueText={p.detail} />
+          <UpdateProgress book={book} currentPage={a.entry.currentPage} className="w-full" />
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p id={ratingLabelId} className="text-sm font-semibold">
-          Your rating
-        </p>
-        <StarRating
-          mode="input"
-          value={entry.rating}
-          onChange={(value) => rate(value, document.activeElement instanceof HTMLElement ? document.activeElement : null)}
-          label={`Your rating for ${book.title}`}
-        />
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4">
+        <p className="font-serif text-lg font-semibold">Your rating</p>
+        <StarRating mode="input" value={a.entry.rating} onChange={a.rate} label={`Your rating for ${book.title}`} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <LovedButton pressed={a.entry.loved} onPressedChange={a.toggleLoved} className="min-h-11 w-full" />
+        <Button variant="outline" className="min-h-11 w-full border-muted-foreground" onClick={a.addToList}>
+          <ListPlus aria-hidden="true" />
+          Add to list
+        </Button>
       </div>
     </section>
   )

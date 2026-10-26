@@ -40,7 +40,7 @@ export function TopBar({ title, actions, back = false, backFallback = '/', class
           </Button>
         )}
         {title ? (
-          <h1 className={cn('min-w-0 flex-1 truncate font-heading text-xl font-bold tracking-tight', !back && 'pl-2')}>
+          <h1 className={cn('min-w-0 flex-1 truncate font-serif text-2xl font-semibold tracking-tight', !back && 'pl-2')}>
             {title}
           </h1>
         ) : (

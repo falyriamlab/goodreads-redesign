@@ -66,8 +66,8 @@ function ThreadView({ group, thread }: { group: Group; thread: GroupThread }) {
           <LikeButton kind="thread" id={thread.id} base={thread.likes ?? 0} className="-ml-2" />
         </article>
 
-        <section aria-labelledby={repliesHeadingId} className="space-y-3">
-          <h2 id={repliesHeadingId} className="text-lg font-bold tracking-tight">
+        <section aria-labelledby={repliesHeadingId} className="space-y-4">
+          <h2 id={repliesHeadingId} className="section-title">
             {replies.length} {replies.length === 1 ? 'reply' : 'replies'}
           </h2>
           {/* role="log": new replies are announced politely */}

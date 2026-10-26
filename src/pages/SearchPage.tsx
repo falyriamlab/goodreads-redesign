@@ -127,7 +127,7 @@ export function SearchPage() {
         />
       ) : (
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="pt-3">
-          <TabsList variant="line" aria-label="Result type" className="h-auto w-full justify-start gap-1 overflow-x-auto border-b border-border px-4">
+          <TabsList variant="line" aria-label="Result type" className="h-auto w-full justify-start gap-1 relative overflow-x-auto border-b border-border px-4">
             {TABS.map((t) => (
               <TabsTrigger
                 key={t.value}
@@ -210,7 +210,7 @@ function AuthorResults({ results, query, onOpen }: { results: SearchResult[]; qu
     <div className="space-y-6">
       {[...groups.entries()].map(([author, items]) => (
         <section key={author}>
-          <h2 className="text-base font-bold">
+          <h2 className="section-title">
             <Highlight text={author} ranges={items[0].highlights.author} />
             <span className="ml-2 text-sm font-normal text-muted-foreground">
               {items.length} {items.length === 1 ? 'book' : 'books'}
@@ -252,7 +252,7 @@ function RecentSearches({
   return (
     <section aria-labelledby={headingId} className="px-4 pt-4">
       <div className="flex items-center justify-between">
-        <h2 id={headingId} className="text-base font-bold">
+        <h2 id={headingId} className="section-title">
           Recent searches
         </h2>
         <button type="button" className={linkButton} onClick={onClear}>

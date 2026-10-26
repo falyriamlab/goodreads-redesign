@@ -4,6 +4,12 @@ A mobile-first redesign of the Goodreads app, built as a UX/UI case study. The f
 
 > This is a design exercise, not affiliated with Goodreads or Amazon. All data is mock data.
 
+## Design docs
+
+- [Design context](docs/design-context.md): primary persona, hypotheses H1–H5 and structural principles
+- [Visual system](docs/visual-system.md): Marginalia, the rules every screen follows
+- [Case study captures](case-study/README.md): screens, F1–F4 flows, contrast and audits
+
 ## Stack
 
 - [Vite](https://vite.dev) + [React](https://react.dev) + TypeScript

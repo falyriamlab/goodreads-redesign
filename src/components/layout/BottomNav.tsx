@@ -19,39 +19,7 @@ const tabs: Tab[] = [
   { to: '/profile', label: 'Profile', icon: User },
 ]
 
-/** Direction B (visual-pass): a floating pill. The active tab is a filled pill + bold label, never color alone. */
-function PillNav() {
-  return (
-    <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-app px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-      <ul className="grid grid-cols-5 gap-1 rounded-full border border-border bg-card/95 p-1.5 text-card-foreground shadow-cover backdrop-blur">
-        {tabs.map(({ to, label, icon: Icon, end }) => (
-          <li key={to}>
-            <NavLink
-              to={to}
-              end={end}
-              className={({ isActive }) =>
-                cn(
-                  'flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-full px-1 text-[0.6875rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
-                  isActive ? 'bg-foreground font-bold text-background' : 'font-medium text-muted-foreground hover:text-foreground',
-                )
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon className="size-5" strokeWidth={isActive ? 2.5 : 1.75} aria-hidden="true" />
-                  <span>{label}</span>
-                </>
-              )}
-            </NavLink>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  )
-}
-
-export function BottomNav({ variant = 'bar' }: { variant?: 'bar' | 'pill' }) {
-  if (variant === 'pill') return <PillNav />
+export function BottomNav() {
   return (
     <nav
       aria-label="Main"

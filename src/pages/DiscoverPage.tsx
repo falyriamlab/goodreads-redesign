@@ -52,7 +52,7 @@ export function DiscoverPage() {
     <>
       <TopBar title="Discover" />
       {/* Bottom padding clears the sticky "Show n books" bar */}
-      <div className="space-y-8 pt-3 pb-40">
+      <div className="space-y-10 pt-3 pb-40">
         {/* 2. Search entry + scanner */}
         <div className="flex items-center gap-2 px-4">
           <Link
@@ -74,8 +74,8 @@ export function DiscoverPage() {
         </div>
 
         {/* 3. Moods */}
-        <section aria-labelledby={ids.vibe} className="space-y-3 px-4">
-          <h2 id={ids.vibe} className="text-lg font-bold tracking-tight">
+        <section aria-labelledby={ids.vibe} className="space-y-4 px-4">
+          <h2 id={ids.vibe} className="section-title">
             What's the vibe?
           </h2>
           <div className="flex flex-wrap gap-x-2 gap-y-3">
@@ -86,8 +86,8 @@ export function DiscoverPage() {
         </section>
 
         {/* 4. Pacing: a radiogroup, clearer than a 3-stop slider */}
-        <section className="space-y-2 px-4">
-          <h2 id={ids.pace} className="text-lg font-bold tracking-tight">
+        <section className="space-y-4 px-4">
+          <h2 id={ids.pace} className="section-title">
             Pacing
           </h2>
           <p id={ids.paceHelp} className="text-sm text-muted-foreground">
@@ -109,9 +109,9 @@ export function DiscoverPage() {
         </section>
 
         {/* 5. Tropes */}
-        <section aria-labelledby={ids.tropes} className="space-y-3 px-4">
+        <section aria-labelledby={ids.tropes} className="space-y-4 px-4">
           <div className="flex items-center justify-between gap-3">
-            <h2 id={ids.tropes} className="text-lg font-bold tracking-tight">
+            <h2 id={ids.tropes} className="section-title">
               Tropes
             </h2>
             <FilterDrawer
@@ -138,7 +138,7 @@ export function DiscoverPage() {
         </section>
 
         {/* 6. Genre, Length, Content warnings */}
-        <section aria-labelledby={ids.more} className="space-y-2 px-4">
+        <section aria-labelledby={ids.more} className="space-y-4 px-4">
           <h2 id={ids.more} className="sr-only">
             More filters
           </h2>
@@ -194,8 +194,8 @@ export function DiscoverPage() {
         </Carousel>
 
         {/* 9. Lists & awards */}
-        <section className="space-y-3 px-4">
-          <h2 className="text-lg font-bold tracking-tight">Lists & awards</h2>
+        <section className="space-y-4 px-4">
+          <h2 className="section-title">Lists & awards</h2>
           <div className="grid grid-cols-2 gap-3">
             <ListCard icon={<ListOrdered aria-hidden="true" />} title="Listopia" detail="Lists made by readers" />
             <ListCard icon={<Award aria-hidden="true" />} title="Choice Awards" detail="Voted by the community" />
@@ -248,11 +248,11 @@ function FilterRow({ label, value, ...props }: { label: string; value: string })
 function Carousel({ title, children }: { title: string; children: ReactNode }) {
   const id = useId()
   return (
-    <section aria-labelledby={id} className="space-y-3">
-      <h2 id={id} className="px-4 text-lg font-bold tracking-tight">
+    <section aria-labelledby={id} className="space-y-4">
+      <h2 id={id} className="px-4 section-title">
         {title}
       </h2>
-      <ul className="flex gap-4 overflow-x-auto px-4 pb-2">{children}</ul>
+      <ul className="flex gap-4 relative overflow-x-auto px-4 pb-2">{children}</ul>
     </section>
   )
 }

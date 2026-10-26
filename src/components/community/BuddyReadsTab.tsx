@@ -15,7 +15,7 @@ export function BuddyReadsTab() {
   const open = buddyReads.filter((br) => !joined.includes(br.id))
 
   return (
-    <div className="space-y-8 px-4 pt-4 pb-8">
+    <div className="space-y-10 px-4 pt-4 pb-10">
       <BuddyList title="Your buddy reads" list={mine} joined empty="You haven't joined a buddy read yet." />
       <BuddyList title="Open to join" list={open} joined={false} empty="You're in every buddy read. Overachiever." />
     </div>
@@ -26,8 +26,8 @@ function BuddyList({ title, list, joined, empty }: { title: string; list: BuddyR
   const headingId = useId()
   const entries = useLibrary((s) => s.entries)
   return (
-    <section aria-labelledby={headingId} className="space-y-3">
-      <h2 id={headingId} className="text-lg font-bold tracking-tight">
+    <section aria-labelledby={headingId} className="space-y-4">
+      <h2 id={headingId} className="section-title">
         {title}
       </h2>
       {list.length === 0 ? (

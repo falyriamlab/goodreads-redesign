@@ -44,7 +44,7 @@ export function ResultsPage() {
       <TopBar title={`${n} ${n === 1 ? 'book' : 'books'}`} back backFallback={`/discover?${params}`} />
       <div className="space-y-4 pt-3 pb-8">
         {chips.length > 0 && (
-          <ul aria-label="Active filters" className="flex gap-2 overflow-x-auto px-4 pb-1">
+          <ul aria-label="Active filters" className="flex gap-2 relative overflow-x-auto px-4 pb-1">
             {chips.map((chip, i) => (
               <li key={`${chip.param}=${chip.value}`} className="shrink-0">
                 <button

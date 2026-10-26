@@ -70,8 +70,8 @@ function NotificationGroup({
 }) {
   const headingId = useId()
   return (
-    <section aria-labelledby={headingId} className="space-y-2">
-      <h2 id={headingId} className="text-lg font-bold tracking-tight">
+    <section aria-labelledby={headingId} className="space-y-4">
+      <h2 id={headingId} className="section-title">
         {title}
       </h2>
       <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card text-card-foreground">

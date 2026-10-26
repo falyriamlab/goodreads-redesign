@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react'
-import { X } from 'lucide-react'
 import { Link } from 'react-router'
 import type { Book } from '@/types/book'
 import { useLogSheet } from '@/components/log-sheet/context'
 import { useLibraryEntry } from '@/state/library'
 import { useShelfActions } from '@/state/useShelfActions'
+import { pressable } from '@/lib/ui'
 import { cn } from '@/lib/utils'
+import { DismissButton } from './cardParts'
 import { BookCover } from './BookCover'
 import { StarRating } from './StarRating'
 import { StatusChip, type LogRequest } from './StatusChip'
@@ -101,18 +102,17 @@ export function BookCard({
 
   if (variant === 'grid') {
     return (
-      <article className={cn('relative flex flex-col', className)}>
-        <div className="relative">
-          <BookCover book={book} className="w-full" reserveBottom />
-          <div className="absolute inset-x-0 -bottom-4 flex justify-center">{chip}</div>
-        </div>
+      <article className={cn('relative flex flex-col', pressable, className)}>
+        <BookCover book={book} className="w-full" />
+        {/* Rule 4: nothing sits on the cover, so the chip goes under it */}
+        <div className="mt-2 flex justify-center">{chip}</div>
         {/* Title isn't visible in the grid, but the link still needs a name */}
         <Link to={href} onClick={onOpen} className={stretchedLink}>
           <span className="sr-only">
             {book.title} by {book.author}
           </span>
         </Link>
-        <div className="mt-6 flex h-4 justify-center">
+        <div className="mt-2 flex h-4 justify-center">
           {entry.rating !== null && <StarRating value={entry.rating} size="xs" />}
         </div>
       </article>
@@ -120,31 +120,21 @@ export function BookCard({
   }
 
   return (
-    <article className={cn('relative flex w-26 flex-col', className)}>
+    <article className={cn('relative flex w-28 flex-col', pressable, className)}>
       <div className="relative">
-        <BookCover book={book} size="md" reserveBottom />
-        <div className="absolute inset-x-0 -bottom-4 flex justify-center">{chip}</div>
-        {onDismiss && (
-          // Sibling of the stretched link, raised above it: 44px hit area, smaller visual circle
-          <button
-            type="button"
-            aria-label={`Not my vibe: hide ${book.title}`}
-            onClick={onDismiss}
-            className="group/dismiss absolute -top-5 -right-5 z-10 flex size-11 items-center justify-center rounded-full outline-none"
-          >
-            <span className="flex size-7 items-center justify-center rounded-full border border-muted-foreground bg-background text-foreground shadow-sm transition-colors group-hover/dismiss:bg-muted group-focus-visible/dismiss:ring-3 group-focus-visible/dismiss:ring-ring/50">
-              <X className="size-4" strokeWidth={2.5} aria-hidden="true" />
-            </span>
-          </button>
-        )}
+        <BookCover book={book} className="w-28" />
+        {/* Sibling of the stretched link, raised above it: 44px hit area, smaller visual circle */}
+        {onDismiss && <DismissButton book={book} onDismiss={onDismiss} className="-top-5 -right-5" />}
       </div>
-      <h3 className="mt-6 line-clamp-2 text-sm leading-snug font-semibold">
+      <h3 className="mt-3 line-clamp-2 font-serif text-base leading-snug font-semibold">
         <Link to={href} onClick={onOpen} className={stretchedLink}>
           {titleContent ?? book.title}
         </Link>
       </h3>
       <p className="truncate text-xs text-muted-foreground">{authorContent ?? book.author}</p>
       {caption && <p className="mt-1 line-clamp-2 text-xs leading-snug">{caption}</p>}
+      {/* Rule 4: the chip sits under the text, never on the cover */}
+      <div className="mt-2 flex">{chip}</div>
     </article>
   )
 }

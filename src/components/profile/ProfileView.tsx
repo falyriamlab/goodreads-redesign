@@ -50,6 +50,8 @@ export type ProfileViewData = {
 
 type Props = {
   data: ProfileViewData
+  /** Owner: the challenge on the brand band (rule 2), shown under the Top 4 */
+  challengeBand?: ReactNode
   /** Owner only: open the favorite picker */
   onAddFavorite?: () => void
   /** Visitor only */
@@ -62,19 +64,20 @@ const linkClass =
 
 const book = (id: string) => getBookById(id) as Book
 
-export function ProfileView({ data, onAddFavorite, following, onToggleFollow }: Props) {
+export function ProfileView({ data, challengeBand, onAddFavorite, following, onToggleFollow }: Props) {
   // Owners see every section (private ones are labelled); visitors only see public ones
   const visible = (s: ProfileSection) => data.isOwner || data.publicSections[s]
   const isPrivate = (s: ProfileSection) => data.isOwner && !data.publicSections[s]
 
   return (
-    <div className="space-y-8 pt-4 pb-8">
+    <div className="space-y-10 pb-10">
       <Header data={data} following={following} onToggleFollow={onToggleFollow} />
       <TopFour data={data} onAddFavorite={onAddFavorite} />
+      {challengeBand}
       {data.stats && visible('stats') && <YearSoFar data={data} privateLabel={isPrivate('stats')} />}
       {data.currentlyReading.length > 0 && (
         <Section title="Currently reading">
-          <ul className="flex gap-3 overflow-x-auto px-4 pb-1">
+          <ul className="flex gap-3 relative overflow-x-auto px-4 pb-1">
             {data.currentlyReading.map((id) => (
               <li key={id} className="shrink-0">
                 <Link to={`/book/${id}`} className="block rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
@@ -93,9 +96,9 @@ export function ProfileView({ data, onAddFavorite, following, onToggleFollow }: 
 function Section({ title, action, children, privateLabel }: { title: string; action?: ReactNode; children: ReactNode; privateLabel?: boolean }) {
   const id = useId()
   return (
-    <section aria-labelledby={id} className="space-y-3">
+    <section aria-labelledby={id} className="space-y-4">
       <div className="flex items-center justify-between gap-3 px-4">
-        <h2 id={id} className="flex items-center gap-2 text-lg font-bold tracking-tight">
+        <h2 id={id} className="flex items-center gap-2 section-title">
           {title}
           {privateLabel && <PrivateBadge />}
         </h2>
@@ -119,7 +122,8 @@ function PrivateBadge() {
 
 function Header({ data, following, onToggleFollow }: Pick<Props, 'following' | 'onToggleFollow'> & { data: ProfileViewData }) {
   return (
-    <div className="space-y-4 px-4">
+    // Rule 1: the profile header is this screen's one paper band (its hero moment)
+    <div className="space-y-4 bg-band px-4 pt-6 pb-6 text-band-foreground">
       <div className="flex items-start gap-4">
         <div
           aria-hidden="true"
@@ -128,8 +132,8 @@ function Header({ data, following, onToggleFollow }: Pick<Props, 'following' | '
           {initials(data.name)}
         </div>
         <div className="min-w-0 flex-1 space-y-1">
-          <h1 className="font-serif text-2xl leading-tight font-semibold">{data.name}</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="font-serif text-3xl leading-tight font-semibold tracking-tight">{data.name}</h1>
+          <p className="text-sm text-band-muted-foreground">
             @{data.handle}
             {data.city && ` · ${data.city}`}
           </p>
@@ -153,7 +157,7 @@ function Header({ data, following, onToggleFollow }: Pick<Props, 'following' | '
           <div key={label} className="flex items-baseline gap-1">
             <dt className="sr-only">{label}</dt>
             <dd className="font-bold tabular-nums">{n.toLocaleString('en-US')}</dd>
-            <span aria-hidden="true" className="text-muted-foreground">
+            <span aria-hidden="true" className="text-band-muted-foreground">
               {label}
             </span>
           </div>
@@ -234,8 +238,8 @@ function YearSoFar({ data, privateLabel }: { data: ProfileViewData; privateLabel
     >
       <div className="mx-4 space-y-4 rounded-xl border border-border bg-card p-4 text-card-foreground">
         <dl className="grid grid-cols-3 gap-2">
-          {s.challenge && <BigStat label="Challenge" value={`${s.challenge.read}`} suffix={`of ${s.challenge.goal}`} />}
-          {!s.challenge && <BigStat label="Books read" value={String(data.counts.read)} />}
+          {/* The owner's challenge is on the brand band above; visitors see the count here */}
+          {!data.isOwner && <BigStat label="Books read" value={String(data.counts.read)} />}
           {s.pages !== null && <BigStat label="Pages" value={s.pages.toLocaleString('en-US')} />}
           {s.avgRating !== null && <BigStat label="Avg rating" value={formatRating(s.avgRating)} suffix="stars" />}
         </dl>
@@ -326,7 +330,7 @@ function ProfileTabs({
 
   return (
     <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="gap-0">
-      <TabsList variant="line" aria-label="Profile sections" className="h-auto w-full justify-start gap-0 overflow-x-auto border-b border-border px-2">
+      <TabsList variant="line" aria-label="Profile sections" className="h-auto w-full justify-start gap-0 relative overflow-x-auto border-b border-border px-2">
         {tabs.map((t) => (
           <TabsTrigger
             key={t.value}

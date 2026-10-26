@@ -41,7 +41,7 @@ function GroupView({ group }: { group: Group }) {
   return (
     <>
       <TopBar title={group.name} back backFallback="/community?tab=groups" />
-      <div className="space-y-6 px-4 pt-4 pb-8">
+      <div className="space-y-10 px-4 pt-4 pb-10">
         <div className="space-y-3">
           <p className="text-sm">{group.description}</p>
           <div className="flex items-center justify-between gap-3">
@@ -64,9 +64,9 @@ function GroupView({ group }: { group: Group }) {
           </div>
         </div>
 
-        <section aria-labelledby={threadsHeadingId} className="space-y-3">
+        <section aria-labelledby={threadsHeadingId} className="space-y-4">
           <div className="flex items-center justify-between gap-3">
-            <h2 id={threadsHeadingId} className="text-lg font-bold tracking-tight">
+            <h2 id={threadsHeadingId} className="section-title">
               Threads
             </h2>
             {joined && (

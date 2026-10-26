@@ -57,8 +57,8 @@ export function FindFriendsPage() {
   return (
     <>
       <TopBar title="Find friends" back backFallback="/community" />
-      <div className="space-y-8 px-4 pt-3 pb-8">
-        <section aria-labelledby={resultsId} className="space-y-3">
+      <div className="space-y-10 px-4 pt-3 pb-10">
+        <section aria-labelledby={resultsId} className="space-y-4">
           <div className="relative">
             <label htmlFor={searchId} className="sr-only">
               Search readers by name or @handle
@@ -73,7 +73,7 @@ export function FindFriendsPage() {
               className="min-h-11 border-muted-foreground pl-9 text-base"
             />
           </div>
-          <h2 id={resultsId} className="text-lg font-bold tracking-tight">
+          <h2 id={resultsId} className="section-title">
             {q ? 'Results' : 'Readers you might know'}
           </h2>
           <p role="status" className="sr-only">
@@ -95,8 +95,8 @@ export function FindFriendsPage() {
           )}
         </section>
 
-        <section aria-labelledby={inviteId} className="space-y-3 rounded-xl border border-border bg-card p-4 text-card-foreground">
-          <h2 id={inviteId} className="text-lg font-bold tracking-tight">
+        <section aria-labelledby={inviteId} className="space-y-4 rounded-xl border border-border bg-card p-4 text-card-foreground">
+          <h2 id={inviteId} className="section-title">
             Invite friends
           </h2>
           <p className="text-sm text-muted-foreground">Reading is better with your people. Send them your link.</p>

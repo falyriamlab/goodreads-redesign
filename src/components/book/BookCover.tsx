@@ -32,7 +32,8 @@ export function BookCover({ book, size = 'md', className, reserveBottom = false,
   return (
     <div
       className={cn(
-        'relative aspect-2/3 shrink-0 overflow-hidden rounded-md bg-muted shadow-sm ring-1 ring-foreground/10',
+        // Marginalia rule 4: covers are objects (one shadow token, small radius), never text on top
+        'relative aspect-2/3 shrink-0 overflow-hidden rounded-sm bg-muted shadow-cover',
         s.width,
         className,
       )}

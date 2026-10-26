@@ -78,7 +78,7 @@ export function LibraryPage() {
               className="min-h-11 min-w-11 flex-none gap-1 px-2 text-muted-foreground data-active:font-semibold data-active:text-foreground"
             >
               {t.label}
-              <span className="rounded-full bg-muted px-1.5 text-xs tabular-nums">{counts[t.value]}</span>
+              <span className="rounded-full bg-muted px-1.5 text-xs text-foreground tabular-nums">{counts[t.value]}</span>
             </TabsTrigger>
           ))}
         </TabsList>

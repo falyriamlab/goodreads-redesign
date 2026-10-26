@@ -107,7 +107,7 @@ export function ActivityItem({ activity }: { activity: Activity }) {
       <Link
         to={`/book/${book.id}`}
         aria-label={book.title}
-        className="shrink-0 self-start rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="shrink-0 self-start rounded-cover outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       >
         <BookCover book={book} size="sm" />
       </Link>

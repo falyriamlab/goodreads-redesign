@@ -1,7 +1,8 @@
 import type { Book, Edition } from '@/types/book'
 
 // MOCK CATALOG: real, well-known books.
-// - isbn13: a real English edition, checked against Open Library; coverUrl is built from it.
+// - isbn13: a real English edition, checked against Open Library; coverUrl is built from it and points to
+//   our copy of that Open Library cover in public/covers/ (`npm run covers`), served from our own origin.
 // - pages: Open Library's median across editions. Page counts vary by edition.
 // - genres / moods / pace / tropes / contentWarnings: editorial tags for this prototype.
 // - Synopses only for The Empyrean (short neutral summaries written for this project, no quoted text).
@@ -28,7 +29,7 @@ function book(input: BookInput): Book {
     isPublished: true,
     trending: false,
     ...input,
-    coverUrl: input.isbn13 ? `https://covers.openlibrary.org/b/isbn/${input.isbn13}-M.jpg?default=false` : null,
+    coverUrl: input.isbn13 ? `/covers/${input.isbn13}.jpg` : null,
     avgRating: null,
     ratingsCount: null,
   }

@@ -163,7 +163,7 @@ function MessageBubble({
         className={cn(
           'max-w-[80%] rounded-2xl px-3 py-2 text-[0.9375rem] leading-snug whitespace-pre-line',
           mine
-            ? 'rounded-br-md bg-primary text-primary-foreground'
+            ? 'rounded-br-md bg-foreground text-background'
             : 'rounded-bl-md border border-border bg-card text-card-foreground',
         )}
       >
@@ -183,8 +183,8 @@ function MessageBubble({
             </span>
             <span className="min-w-0">
               <span className="sr-only">Shared a book: </span>
-              <span className="block font-serif text-sm leading-tight font-semibold">{book.title}</span>
-              <span className={cn('block text-xs', !mine && 'text-muted-foreground')}>{book.author}</span>
+              <span className="block text-sm leading-tight font-semibold">{book.title}</span>
+              <span className="block text-xs">{book.author}</span>
             </span>
           </Link>
         )}

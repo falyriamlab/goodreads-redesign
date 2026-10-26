@@ -17,25 +17,20 @@ import { useChallengeProgress, useLibrary } from '@/state/library'
 import { now as clockNow } from '@/lib/clock'
 import type { Book } from '@/types/book'
 
-/* ---------- Cover CORS check: covers that can't be read cross-origin become placeholders ---------- */
-
-const readable = (url: string) =>
-  fetch(url, { mode: 'cors' })
-    .then((r) => r.ok && (r.headers.get('content-type') ?? '').startsWith('image/'))
-    .catch(() => false)
+/* ---------- Cover check: covers that can't be painted into the canvas become placeholders ---------- */
 
 /**
- * Open Library's CORS is intermittent: the cover redirect sometimes lands on a mirror without
- * Access-Control-Allow-Origin. Try the URL, then once more with a cache-buster; resolve to the URL
- * that worked, or null (the card then draws the placeholder cover).
+ * Covers are self-hosted (public/covers/), so they're same-origin and always canvas-safe. A missing
+ * file still has to become the placeholder: the SPA rewrite answers it with index.html, not an image.
  */
-const corsCache = new Map<string, Promise<string | null>>()
+const coverCheck = new Map<string, Promise<string | null>>()
 function readableCoverUrl(url: string): Promise<string | null> {
-  let check = corsCache.get(url)
+  let check = coverCheck.get(url)
   if (!check) {
-    const retry = `${url}${url.includes('?') ? '&' : '?'}cors=1`
-    check = readable(url).then(async (ok) => (ok ? url : (await readable(retry)) ? retry : null))
-    corsCache.set(url, check)
+    check = fetch(url)
+      .then((r) => (r.ok && (r.headers.get('content-type') ?? '').startsWith('image/') ? url : null))
+      .catch(() => null)
+    coverCheck.set(url, check)
   }
   return check
 }

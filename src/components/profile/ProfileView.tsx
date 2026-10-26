@@ -80,7 +80,7 @@ export function ProfileView({ data, challengeBand, onAddFavorite, following, onT
           <ul className="flex gap-3 relative overflow-x-auto px-4 pb-1">
             {data.currentlyReading.map((id) => (
               <li key={id} className="shrink-0">
-                <Link to={`/book/${id}`} className="block rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+                <Link to={`/book/${id}`} className="block rounded-cover outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
                   <BookCover book={book(id)} size="md" />
                 </Link>
               </li>
@@ -205,7 +205,7 @@ function TopFour({ data, onAddFavorite }: { data: ProfileViewData; onAddFavorite
       <ul className="grid grid-cols-4 gap-3 px-4">
         {data.favorites.map((id) => (
           <li key={id}>
-            <Link to={`/book/${id}`} className="block rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+            <Link to={`/book/${id}`} className="block rounded-cover outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
               <BookCover book={book(id)} className="w-full" />
             </Link>
           </li>
@@ -215,7 +215,7 @@ function TopFour({ data, onAddFavorite }: { data: ProfileViewData; onAddFavorite
             <button
               type="button"
               onClick={onAddFavorite}
-              className="flex aspect-2/3 w-full flex-col items-center justify-center gap-1 rounded-md border-2 border-dashed border-muted-foreground p-1 text-center text-xs font-medium outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="flex aspect-2/3 w-full flex-col items-center justify-center gap-1 rounded-cover border-2 border-dashed border-muted-foreground p-1 text-center text-xs font-medium outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               <Plus className="size-5" aria-hidden="true" />
               Add a favorite
@@ -378,7 +378,7 @@ function ProfileTabs({
                   {/* Three covers fanned out */}
                   <div aria-hidden="true" className="flex h-24 items-end pl-1">
                     {list.bookIds.slice(0, 3).map((id, i) => (
-                      <BookCover key={id} book={book(id)} size="sm" className={cn('shadow-md', i > 0 && '-ml-6', i === 1 && 'rotate-3', i === 2 && '-rotate-2')} />
+                      <BookCover key={id} book={book(id)} size="sm" className={cn(i > 0 && '-ml-6', i === 1 && 'rotate-3', i === 2 && '-rotate-2')} />
                     ))}
                   </div>
                   <p className="text-sm font-semibold">{list.name}</p>

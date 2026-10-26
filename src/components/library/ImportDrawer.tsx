@@ -191,13 +191,13 @@ export function ImportDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
                   <h3 id="import-unmatched" className="text-sm font-semibold">
                     Couldn't match ({parsed.unmatched.length})
                   </h3>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs">
                     These aren't in our catalog yet. Nothing about them was imported; you can add them from Search later.
                   </p>
                   <ul className="space-y-1 text-sm">
                     {parsed.unmatched.map((r) => (
                       <li key={`${r.title}-${r.author}`}>
-                        {r.title} <span className="text-muted-foreground">· {r.author}</span>
+                        {r.title} <span>· {r.author}</span>
                       </li>
                     ))}
                   </ul>

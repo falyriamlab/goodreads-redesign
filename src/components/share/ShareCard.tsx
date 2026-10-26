@@ -44,7 +44,7 @@ type ShareCardProps = {
 export const CARD_WIDTH = 1080
 export const CARD_HEIGHT = 1920
 
-// Light/Dark force a palette on the card regardless of the app theme; Brand = theme green
+// Light/Dark force a palette on the card regardless of the app theme; Brand = theme indigo (always the light palette: white on --primary, 4.98:1)
 const STYLE_CLASS: Record<ShareStyle, string> = {
   light: 'theme-light bg-background text-foreground',
   dark: 'theme-dark bg-background text-foreground',
@@ -57,14 +57,14 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
   ref,
 ) {
   const brand = style === 'brand'
-  // Secondary text: muted on Light/Dark; on Brand everything stays primary-foreground (4.5:1 on the green)
+  // Secondary text: muted on Light/Dark; on Brand everything stays primary-foreground (4.98:1 on the indigo)
   const soft = brand ? '' : 'text-muted-foreground'
   const panel = brand ? 'border-4 border-primary-foreground' : 'bg-card text-card-foreground'
   const cover = (b: Book) => ({ ...b, coverUrl: coverUrls.get(b.id) ?? null })
   // A render helper (not a nested component) so covers don't remount on every render.
-  // Same treatment as the app (rule 4): cover shadow token, small radius, nothing on top.
+  // Same treatment as the app (rule 4): cover shadow token, the 4px cover radius, nothing on top.
   const renderCover = (book: Book, className?: string) => (
-    <BookCover key={book.id} book={cover(book)} size="xl" crossOrigin="anonymous" className={cn('rounded-lg shadow-cover', className)} />
+    <BookCover key={book.id} book={cover(book)} size="xl" crossOrigin="anonymous" className={className} />
   )
 
   return (

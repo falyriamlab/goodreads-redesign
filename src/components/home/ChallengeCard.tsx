@@ -6,7 +6,8 @@ import type { ChallengePace, ChallengeProgress } from '@/lib/challenge'
 type Props = { challenge: ChallengeProgress; pace: ChallengePace; percent: number; to?: string }
 
 /**
- * Marginalia rule 2: the challenge lives on the brand band (bg-primary + text-primary-foreground, 4.69:1).
+ * Marginalia rule 2: the challenge lives on the brand band (bg-primary + text-primary-foreground: 4.98:1 white in light,
+ * 5.75:1 dark stone in dark mode; stars use tone="current" so they follow it).
  * Big text is ≥ 24px; the small lines (kicker, pace, link) still pass 4.5:1. Used on Home and Profile.
  */
 export function ChallengeCard({ challenge, pace, percent, to = '/profile/stats' }: Props) {

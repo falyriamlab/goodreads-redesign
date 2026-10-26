@@ -1,3 +1,4 @@
+import { CircleAlert } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -83,7 +84,8 @@ export function NewThreadDrawer({ open, onOpenChange, groupName, onSubmit }: Pro
             />
           </div>
           {error && (
-            <p id={ids.error} role="alert" className="text-sm font-semibold text-destructive">
+            <p id={ids.error} role="alert" className="flex items-center gap-1.5 text-sm font-semibold">
+              <CircleAlert className="size-4 shrink-0 text-destructive" aria-hidden="true" />
               {error}
             </p>
           )}

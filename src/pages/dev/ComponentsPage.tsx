@@ -16,11 +16,8 @@ import type { ReadingStatus } from '@/types/library'
 
 const book = (id: string) => getBookById(id) as Book
 
-// Real cover via Open Library to exercise the image path; a bad URL shows the fallback
-const withImage: Book = {
-  ...book('fourth-wing'),
-  coverUrl: 'https://covers.openlibrary.org/b/isbn/9781649374042-M.jpg?default=false',
-}
+// A real cover (self-hosted copy) to exercise the image path; a bad Open Library URL shows the fallback
+const withImage: Book = book('fourth-wing')
 const brokenImage: Book = {
   ...book('onyx-storm'),
   coverUrl: 'https://covers.openlibrary.org/b/isbn/0000000000-M.jpg?default=false',

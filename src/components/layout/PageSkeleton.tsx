@@ -9,7 +9,7 @@ export function PageSkeleton() {
         </div>
         <div className="space-y-4 p-4">
           <div className="flex gap-3">
-            <div className="aspect-2/3 w-26 rounded-md bg-muted" />
+            <div className="aspect-2/3 w-26 rounded-cover bg-muted" />
             <div className="flex-1 space-y-2 pt-1">
               <div className="h-4 w-3/4 rounded-md bg-muted" />
               <div className="h-3 w-1/2 rounded-md bg-muted" />

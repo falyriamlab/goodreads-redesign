@@ -75,7 +75,7 @@ function BuddyReadView({ br, book }: { br: BuddyRead; book: Book }) {
       <div className="space-y-6 px-4 pt-4 pb-6">
         <header className="space-y-4">
           <div className="flex gap-4">
-            <Link to={`/book/${book.id}`} aria-label={book.title} className="shrink-0 self-start rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+            <Link to={`/book/${book.id}`} aria-label={book.title} className="shrink-0 self-start rounded-cover outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
               <BookCover book={book} size="md" />
             </Link>
             <div className="min-w-0 flex-1 space-y-1">
@@ -201,7 +201,7 @@ function ChapterSection({
       </h2>
       {group.ahead && (
         <div className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-muted-foreground bg-muted px-3 py-1">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm">
             {n} {n === 1 ? 'comment' : 'comments'} {hidden ? 'hidden' : 'shown'}
           </p>
           <button

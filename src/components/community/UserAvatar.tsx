@@ -19,7 +19,8 @@ export function UserAvatar({ author, size = 'md', link = true, className }: Prop
       <AvatarFallback
         className={cn(
           'font-semibold',
-          author.isMe ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
+          // You = ink, everyone else = stone (neutral: --primary is for actions)
+          author.isMe ? 'bg-foreground text-background' : 'bg-secondary text-secondary-foreground',
           size === 'sm' && 'text-xs',
         )}
       >

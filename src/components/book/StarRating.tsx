@@ -18,7 +18,7 @@ function ratingText(value: number): string {
 }
 
 /** One star: outline always visible, solid fill clipped to `fill` (0–1). Filled vs empty differs by shape, not hue. */
-/** tone "current": stars take the text color (e.g. on the green Brand share card, where amber lacks contrast) */
+/** tone "current": stars take the text color (on --primary: the challenge band and the Brand share card, where amber lacks contrast; dark stone in dark mode) */
 type Tone = 'rating' | 'current'
 const toneClass: Record<Tone, { stroke: string; fill: string }> = {
   rating: { stroke: 'text-rating', fill: 'fill-rating text-rating' },

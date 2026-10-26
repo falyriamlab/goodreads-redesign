@@ -45,6 +45,7 @@ Other scripts:
 - Link previews use `public/og-image.png`. Its absolute URL comes from `VITE_SITE_URL`, or on Vercel from the production domain.
 - A first visit with empty storage loads the full demo (seed + demo clock on Oct 16, 2026).
 - `npm run capture` regenerates `case-study/`. `npm run assets` regenerates the OG image and the PNG favicons from it.
+- Covers are self-hosted copies of Open Library's in `public/covers/`. `npm run covers` downloads any that are missing (after adding a book to `src/mocks/books.ts`).
 
 ## Reviewing components
 

@@ -6,7 +6,7 @@ type Props = {
   /** Use instead of label when a visible heading names the bar */
   labelledBy?: string
   valueText: string
-  /** brand: on the green challenge band. White fill on a 20% white track: 3.37:1 fill vs track */
+  /** brand: on the challenge band (--primary). primary-foreground fill on a 20% track of it: 3.46:1 light (white) / 4.15:1 dark (stone) */
   tone?: 'default' | 'brand'
   className?: string
 }

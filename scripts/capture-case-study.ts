@@ -5,7 +5,8 @@
  * - case-study/screens/{light,dark}/NN-name.png at 390×844 (@2x)
  * - case-study/flows/fN-NN.png: each F1–F4 flow, one capture per tap (light)
  * - case-study/share-cards/*.png: the 4 Brand share cards, exported by the app itself
- * - case-study/audit.json + metrics.json: per-screen audit (44px, nesting, overflow) and tap counts
+ * - case-study/audit.json + metrics.json: per-screen audit (44px, nesting, overflow, text contrast in light
+ *   and dark) and tap counts
  *
  * Uses the system Chrome (channel: 'chrome'), so no browser download is needed.
  */
@@ -126,6 +127,75 @@ async function audit(page: Page, screen: string) {
   audits.push({ screen, ...r })
 }
 
+const contrastIssues: { screen: string; scheme: Scheme; text: string; ratio: number; min: number; fg: string; bg: string }[] = []
+
+/**
+ * Text contrast as rendered: every visible text node's color against the background actually behind it
+ * (ancestor backgrounds composited in sRGB, opacity included). 4.5:1, or 3:1 for large text (24px, or 18.66px bold).
+ * Skips disabled controls (WCAG exempts them) and text over images or gradients (rule 4: never text on covers).
+ */
+async function auditContrast(page: Page, screen: string, scheme: Scheme) {
+  const found = await page.evaluate(() => {
+    const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!
+    const rgba = (c: string) => {
+      ctx.clearRect(0, 0, 1, 1)
+      ctx.fillStyle = '#000'
+      ctx.fillStyle = c
+      ctx.fillRect(0, 0, 1, 1)
+      const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data
+      return [r / 255, g / 255, b / 255, a / 255]
+    }
+    const lum = ([r, g, b]: number[]) => {
+      const f = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+      return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+    }
+    const over = (top: number[], a: number, under: number[]) => top.slice(0, 3).map((c, i) => a * c + (1 - a) * under[i])
+    const hex = (c: number[]) => '#' + c.slice(0, 3).map((x) => Math.round(x * 255).toString(16).padStart(2, '0')).join('')
+    const out: { text: string; ratio: number; min: number; fg: string; bg: string }[] = []
+    const seen = new Set<Element>()
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const el = node.parentElement
+      if (!el || seen.has(el) || !node.textContent?.trim()) continue
+      seen.add(el)
+      if (!el.getClientRects().length || el.closest('[hidden], .sr-only, [disabled], [aria-disabled="true"], svg')) continue
+      const s = getComputedStyle(el)
+      if (s.visibility === 'hidden') continue
+      // Background stack: walk up until an opaque layer, keeping each translucent layer and the opacities
+      const layers: { color: number[]; alpha: number }[] = []
+      let alphaMul = 1
+      let unknown = false
+      for (let n: Element | null = el; n; n = n.parentElement) {
+        const ns = getComputedStyle(n)
+        alphaMul *= parseFloat(ns.opacity)
+        if (ns.backgroundImage !== 'none') {
+          unknown = true
+          break
+        }
+        const c = rgba(ns.backgroundColor)
+        if (c[3] > 0) {
+          layers.push({ color: c, alpha: c[3] })
+          if (c[3] >= 1) break
+        }
+      }
+      if (unknown || alphaMul === 0) continue
+      let bg = [1, 1, 1]
+      for (const l of layers.reverse()) bg = over(l.color, l.alpha, bg)
+      const fgRaw = rgba(s.color)
+      const fg = over(fgRaw, fgRaw[3] * alphaMul, bg)
+      const [hi, lo] = [lum(fg), lum(bg)].sort((a, b) => b - a)
+      const ratio = (hi + 0.05) / (lo + 0.05)
+      const size = parseFloat(s.fontSize)
+      const large = size >= 24 || (size >= 18.66 && parseInt(s.fontWeight) >= 700)
+      const min = large ? 3 : 4.5
+      if (ratio < min - 0.005)
+        out.push({ text: (node.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 40), ratio: Math.round(ratio * 100) / 100, min, fg: hex(fg), bg: hex(bg) })
+    }
+    return out
+  })
+  for (const f of found) contrastIssues.push({ screen, scheme, ...f })
+}
+
 /** Center it: scrollIntoViewIfNeeded can leave it under the fixed bottom nav */
 async function centerOf(locator: ReturnType<Page['locator']>) {
   await locator.evaluate((el) => {
@@ -172,6 +242,7 @@ async function captureScreens(browser: Browser, scheme: Scheme) {
     n++
     await shot(page, path.join(dir, `${String(n).padStart(2, '0')}-${name}.png`))
     if (scheme === 'light') await audit(page, name)
+    await auditContrast(page, name, scheme)
   }
 
   await go(page, '/')
@@ -275,6 +346,7 @@ async function captureScreens(browser: Browser, scheme: Scheme) {
       await go(page, url)
       if (name === 'library-list') await page.getByRole('button', { name: 'List view' }).click()
       await audit(page, name)
+      await auditContrast(page, name, scheme)
     }
     await go(page, '/library?shelf=read')
     await page.getByRole('button', { name: 'Select' }).click()
@@ -457,7 +529,7 @@ try {
   const metrics = await measureFlows(browser)
   await shareCards(browser)
 
-  fs.writeFileSync(path.join(OUT, 'audit.json'), JSON.stringify(audits, null, 2) + '\n')
+  fs.writeFileSync(path.join(OUT, 'audit.json'), JSON.stringify({ screens: audits, contrast: contrastIssues }, null, 2) + '\n')
   fs.writeFileSync(path.join(OUT, 'metrics.json'), JSON.stringify(metrics, null, 2) + '\n')
 
   const failing = audits.filter((a) => a.overflow > 0 || a.nested > 0 || a.small.length > 0)
@@ -465,6 +537,8 @@ try {
   console.log('Flows:', JSON.stringify(metrics, null, 2))
   console.log(`Audit: ${audits.length} screens, ${failing.length} with issues`)
   for (const a of failing) console.log(`  ${a.screen}:`, JSON.stringify({ overflow: a.overflow, nested: a.nested, small: a.small }))
+  console.log(`Text contrast: ${contrastIssues.length} failing text nodes (light + dark)`)
+  for (const c of contrastIssues) console.log(`  ${c.scheme} ${c.screen}: "${c.text}" ${c.ratio} < ${c.min} (${c.fg} on ${c.bg})`)
 } finally {
   await browser.close()
   stopServer(server)

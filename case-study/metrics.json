@@ -1,0 +1,27 @@
+{
+  "F1 from Home": {
+    "taps": 4,
+    "note": "Finished it → 4.25 → Save → Start reading"
+  },
+  "F1 book page, via status": {
+    "taps": 5,
+    "note": "Status → Read → 4.25 → Save → Start reading"
+  },
+  "F1 book page, via rating": {
+    "taps": 3,
+    "note": "Tap 4.25 on Your rating → Save → Start reading"
+  },
+  "F2": {
+    "taps": 3,
+    "note": "Discover → Search → type \"forth wing\" → Fourth Wing",
+    "keys": 10
+  },
+  "F3": {
+    "taps": 5,
+    "note": "Dark → Fast → Unreliable narrator → Show → one-tap Want on \"The Housemaid\""
+  },
+  "F4": {
+    "taps": 2,
+    "note": "Share your October recap → Save image"
+  }
+}

@@ -51,7 +51,7 @@ export type ProfileViewData = {
 type Props = {
   data: ProfileViewData
   /** Owner: the challenge on the brand band (rule 2), shown under the Top 4 */
-  challengeBand?: ReactNode
+  challengeCard?: ReactNode
   /** Owner only: open the favorite picker */
   onAddFavorite?: () => void
   /** Visitor only */
@@ -64,7 +64,7 @@ const linkClass =
 
 const book = (id: string) => getBookById(id) as Book
 
-export function ProfileView({ data, challengeBand, onAddFavorite, following, onToggleFollow }: Props) {
+export function ProfileView({ data, challengeCard, onAddFavorite, following, onToggleFollow }: Props) {
   // Owners see every section (private ones are labelled); visitors only see public ones
   const visible = (s: ProfileSection) => data.isOwner || data.publicSections[s]
   const isPrivate = (s: ProfileSection) => data.isOwner && !data.publicSections[s]
@@ -73,7 +73,7 @@ export function ProfileView({ data, challengeBand, onAddFavorite, following, onT
     <div className="space-y-10 pb-10">
       <Header data={data} following={following} onToggleFollow={onToggleFollow} />
       <TopFour data={data} onAddFavorite={onAddFavorite} />
-      {challengeBand}
+      {challengeCard}
       {data.stats && visible('stats') && <YearSoFar data={data} privateLabel={isPrivate('stats')} />}
       {data.currentlyReading.length > 0 && (
         <Section title="Currently reading">
@@ -132,7 +132,7 @@ function Header({ data, following, onToggleFollow }: Pick<Props, 'following' | '
           {initials(data.name)}
         </div>
         <div className="min-w-0 flex-1 space-y-1">
-          <h1 className="font-serif text-3xl leading-tight font-semibold tracking-tight">{data.name}</h1>
+          <h1 className="text-2xl leading-tight font-bold tracking-tight">{data.name}</h1>
           <p className="text-sm text-band-muted-foreground">
             @{data.handle}
             {data.city && ` · ${data.city}`}
@@ -300,7 +300,7 @@ function BigStat({ label, value, suffix }: { label: string; value: string; suffi
     <div>
       <dt className="text-xs text-muted-foreground">{label}</dt>
       <dd>
-        <span className="font-serif text-3xl leading-none font-semibold tabular-nums">{value}</span>
+        <span className="text-2xl leading-none font-bold tabular-nums">{value}</span>
         {suffix && <span className="ml-1 text-xs text-muted-foreground">{suffix}</span>}
       </dd>
     </div>

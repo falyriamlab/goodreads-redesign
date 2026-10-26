@@ -130,8 +130,8 @@ export function ImportDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
               <div className="-mx-4 bg-band px-4 py-5 text-band-foreground">
                 <p aria-live="polite" className="flex items-baseline gap-2">
                   <span className="sr-only">Matched </span>
-                  <span className="display-lg">{parsed.matched.length}</span>
-                  <span className="font-serif text-2xl">of {parsed.total} matched</span>
+                  <span className="stat-number">{parsed.matched.length}</span>
+                  <span className="stat-unit text-band-muted-foreground">of {parsed.total} matched</span>
                 </p>
                 <p className="mt-1 text-sm text-band-muted-foreground">
                   {FORMAT_LABEL[parsed.format]} export · {parsed.fileName}

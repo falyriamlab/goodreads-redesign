@@ -75,8 +75,8 @@ export function SegmentedRadio<T extends string>({
             className={cn(
               'inline-flex min-h-11 items-center justify-center gap-1 px-1 text-xs leading-tight font-medium text-foreground outline-none focus-visible:z-10 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset disabled:opacity-50',
               i > 0 && 'border-l border-muted-foreground',
-              // Checked = ink fill + bold + a check (neutral: --primary is for actions, and never hue alone)
-              checked && 'bg-foreground font-semibold text-background',
+              // Checked = stone fill + bold + a check (neutral: --primary is for actions, and never hue alone)
+              checked && 'bg-secondary font-semibold text-secondary-foreground',
             )}
           >
             {checked && <Check className="size-3.5 shrink-0" strokeWidth={3} aria-hidden="true" />}

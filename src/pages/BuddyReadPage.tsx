@@ -80,7 +80,7 @@ function BuddyReadView({ br, book }: { br: BuddyRead; book: Book }) {
             </Link>
             <div className="min-w-0 flex-1 space-y-1">
               <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Buddy read</p>
-              <h1 className="font-serif text-2xl leading-tight font-semibold">{book.title}</h1>
+              <h1 className="text-2xl leading-tight font-bold">{book.title}</h1>
               <p className="text-sm">
                 {buddyReaderCount(br, joined)} readers · hosted by {host.name}
               </p>

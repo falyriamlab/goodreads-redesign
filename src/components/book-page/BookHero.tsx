@@ -15,7 +15,8 @@ export function BookHero({ book }: { book: Book }) {
           {book.series} · Book {book.seriesNumber}
         </p>
       )}
-      <h1 className="mt-2 font-serif text-[2.5rem] leading-[1.05] font-semibold tracking-tight text-balance">{book.title}</h1>
+      {/* One of the two places Playfair is used (the other: share cards) */}
+      <h1 className="mt-2 font-serif text-[1.875rem] leading-tight text-balance">{book.title}</h1>
       <p className="mt-2 text-base">{book.author}</p>
       <dl className="mt-6 grid grid-cols-3 divide-x divide-band-muted-foreground/40 border-y border-band-muted-foreground/40 py-3">
         <Fact label="Pages" value={String(book.pages)} />
@@ -32,7 +33,7 @@ function Fact({ label, value }: { label: string; value: string }) {
     // dt first in the DOM; flex-col-reverse puts the number on top
     <div className="flex flex-col-reverse items-center px-1">
       <dt className="text-xs text-band-muted-foreground">{label}</dt>
-      <dd className="font-serif text-xl font-semibold tabular-nums">{value}</dd>
+      <dd className="text-lg font-bold tabular-nums">{value}</dd>
     </div>
   )
 }

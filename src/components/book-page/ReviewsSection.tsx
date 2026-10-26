@@ -8,6 +8,7 @@ import { readers } from '@/mocks/community'
 import { getReviewsForBook } from '@/mocks/reviews'
 import { useLibrary, useLibraryEntry } from '@/state/library'
 import type { Book } from '@/types/book'
+import { SelectedCheck } from '@/components/common/SelectedCheck'
 
 type Filter = 'friends' | 'popular' | 'recent' | 'no-spoilers'
 
@@ -21,7 +22,7 @@ const filters: { value: Filter; label: string }[] = [
 const PREVIEW_COUNT = 3
 
 const toggleOnClass =
-  'min-h-11 border-muted-foreground px-3 font-medium data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:font-semibold data-[state=on]:text-background'
+  'min-h-11 border-muted-foreground px-3 font-medium group/selected data-[state=on]:border-muted-foreground data-[state=on]:bg-secondary data-[state=on]:font-semibold data-[state=on]:text-secondary-foreground'
 
 export function ReviewsSection({ book }: { book: Book }) {
   const headingId = useId()
@@ -84,6 +85,7 @@ export function ReviewsSection({ book }: { book: Book }) {
       >
         {filters.map((f) => (
           <ToggleGroupItem key={f.value} value={f.value} className={toggleOnClass}>
+            <SelectedCheck />
             {f.label}
           </ToggleGroupItem>
         ))}

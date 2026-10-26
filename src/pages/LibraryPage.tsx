@@ -285,7 +285,7 @@ function ViewButton({ label, pressed, onClick, children }: { label: string; pres
       className={cn(
         'flex size-11 items-center justify-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50 [&_svg]:size-5',
         // Pressed = inverted fill (not color alone)
-        pressed ? 'bg-foreground text-background' : 'text-foreground hover:bg-muted',
+        pressed ? 'border border-muted-foreground bg-secondary text-secondary-foreground' : 'text-foreground hover:bg-muted',
       )}
     >
       {children}

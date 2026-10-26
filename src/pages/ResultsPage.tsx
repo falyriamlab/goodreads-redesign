@@ -51,7 +51,7 @@ export function ResultsPage() {
                   type="button"
                   aria-label={`Remove filter: ${chip.label}`}
                   onClick={() => removeAt(i)}
-                  className="inline-flex min-h-11 items-center gap-1 rounded-full border border-foreground bg-foreground px-3.5 text-sm font-semibold text-background outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="inline-flex min-h-11 items-center gap-1 rounded-full border border-muted-foreground bg-secondary font-semibold text-secondary-foreground px-3.5 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   {chip.label}
                   <X className="size-4" strokeWidth={2.5} aria-hidden="true" />

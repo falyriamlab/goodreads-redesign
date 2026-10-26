@@ -68,7 +68,7 @@ export function ProfilePage() {
       />
       <ProfileView
         data={data}
-        challengeBand={
+        challengeCard={
           <ChallengeCard
             challenge={challenge}
             pace={getChallengePace(challenge)}

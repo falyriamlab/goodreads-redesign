@@ -44,7 +44,7 @@ function BuddyList({ title, list, joined, empty }: { title: string; list: BuddyR
                 >
                   <BookCover book={book} size="sm" />
                   <span className="min-w-0 flex-1 space-y-0.5">
-                    <span className="block font-serif font-semibold">{book.title}</span>
+                    <span className="block book-title">{book.title}</span>
                     <span className="block text-sm">
                       {buddyReaderCount(br, joined)} readers · {spanLabel(br.currentSpan)}
                     </span>

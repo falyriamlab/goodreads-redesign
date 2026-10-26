@@ -6,6 +6,7 @@ import { activities } from '@/mocks/community'
 import { useLibrary } from '@/state/library'
 import type { FeedFilter } from '@/types/community'
 import { ActivityItem } from './ActivityItem'
+import { SelectedCheck } from '@/components/common/SelectedCheck'
 
 const FILTERS: { value: FeedFilter; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -15,7 +16,7 @@ const FILTERS: { value: FeedFilter; label: string }[] = [
 ]
 
 const toggleOnClass =
-  'min-h-11 flex-1 border-muted-foreground px-3 font-medium data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:font-semibold data-[state=on]:text-background'
+  'min-h-11 flex-1 border-muted-foreground px-3 font-medium group/selected data-[state=on]:border-muted-foreground data-[state=on]:bg-secondary data-[state=on]:font-semibold data-[state=on]:text-secondary-foreground'
 
 export function FeedTab() {
   const following = useLibrary((s) => s.following)
@@ -35,6 +36,7 @@ export function FeedTab() {
       >
         {FILTERS.map((f) => (
           <ToggleGroupItem key={f.value} value={f.value} className={toggleOnClass}>
+            <SelectedCheck />
             {f.label}
           </ToggleGroupItem>
         ))}

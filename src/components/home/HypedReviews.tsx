@@ -28,7 +28,7 @@ export function HypedReviews() {
               >
                 <BookCover book={book} size="sm" className="w-10" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold">{book.title}</span>
+                  <span className="block truncate book-title">{book.title}</span>
                   <span className="block text-xs text-muted-foreground">See all reviews</span>
                 </span>
                 <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />

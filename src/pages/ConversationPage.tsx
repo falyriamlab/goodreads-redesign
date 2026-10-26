@@ -183,7 +183,7 @@ function MessageBubble({
             </span>
             <span className="min-w-0">
               <span className="sr-only">Shared a book: </span>
-              <span className="block text-sm leading-tight font-semibold">{book.title}</span>
+              <span className="block book-title leading-tight">{book.title}</span>
               <span className="block text-xs">{book.author}</span>
             </span>
           </Link>

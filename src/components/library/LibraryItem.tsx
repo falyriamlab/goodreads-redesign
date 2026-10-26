@@ -73,7 +73,7 @@ export function LibraryItem({ book, entry, view, selecting, selected, onToggleSe
           {check}
           <BookCover book={book} size="sm" />
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-semibold">{book.title}</span>
+            <span className="block truncate book-title">{book.title}</span>
             <span className="block truncate text-xs text-muted-foreground">{book.author}</span>
             {line && <span className="block truncate text-xs">{line}</span>}
           </span>

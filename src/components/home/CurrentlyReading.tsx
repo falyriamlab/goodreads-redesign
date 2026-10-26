@@ -49,7 +49,7 @@ function ReadingCard({ book, currentPage }: { book: Book; currentPage: number })
       <div className="flex gap-4">
         <BookCover book={book} className="w-24" />
         <div className="min-w-0 flex-1">
-          <h3 className="font-serif text-xl leading-tight font-semibold">
+          <h3 className="book-title">
             <Link
               to={`/book/${book.id}`}
               className="inline-flex min-h-11 items-center outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
@@ -59,8 +59,8 @@ function ReadingCard({ book, currentPage }: { book: Book; currentPage: number })
           </h3>
           <p className="truncate text-sm text-muted-foreground">{book.author}</p>
           <p className="mt-2 flex items-baseline gap-1">
-            <span className="display-lg">{p.percent}</span>
-            <span className="font-serif text-xl">%</span>
+            <span className="stat-number">{p.percent}</span>
+            <span className="stat-unit text-muted-foreground">%</span>
             <span className="sr-only"> read</span>
           </p>
           <p className="text-xs text-muted-foreground">{p.detail}</p>

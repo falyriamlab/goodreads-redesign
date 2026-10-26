@@ -73,7 +73,7 @@ export function ShareBookDrawer({ open, onOpenChange, recipientName, onPick }: P
                   <BookCover book={b} size="sm" className="w-10" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold">{b.title}</span>
+                  <span className="block truncate book-title">{b.title}</span>
                   <span className="block truncate text-xs text-muted-foreground">{b.author}</span>
                 </span>
                 <Send className="size-4 shrink-0" aria-hidden="true" />

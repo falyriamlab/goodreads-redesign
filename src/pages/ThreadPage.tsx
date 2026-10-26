@@ -51,7 +51,7 @@ function ThreadView({ group, thread }: { group: Group; thread: GroupThread }) {
           >
             {group.name}
           </Link>
-          <h1 className="font-serif text-2xl leading-tight font-semibold">{thread.title}</h1>
+          <h1 className="text-2xl leading-tight font-bold">{thread.title}</h1>
           <div className="flex items-center gap-2">
             <UserAvatar author={author} className="-ml-1.5" />
             <p className="text-sm">

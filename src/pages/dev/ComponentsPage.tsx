@@ -80,7 +80,7 @@ export function ComponentsPage() {
   return (
     <div className="mx-auto min-h-dvh w-full max-w-app bg-background pb-16 sm:border-x sm:border-border">
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/95 px-4 backdrop-blur">
-        <h1 className="font-serif text-2xl font-semibold tracking-tight">Component lab</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Component lab</h1>
         <label className="flex min-h-11 items-center gap-2 text-sm font-medium">
           Dark mode
           <Switch

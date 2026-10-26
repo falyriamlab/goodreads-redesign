@@ -116,7 +116,7 @@ export function StatusChip({
           // Shelved = neutral fill + the shelf's own icon and name (never hue alone). Only the book page's
           // big "Want to read" (variant primary, nothing shelved yet) is the view's main action in --primary.
           status !== null
-            ? 'border border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80'
+            ? 'border border-muted-foreground bg-secondary text-secondary-foreground hover:bg-secondary/80'
             : variant === 'primary'
               ? 'bg-primary text-primary-foreground hover:bg-primary/90'
               : 'border border-input bg-background text-foreground hover:bg-muted',

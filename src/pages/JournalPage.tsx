@@ -5,6 +5,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { groupByMonth, monthSummary } from '@/lib/journal'
 import { getBookById } from '@/mocks/books'
 import { useLibrary } from '@/state/library'
+import { SelectedCheck } from '@/components/common/SelectedCheck'
 
 type Filter = 'all' | 'finished' | 'started' | 'dnf'
 
@@ -16,7 +17,7 @@ const FILTERS: { value: Filter; label: string }[] = [
 ]
 
 const toggleOnClass =
-  'min-h-11 min-w-11 border-muted-foreground px-3 font-medium data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:font-semibold data-[state=on]:text-background'
+  'min-h-11 min-w-11 border-muted-foreground px-3 font-medium group/selected data-[state=on]:border-muted-foreground data-[state=on]:bg-secondary data-[state=on]:font-semibold data-[state=on]:text-secondary-foreground'
 
 export function JournalPage() {
   const history = useLibrary((s) => s.history)
@@ -45,7 +46,7 @@ export function JournalPage() {
             ).map(([label, n]) => (
               <div key={label} className="flex flex-col-reverse">
                 <dt className="text-sm text-band-muted-foreground">{label}</dt>
-                <dd className="display-lg">{n}</dd>
+                <dd className="stat-number">{n}</dd>
               </div>
             ))}
           </dl>
@@ -70,6 +71,7 @@ export function JournalPage() {
             >
               {FILTERS.map((f) => (
                 <ToggleGroupItem key={f.value} value={f.value} className={toggleOnClass}>
+                  <SelectedCheck />
                   {f.label}
                 </ToggleGroupItem>
               ))}

@@ -2,36 +2,40 @@ import { useId } from 'react'
 import { Link } from 'react-router'
 import { ProgressBar } from '@/components/common/ProgressBar'
 import type { ChallengePace, ChallengeProgress } from '@/lib/challenge'
+import { seeMoreClass } from '@/lib/ui'
 
 type Props = { challenge: ChallengeProgress; pace: ChallengePace; percent: number; to?: string }
 
 /**
- * Marginalia rule 2: the challenge lives on the brand band (bg-primary + text-primary-foreground: 4.98:1 white in light,
- * 5.75:1 dark stone in dark mode; stars use tone="current" so they follow it).
- * Big text is ≥ 24px; the small lines (kicker, pace, link) still pass 4.5:1. Used on Home and Profile.
+ * Rule 2: the reading challenge is a card (Home and Profile), not a full-width band. Neutral on purpose:
+ * the count is a stat number, and the bar is ink on the muted track (the one progress bar that isn't --primary).
+ * Once the goal is met, the link becomes "Raise your goal".
  */
 export function ChallengeCard({ challenge, pace, percent, to = '/profile/stats' }: Props) {
   const id = useId()
+  const valueText = `${challenge.read} of ${challenge.goal} books`
   return (
-    <section aria-labelledby={id} className="space-y-4 bg-primary px-4 py-8 text-primary-foreground">
-      <div className="flex items-start justify-between gap-3">
+    <section aria-labelledby={id} className="mx-4 space-y-4 rounded-lg border border-border bg-card p-5 text-card-foreground">
+      <div className="flex items-center justify-between gap-3">
         <h2 id={id} className="section-title">
-          {challenge.year} reading challenge
+          {challenge.year} Reading Challenge
         </h2>
-        <Link
-          to={to}
-          className="inline-flex min-h-11 min-w-11 items-center justify-end text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-primary-foreground"
-        >
-          See all<span className="sr-only"> reading stats</span>
+        <Link to={to} className={seeMoreClass}>
+          {pace.goalMet ? (
+            'Raise your goal'
+          ) : (
+            <>
+              View<span className="sr-only"> reading challenge</span>
+            </>
+          )}
         </Link>
       </div>
-      {/* Display number */}
-      <p className="flex items-baseline gap-3">
-        <span className="display-xl">{challenge.read}</span>
-        <span className="font-serif text-2xl">of {challenge.goal} books</span>
+      <p className="flex items-baseline gap-2">
+        <span className="stat-number">{challenge.read}</span>
+        <span className="stat-unit text-muted-foreground">of {challenge.goal} books</span>
       </p>
-      <ProgressBar tone="brand" percent={percent} labelledBy={id} valueText={`${challenge.read} of ${challenge.goal} books`} />
-      <p className="text-base font-medium">{pace.message}</p>
+      <ProgressBar tone="ink" percent={percent} labelledBy={id} valueText={valueText} />
+      <p className="text-sm text-muted-foreground">{pace.message}</p>
     </section>
   )
 }

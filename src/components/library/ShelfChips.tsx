@@ -97,7 +97,7 @@ function ShelfChip({
       }}
       className={cn(
         chipClass,
-        pressed ? 'border-foreground bg-foreground font-semibold text-background' : 'border-muted-foreground bg-background font-medium hover:bg-muted',
+        pressed ? 'border-muted-foreground bg-secondary font-semibold text-secondary-foreground' : 'border-muted-foreground bg-background font-medium hover:bg-muted',
       )}
     >
       {pressed && <Check className="size-4" strokeWidth={3} aria-hidden="true" />}

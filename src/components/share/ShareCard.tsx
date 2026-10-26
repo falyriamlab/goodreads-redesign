@@ -84,7 +84,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
             </Kicker>
             <Headline>My {content.monthName} book dump</Headline>
             {content.books.length === 0 ? (
-              <p className={cn('mt-16 font-serif text-6xl leading-tight', soft)}>Nothing finished yet. The month isn't over.</p>
+              <p className={cn('mt-16 text-6xl leading-tight font-medium', soft)}>Nothing finished yet. The month isn't over.</p>
             ) : (
               <>
                 {/* Columns by count so covers always fit above the stats: 1–3 in one row, 4 in one row, 5–6 in two */}
@@ -104,9 +104,9 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
                   <StatBlock label="avg rating" value={content.avgRating === null ? '–' : formatRating(content.avgRating)} soft={soft} />
                 </dl>
                 {content.topRated && (
-                  <p className="mt-12 font-serif text-5xl leading-tight">
+                  <p className="mt-12 text-5xl leading-tight">
                     <span className={soft}>Living rent-free in my head: </span>
-                    <span className="font-semibold italic">{content.topRated.title}</span>
+                    <span className="font-bold">{content.topRated.title}</span>
                   </p>
                 )}
               </>
@@ -128,7 +128,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
               {content.topGenres.map((g) => (
                 <div key={g.label} className="space-y-3">
                   <div className="flex justify-between text-5xl">
-                    <span className="font-serif">{g.label}</span>
+                    <span>{g.label}</span>
                     <span className="font-bold tabular-nums">{g.percent}%</span>
                   </div>
                   <div className={cn('h-5 overflow-hidden rounded-full', brand ? 'border-2 border-primary-foreground' : 'bg-muted')}>
@@ -138,9 +138,9 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
               ))}
             </div>
             {content.vibe.length > 0 && (
-              <p className="mt-auto pt-12 font-serif text-6xl leading-tight">
+              <p className="mt-auto pt-12 text-6xl leading-tight">
                 <span className={soft}>Your vibe: </span>
-                <span className="font-semibold">{content.vibe.join(' · ')}</span>
+                <span className="font-bold">{content.vibe.join(' · ')}</span>
               </p>
             )}
           </>
@@ -164,7 +164,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
               )}
             </div>
             {content.reviewSentence && (
-              <blockquote className={cn('mt-12 rounded-3xl p-12 font-serif text-5xl leading-snug italic', panel)}>
+              <blockquote className={cn('mt-12 rounded-3xl p-12 text-5xl leading-snug font-medium', panel)}>
                 “{content.reviewSentence}”
               </blockquote>
             )}
@@ -193,7 +193,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
       <footer className="mt-12 flex shrink-0 items-end justify-between border-t-4 border-current pt-10">
         <span className="text-4xl font-semibold">@{handle}</span>
         {/* Small text wordmark: this is a concept, not the real brand */}
-        <span className="font-serif text-4xl font-semibold tracking-tight">goodreads concept</span>
+        <span className="text-4xl font-bold tracking-tight">goodreads concept</span>
       </footer>
     </div>
   )

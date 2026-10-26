@@ -27,7 +27,7 @@ export function JournalEntry({ event, book, loved }: { event: ReadingEvent; book
       </time>
       <BookCover book={book} size="sm" />
       <span className="min-w-0 flex-1 space-y-0.5">
-        <span className="block line-clamp-2 text-sm leading-snug font-semibold">{book.title}</span>
+        <span className="block line-clamp-2 book-title">{book.title}</span>
         <span className="block text-xs">{typeLabel(event)}</span>
         <span className="flex flex-wrap items-center gap-2">
           {event.type === 'finished' && event.rating != null && <StarRating value={event.rating} size="xs" />}

@@ -69,7 +69,7 @@ export function FavoritePickerDrawer({ open, onOpenChange, exclude, onPick }: Pr
               >
                 <BookCover book={b} size="sm" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold">{b.title}</span>
+                  <span className="block truncate book-title">{b.title}</span>
                   <span className="block truncate text-xs text-muted-foreground">{b.author}</span>
                   {entries[b.id]?.rating != null && <StarRating value={entries[b.id].rating} size="xs" />}
                 </span>

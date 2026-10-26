@@ -150,7 +150,7 @@ function SortableRow({
             <span className="line-clamp-2">{book.title}</span>
           </Link>
         ) : (
-          <p className="line-clamp-2 text-sm leading-snug font-semibold">{book.title}</p>
+          <p className="line-clamp-2 book-title">{book.title}</p>
         )}
         <p className="truncate text-xs text-muted-foreground">{book.author}</p>
       </div>

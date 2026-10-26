@@ -21,7 +21,7 @@ export function InvitePage() {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-app flex-col justify-center gap-8 bg-background px-6 py-10 sm:border-x sm:border-border">
-      <p className="text-center font-serif text-3xl font-bold tracking-tight">goodreads</p>
+      <p className="text-center text-3xl font-bold tracking-tight">goodreads</p>
       {inviter ? (
         <>
           <div className="space-y-4 text-center">
@@ -31,7 +31,7 @@ export function InvitePage() {
             >
               {initials(inviter.name)}
             </div>
-            <h1 className="font-serif text-3xl leading-tight font-semibold text-balance">{inviter.name} invited you to read along</h1>
+            <h1 className="text-2xl leading-tight font-bold text-balance">{inviter.name} invited you to read along</h1>
             <p className="text-sm text-muted-foreground">@{inviter.handle} wants to swap recs, buddy read and cheer on your reading goal.</p>
           </div>
 
@@ -59,7 +59,7 @@ export function InvitePage() {
         </>
       ) : (
         <div className="space-y-3 text-center">
-          <h1 className="font-serif text-2xl font-semibold">This invite link isn't valid.</h1>
+          <h1 className="text-2xl font-bold">This invite link isn't valid.</h1>
           <p className="text-sm text-muted-foreground">Ask your friend to send it again.</p>
         </div>
       )}

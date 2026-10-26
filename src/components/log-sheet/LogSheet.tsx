@@ -28,6 +28,7 @@ import { EMPTY_ENTRY, useChallengeProgress, useLibrary } from '@/state/library'
 import type { Book } from '@/types/book'
 import type { DnfReason, ReadingStatus } from '@/types/library'
 import type { LogSheetOptions } from './context'
+import { SelectedCheck } from '@/components/common/SelectedCheck'
 
 type LogSheetProps = {
   bookId: string
@@ -47,7 +48,7 @@ const dnfReasons: { value: DnfReason; label: string }[] = [
 // Form fields get a 3:1 boundary (WCAG 1.4.11); the theme's --input border is too light
 const fieldClass = 'min-h-11 border-muted-foreground'
 const toggleOnClass =
-  'min-h-11 border-muted-foreground font-medium data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:font-semibold data-[state=on]:text-background'
+  'min-h-11 border-muted-foreground font-medium group/selected data-[state=on]:border-muted-foreground data-[state=on]:bg-secondary data-[state=on]:font-semibold data-[state=on]:text-secondary-foreground'
 
 const draftKey = (bookId: string) => `review-draft:${bookId}`
 
@@ -282,6 +283,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
                     >
                       {dnfReasons.map((r) => (
                         <ToggleGroupItem key={r.value} value={r.value} className={toggleOnClass}>
+                          <SelectedCheck />
                           {r.label}
                         </ToggleGroupItem>
                       ))}
@@ -392,7 +394,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
                     <li key={b.id} className="flex items-center gap-3 py-3">
                       <BookCover book={b} size="sm" />
                       <div className="min-w-0 flex-1">
-                        <p className="line-clamp-2 text-sm font-semibold">{b.title}</p>
+                        <p className="line-clamp-2 book-title">{b.title}</p>
                         <p className="truncate text-xs text-muted-foreground">
                           {b.author}
                           {b.series && ` · ${b.series} #${b.seriesNumber}`}

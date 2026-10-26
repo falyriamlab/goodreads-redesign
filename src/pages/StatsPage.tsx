@@ -55,11 +55,11 @@ export function StatsPage() {
           </div>
         ) : (
           <>
-            {/* Display-number place #1 (the only one on this screen): books; pages and rating stay serif 3xl */}
+            {/* Stat-number place #1 (the only one on this screen): books; pages and rating are 24px bold */}
             <dl className="grid grid-cols-2 gap-4 rounded-xl border border-border bg-card p-4 text-card-foreground">
               <div className="col-span-2 flex flex-col-reverse">
                 <dt className="text-sm text-muted-foreground">Books finished</dt>
-                <dd className="display-xl">{s.books}</dd>
+                <dd className="stat-number">{s.books}</dd>
               </div>
               <Big label="Pages" value={s.pages.toLocaleString('en-US')} />
               <Big label="Avg rating" value={s.avgRating === null ? '–' : formatRating(s.avgRating)} />
@@ -130,7 +130,7 @@ function Big({ label, value }: { label: string; value: string }) {
     // dt first in the DOM; flex-col-reverse shows the number on top
     <div className="flex flex-col-reverse">
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className="font-serif text-3xl leading-none font-semibold tabular-nums">{value}</dd>
+      <dd className="text-2xl leading-none font-bold tabular-nums">{value}</dd>
     </div>
   )
 }

@@ -15,7 +15,7 @@ export function HomePage() {
       <TopBar actions={<HomeActions />} />
       <header className="px-4 pt-6">
         <p className="kicker text-muted-foreground">{data.today}</p>
-        <h1 className="mt-1 font-serif text-4xl leading-tight font-semibold tracking-tight">Hey, {data.firstName}</h1>
+        <h1 className="mt-1 text-3xl leading-tight font-bold tracking-tight">Hey, {data.firstName}</h1>
       </header>
       <div className="space-y-10 pt-6 pb-10">
         <CurrentlyReading reading={data.reading} />

@@ -93,9 +93,10 @@
  * Color usage rules (WCAG AA, sRGB; full table in docs/visual-system.md):
  * - Every *-foreground passes 4.5:1 on its own surface. primary-foreground on primary: 4.98 light / 5.75 dark.
  *   In dark mode --primary-foreground is DARK (the stone background): never assume white on --primary.
- * - --primary is the action color, not a decoration: the one main button per view, progress bars, the
- *   challenge band, the active tab indicator, focus and the Brand share cards. Selected chips, segments and
- *   shelf chips are neutral (foreground fill or outline + a check), so state never depends on hue.
+ * - --primary is the action color, not a decoration: the one main button per view, progress bars (except the
+ *   challenge's, which is ink), the active tab indicator, focus, switches and the Brand share cards. There is no
+ *   full-width brand band in the app any more. Selected chips, segments and shelved status chips are neutral:
+ *   --secondary fill, --muted-foreground border, --secondary-foreground text and a check or icon.
  * - --primary as TEXT on --background is only 3.97:1 in light mode: never use text-primary for text.
  * - --muted-foreground: 4.78 on --background, 5.50 on --card (light). On --muted it's only 3.92:
  *   text inside a bg-muted panel uses text-foreground (9.55).
@@ -248,7 +249,8 @@
     letter-spacing: var(--tracking-normal);
   }
   /*
-   * The serif is a display face: only Playfair Display SemiBold Italic is loaded, so every serif use
+   * The serif is a display face used in exactly two places: the book title in the book page hero and the
+   * share cards' headlines and numbers. Only Playfair Display SemiBold Italic is loaded, so every serif use
    * asks for exactly that cut, and the browser never fakes bold or upright from it.
    */
   .font-serif {
@@ -280,15 +282,20 @@
 
 /* ---------- Marginalia type utilities (docs/visual-system.md) ---------- */
 
-/* The one h2 style */
+/* The one h2 style: section, card and drawer titles (sans 18px semibold) */
 @utility section-title {
-  font-family: var(--font-serif);
-  font-size: var(--text-2xl);
-  line-height: 1.15;
-  font-style: italic;
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: 1.35;
   font-weight: 600;
-  font-synthesis: none;
   letter-spacing: -0.01em;
+}
+
+/* Book titles in cards, rows and grids: 15px semibold */
+@utility book-title {
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  font-weight: 600;
 }
 
 /* Small uppercase label above a title */
@@ -300,23 +307,19 @@
   text-transform: uppercase;
 }
 
-/* Display numbers: Playfair Display SemiBold Italic, 72px (challenge) and 56px (reading %, main stats) */
-@utility display-xl {
-  font-family: var(--font-serif);
-  font-size: 72px;
+/*
+ * Stat numbers (reading %, the challenge count, Stats, Journal, import count): sans 36px bold, at most 2 places
+ * per screen. The unit sits beside it on the same baseline: stat-unit (18px regular) + a muted text color.
+ */
+@utility stat-number {
+  font-size: 2.25rem;
   line-height: 1;
-  font-style: italic;
-  font-weight: 600;
-  font-synthesis: none;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  font-variant-numeric: lining-nums tabular-nums;
+  font-variant-numeric: tabular-nums;
 }
-@utility display-lg {
-  font-family: var(--font-serif);
-  font-size: 56px;
-  line-height: 1;
-  font-style: italic;
-  font-weight: 600;
-  font-synthesis: none;
-  font-variant-numeric: lining-nums tabular-nums;
+@utility stat-unit {
+  font-size: var(--text-lg);
+  line-height: 1.2;
+  font-weight: 400;
 }

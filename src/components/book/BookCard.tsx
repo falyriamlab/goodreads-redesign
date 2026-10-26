@@ -82,7 +82,7 @@ export function BookCard({
       <article className={cn('relative flex items-center gap-3 py-2', className)}>
         <BookCover book={book} size="sm" />
         <div className="min-w-0 flex-1">
-          <h3 className="line-clamp-2 text-sm leading-snug font-semibold">
+          <h3 className="line-clamp-2 book-title">
             <Link to={href} onClick={onOpen} className={stretchedLink}>
               {titleContent ?? book.title}
             </Link>
@@ -126,7 +126,7 @@ export function BookCard({
         {/* Sibling of the stretched link, raised above it: 44px hit area, smaller visual circle */}
         {onDismiss && <DismissButton book={book} onDismiss={onDismiss} className="-top-5 -right-5" />}
       </div>
-      <h3 className="mt-3 line-clamp-2 font-serif text-base leading-snug font-semibold">
+      <h3 className="mt-3 line-clamp-2 book-title">
         <Link to={href} onClick={onOpen} className={stretchedLink}>
           {titleContent ?? book.title}
         </Link>

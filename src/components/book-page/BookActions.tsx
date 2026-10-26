@@ -22,8 +22,8 @@ export function BookActions({ book }: { book: Book }) {
         <div className="space-y-2">
           <div className="flex items-end justify-between gap-3">
             <p className="flex items-baseline gap-1">
-              <span className="display-lg">{p.percent}</span>
-              <span className="font-serif text-xl">%</span>
+              <span className="stat-number">{p.percent}</span>
+              <span className="stat-unit text-muted-foreground">%</span>
               <span className="sr-only"> read</span>
             </p>
             <p className="pb-1 text-sm text-muted-foreground">{p.detail}</p>
@@ -34,7 +34,7 @@ export function BookActions({ book }: { book: Book }) {
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4">
-        <p className="font-serif text-lg font-semibold">Your rating</p>
+        <p className="text-lg font-semibold">Your rating</p>
         <StarRating mode="input" value={a.entry.rating} onChange={a.rate} label={`Your rating for ${book.title}`} />
       </div>
 

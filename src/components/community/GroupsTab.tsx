@@ -25,7 +25,7 @@ export function GroupsTab() {
               to={`/community/groups/${g.id}`}
               className="min-w-0 flex-1 space-y-1 rounded-md outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
             >
-              <span className="block font-serif text-lg leading-tight font-semibold">{g.name}</span>
+              <span className="block text-lg leading-tight font-semibold">{g.name}</span>
               <span className="block text-sm">{(g.memberCount + (isMember ? 1 : 0)).toLocaleString('en-US')} members</span>
               {latest && (
                 <span className="block text-xs text-muted-foreground">

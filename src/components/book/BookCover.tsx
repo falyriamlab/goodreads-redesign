@@ -55,7 +55,7 @@ export function BookCover({ book, size = 'md', className, reserveBottom = false,
         // Placeholder that still reads as a book: spine shadow, serif title, author at the bottom
         <div role="img" aria-label={alt} className={cn('flex size-full flex-col justify-between', s.padding, reserveBottom && 'pb-6')}>
           <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-foreground/10" />
-          <span aria-hidden="true" className={cn('font-serif font-semibold text-foreground', s.title)}>
+          <span aria-hidden="true" className={cn('font-semibold text-foreground', s.title)}>
             {book.title}
           </span>
           <span aria-hidden="true" className={cn('truncate font-sans text-foreground/80', s.author)}>

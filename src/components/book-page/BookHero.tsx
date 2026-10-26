@@ -15,7 +15,7 @@ export function BookHero({ book }: { book: Book }) {
           {book.series} · Book {book.seriesNumber}
         </p>
       )}
-      {/* One of the two places Playfair is used (the other: share cards) */}
+      {/* One of the three places Playfair is used (with Home's greeting and the share cards) */}
       <h1 className="mt-2 font-serif text-[1.875rem] leading-tight text-balance">{book.title}</h1>
       <p className="mt-2 text-base">{book.author}</p>
       <dl className="mt-6 grid grid-cols-3 divide-x divide-band-muted-foreground/40 border-y border-band-muted-foreground/40 py-3">

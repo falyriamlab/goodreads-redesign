@@ -15,7 +15,8 @@ export function HomePage() {
       <TopBar actions={<HomeActions />} />
       <header className="px-4 pt-6">
         <p className="kicker text-muted-foreground">{data.today}</p>
-        <h1 className="mt-1 text-3xl leading-tight font-bold tracking-tight">Hey, {data.firstName}</h1>
+        {/* One of the three places Playfair is used (with the book hero title and the share cards) */}
+        <h1 className="mt-1 font-serif text-[1.875rem] leading-tight">Hey, {data.firstName}</h1>
       </header>
       <div className="space-y-10 pt-6 pb-10">
         <CurrentlyReading reading={data.reading} />

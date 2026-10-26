@@ -249,8 +249,8 @@
     letter-spacing: var(--tracking-normal);
   }
   /*
-   * The serif is a display face used in exactly two places: the book title in the book page hero and the
-   * share cards' headlines and numbers. Only Playfair Display SemiBold Italic is loaded, so every serif use
+   * The serif is a display face used in exactly three places: Home's greeting, the book title in the book
+   * page hero and the share cards' headlines and numbers. Only Playfair Display SemiBold Italic is loaded, so every serif use
    * asks for exactly that cut, and the browser never fakes bold or upright from it.
    */
   .font-serif {

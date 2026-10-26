@@ -2,7 +2,7 @@
 
 Marginalia is the app's only visual system: covers treated as physical objects, a quiet page with one strong moment per screen, and clear, neutral states. It was picked over Night Shelf (immersive, dark-first) in the visual-pass exploration. See [the PR](https://github.com/falyriamlab/goodreads-redesign/pull/new/visual-pass) for why.
 
-Since theme v2 it runs on the **"Goodreads 1"** palette (tweakcn): indigo on stone. Type is **sans-first**: Plus Jakarta Sans for every title and number, and Playfair Display SemiBold Italic only for two special moments.
+Since theme v2 it runs on the **"Goodreads 1"** palette (tweakcn): indigo on stone. Type is **sans-first**: Plus Jakarta Sans for every title and number, and Playfair Display SemiBold Italic only for three special moments.
 
 Everything below uses theme tokens from `src/index.css`. Contrast is computed in sRGB, as browsers blend (WCAG 2.x formula).
 
@@ -107,20 +107,20 @@ There is no full-width `bg-primary` band anywhere in the app. The only place ind
 - The placeholder for a missing image shows the title (sans). That placeholder is the cover itself, not an overlay.
 - Covers are self-hosted copies of Open Library's (`public/covers/`, `npm run covers`), so they load with the page and are always safe to paint into the share-card canvas.
 
-### 5. Type: sans-first, Playfair in exactly two places
+### 5. Type: sans-first, Playfair in exactly three places
 **Plus Jakarta Sans** sets every title and number:
 
 | Role | Style |
 |---|---|
 | Page title (TopBar h1, and h1s like the profile name or a thread) | 24px bold |
-| Home greeting ("Hey, Sofía") | 30px bold |
 | Section h2, card titles, drawer titles (`section-title`; `DrawerTitle` defaults to it) | 18px semibold |
 | Book titles in cards, rows and grids (`book-title`) | 15px semibold |
 | Stat numbers (`stat-number` + `stat-unit`) | 36px bold + 18px regular, muted |
 
 **Playfair Display SemiBold Italic** (the only cut loaded, `font-synthesis: none`) appears only in:
-1. the book title in the book page hero (30px);
-2. the share cards' headlines and big numbers (the card headline, the book title, the top 4 titles and the stat numbers).
+1. Home's greeting ("Hey, Sofía", 30px);
+2. the book title in the book page hero (30px);
+3. the share cards' headlines and big numbers (the card headline, the book title, the top 4 titles and the stat numbers).
 
 Everything else in a share card (kicker, quote, "Living rent-free…", "Your vibe…", genre labels, footer and wordmark) is sans. Body text (synopsis, reviews, comments) is sans everywhere. The mono (star values, rank numbers, the invite link) is Roboto Mono.
 

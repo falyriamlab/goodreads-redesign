@@ -77,7 +77,7 @@ export function ActivityItem({ activity }: { activity: Activity }) {
               </button>
             )}
             <div id={bodyId} hidden={!revealed}>
-              <ClampText clamp="line-clamp-3" className="font-serif text-[0.9375rem] leading-relaxed">
+              <ClampText clamp="line-clamp-3" className="text-[0.9375rem] leading-relaxed">
                 {reviewText}
               </ClampText>
             </div>

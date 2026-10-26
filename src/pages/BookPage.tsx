@@ -69,7 +69,7 @@ function BookDetails({ book }: { book: Book }) {
         <ContentWarnings book={book} />
         <Section title="Synopsis">
           {book.synopsis ? (
-            <ClampText clamp="line-clamp-3" className="font-serif leading-relaxed">
+            <ClampText clamp="line-clamp-3" className="leading-relaxed">
               {book.synopsis}
             </ClampText>
           ) : (

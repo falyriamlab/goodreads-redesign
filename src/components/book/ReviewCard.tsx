@@ -66,7 +66,7 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
       )}
 
       <div id={textId} hidden={!revealed}>
-        <ClampText clamp="line-clamp-4" className="font-serif text-[0.9375rem] leading-relaxed">
+        <ClampText clamp="line-clamp-4" className="text-[0.9375rem] leading-relaxed">
           {review.text}
         </ClampText>
       </div>

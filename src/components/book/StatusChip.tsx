@@ -105,7 +105,7 @@ export function StatusChip({
         {...quickHandlers}
         aria-label={ariaLabel}
         className={cn(
-          'relative inline-flex max-w-full min-w-11 items-center justify-center font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
+          'relative inline-flex max-w-full min-w-11 items-center justify-center font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
           variant === 'primary'
             ? 'min-h-11 w-full gap-2 rounded-lg px-4 text-sm'
             : cn(

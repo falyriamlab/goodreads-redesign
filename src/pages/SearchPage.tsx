@@ -20,7 +20,7 @@ const TABS = [
 ] as const
 
 const linkButton =
-  'inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50'
+  'inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
 export function SearchPage() {
   const [query, setQuery] = useState('')
@@ -87,7 +87,7 @@ export function SearchPage() {
             onChange={(e) => change(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="Books, authors, lists, people"
-            className="min-h-11 w-full rounded-lg border border-muted-foreground bg-card pr-11 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 [&::-webkit-search-cancel-button]:appearance-none"
+            className="min-h-11 w-full rounded-lg border border-muted-foreground bg-card pr-11 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&::-webkit-search-cancel-button]:appearance-none"
           />
           {query && (
             <button
@@ -97,13 +97,13 @@ export function SearchPage() {
                 change('')
                 inputRef.current?.focus()
               }}
-              className="absolute top-0 right-0 flex size-11 items-center justify-center rounded-lg text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="absolute top-0 right-0 flex size-11 items-center justify-center rounded-lg text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <X className="size-4" aria-hidden="true" />
             </button>
           )}
         </div>
-        <Link to="/discover" className="inline-flex min-h-11 items-center px-1 text-sm font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+        <Link to="/discover" className="inline-flex min-h-11 items-center px-1 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
           Cancel
         </Link>
       </form>
@@ -265,7 +265,7 @@ function RecentSearches({
             <button
               type="button"
               onClick={() => onPick(q)}
-              className="flex min-h-11 flex-1 items-center gap-3 text-left text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="flex min-h-11 flex-1 items-center gap-3 text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <Clock className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               {q}
@@ -274,7 +274,7 @@ function RecentSearches({
               type="button"
               aria-label={`Remove "${q}" from recent searches`}
               onClick={() => onRemove(q)}
-              className="flex size-11 items-center justify-center text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="flex size-11 items-center justify-center text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <X className="size-4" aria-hidden="true" />
             </button>

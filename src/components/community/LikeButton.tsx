@@ -29,7 +29,7 @@ export function LikeButton({ kind, id, base, className }: Props) {
         aria-pressed={liked}
         onClick={() => toggleLike(key)}
         className={cn(
-          'inline-flex min-h-11 min-w-11 items-center gap-1.5 rounded-md px-2 text-sm transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50',
+          'inline-flex min-h-11 min-w-11 items-center gap-1.5 rounded-md px-2 text-sm transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
           liked ? 'font-semibold text-foreground' : 'text-muted-foreground',
         )}
       >

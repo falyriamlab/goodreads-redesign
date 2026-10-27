@@ -106,7 +106,7 @@ export function ImportDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
                 onChange={onFile}
                 aria-describedby={error ? ids.error : undefined}
                 aria-invalid={error ? true : undefined}
-                className="block min-h-11 w-full rounded-lg border border-muted-foreground bg-card p-1.5 text-sm file:mr-3 file:min-h-9 file:rounded-md file:border-0 file:bg-primary file:px-3 file:text-sm file:font-semibold file:text-primary-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+                className="block min-h-11 w-full rounded-lg border border-muted-foreground bg-card p-1.5 text-sm file:mr-3 file:min-h-9 file:rounded-md file:border-0 file:bg-primary file:px-3 file:text-sm file:font-semibold file:text-primary-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
               />
             </div>
             {error && (

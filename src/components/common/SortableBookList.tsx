@@ -110,7 +110,7 @@ export function SortableBookList({ books, onMove, label, renderAction, linkTitle
 }
 
 const iconButton =
-  'flex size-11 items-center justify-center rounded-md text-foreground outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-30'
+  'flex size-11 items-center justify-center rounded-md text-foreground outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-30'
 
 function SortableRow({
   book,
@@ -145,7 +145,7 @@ function SortableRow({
         {linkTitle ? (
           <Link
             to={`/book/${book.id}`}
-            className="flex min-h-11 items-center text-sm leading-snug font-semibold outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="flex min-h-11 items-center text-sm leading-snug font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <span className="line-clamp-2">{book.title}</span>
           </Link>

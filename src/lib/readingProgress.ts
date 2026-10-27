@@ -2,7 +2,7 @@ import { chapterFromPage } from '@/lib/community'
 import type { Book } from '@/types/book'
 
 export const stretchedLink =
-  "outline-none after:absolute after:inset-0 after:z-0 after:content-[''] focus-visible:after:ring-3 focus-visible:after:ring-ring/50"
+  "outline-none after:absolute after:inset-0 after:z-0 after:content-[''] focus-visible:after:ring-2 focus-visible:after:ring-ring"
 
 /** Reading progress for a book: percent, page and (when the chapter count is known) chapter */
 export function readingProgress(book: Book, currentPage: number) {

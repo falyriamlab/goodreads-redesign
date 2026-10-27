@@ -104,7 +104,7 @@ function Section({ title, children, action }: { title: string; children: ReactNo
 
 /* 4. Moods, pace and tropes as links into Discover */
 const pillLink =
-  "relative inline-flex h-8 items-center rounded-full border border-muted-foreground px-3 text-xs font-medium text-foreground transition-colors outline-none after:absolute after:-inset-y-1.5 after:inset-x-0 after:content-[''] hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+  "relative inline-flex h-8 items-center rounded-full border border-muted-foreground px-3 text-xs font-medium text-foreground transition-colors outline-none after:absolute after:-inset-y-1.5 after:inset-x-0 after:content-[''] hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
 function Vibes({ book }: { book: Book }) {
   const groups: { label: string; param: string; values: string[] }[] = [
@@ -151,7 +151,7 @@ function ContentWarnings({ book }: { book: Book }) {
         aria-expanded={open}
         aria-controls={listId}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         {open ? 'Hide content warnings' : 'See content warnings'}
       </button>
@@ -182,7 +182,7 @@ function WhereToGetIt() {
           <li key={name}>
             <a
               href="#"
-              className="flex min-h-14 items-center gap-3 px-3 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+              className="flex min-h-14 items-center gap-3 px-3 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             >
               <Icon className="size-5 shrink-0" aria-hidden="true" />
               <span className="flex-1">
@@ -248,7 +248,7 @@ function Discussions({ book }: { book: Book }) {
             <li key={br.id}>
               <Link
                 to={`/community/buddy/${br.id}`}
-                className="flex min-h-14 items-center gap-3 rounded-lg border border-border px-3 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="flex min-h-14 items-center gap-3 rounded-lg border border-border px-3 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <MessagesSquare className="size-5 shrink-0" aria-hidden="true" />
                 <span className="flex-1">

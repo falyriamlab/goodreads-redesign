@@ -34,7 +34,7 @@ export function BottomNav() {
               end={end}
               className={({ isActive }) =>
                 cn(
-                  'relative flex min-h-14 min-w-11 flex-col items-center justify-center gap-0.5 px-1 text-xs transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset',
+                  'relative flex min-h-14 min-w-11 flex-col items-center justify-center gap-0.5 px-1 text-xs transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
                   // Active state uses text-foreground (primary on background is < 3:1 in light mode)
                   // plus weight and an indicator bar, so it never relies on color alone
                   isActive

@@ -19,7 +19,7 @@ export function JournalEntry({ event, book, loved }: { event: ReadingEvent; book
   return (
     <Link
       to={`/book/${book.id}`}
-      className="flex min-h-14 items-center gap-3 rounded-lg py-2 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+      className="flex min-h-14 items-center gap-3 rounded-lg py-2 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       <time dateTime={event.date} className="flex w-9 shrink-0 flex-col items-center leading-none">
         <span className="text-lg font-bold tabular-nums">{date.getDate()}</span>

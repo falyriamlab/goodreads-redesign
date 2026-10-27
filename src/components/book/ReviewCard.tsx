@@ -58,7 +58,7 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
           aria-expanded={revealed}
           aria-controls={textId}
           onClick={() => setRevealed((v) => !v)}
-          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-dashed border-input bg-muted px-3 text-sm font-medium text-foreground transition-colors outline-none hover:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-dashed border-input bg-muted px-3 text-sm font-medium text-foreground transition-colors outline-none hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <EyeOff className="size-4" aria-hidden="true" />
           {revealed ? 'Hide spoilers' : 'Spoilers ahead · Tap to reveal'}
@@ -76,7 +76,7 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
         <LikeButton kind="review" id={review.id} base={review.likes} className="mr-2" />
         <button
           type="button"
-          className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <MessageCircle className="size-4" aria-hidden="true" />
           <span>

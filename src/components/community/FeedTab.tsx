@@ -48,7 +48,7 @@ export function FeedTab() {
           <p className="text-sm text-muted-foreground">Follow some readers and the tea starts flowing.</p>
           <Link
             to="/community/find"
-            className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             Find friends
           </Link>

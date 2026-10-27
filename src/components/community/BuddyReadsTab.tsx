@@ -40,7 +40,7 @@ function BuddyList({ title, list, joined, empty }: { title: string; list: BuddyR
               <li key={br.id}>
                 <Link
                   to={`/community/buddy/${br.id}`}
-                  className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-card-foreground outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-card-foreground outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   <BookCover book={book} size="sm" />
                   <span className="min-w-0 flex-1 space-y-0.5">

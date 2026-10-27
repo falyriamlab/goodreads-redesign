@@ -34,7 +34,7 @@ export function UserAvatar({ author, size = 'md', link = true, className }: Prop
       to={author.href}
       aria-label={author.isMe ? 'Your profile' : `${author.name}'s profile`}
       className={cn(
-        'flex size-11 shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
+        'flex size-11 shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         className,
       )}
     >

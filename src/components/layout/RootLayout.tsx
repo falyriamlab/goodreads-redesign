@@ -1,4 +1,5 @@
 import { Outlet, ScrollRestoration } from 'react-router'
+import { OfflineNotice } from '@/components/layout/OfflineNotice'
 import { LogSheetProvider } from '@/components/log-sheet/LogSheetProvider'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -13,6 +14,7 @@ export function RootLayout() {
       <Outlet />
       {/* New pages start at the top; back/forward restores the previous position */}
       <ScrollRestoration />
+      <OfflineNotice />
       <Toaster
         position="top-center"
         offset={toastOffset}

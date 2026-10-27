@@ -47,7 +47,7 @@ function ThreadView({ group, thread }: { group: Group; thread: GroupThread }) {
         <article className="space-y-3">
           <Link
             to={`/community/groups/${group.id}`}
-            className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {group.name}
           </Link>

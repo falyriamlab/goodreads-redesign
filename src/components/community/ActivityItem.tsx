@@ -14,7 +14,7 @@ import { useAuthor } from './people'
 import { UserAvatar } from './UserAvatar'
 
 const actionLinkClass =
-  'inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50'
+  'inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
 /** One feed event: who did what, with the book, time, Like and (for reviews) Comment */
 export function ActivityItem({ activity }: { activity: Activity }) {
@@ -70,7 +70,7 @@ export function ActivityItem({ activity }: { activity: Activity }) {
                 aria-expanded={revealed}
                 aria-controls={bodyId}
                 onClick={() => setRevealed((v) => !v)}
-                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-dashed border-input bg-muted px-3 text-sm font-medium text-foreground transition-colors outline-none hover:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-dashed border-input bg-muted px-3 text-sm font-medium text-foreground transition-colors outline-none hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <EyeOff className="size-4" aria-hidden="true" />
                 {revealed ? 'Hide spoilers' : 'Spoilers ahead · Tap to reveal'}
@@ -107,7 +107,7 @@ export function ActivityItem({ activity }: { activity: Activity }) {
       <Link
         to={`/book/${book.id}`}
         aria-label={book.title}
-        className="shrink-0 self-start rounded-cover outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="shrink-0 self-start rounded-cover outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <BookCover book={book} size="sm" />
       </Link>

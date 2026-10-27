@@ -12,7 +12,7 @@ import type { Shelf } from '@/types/library'
 const LONG_PRESS_MS = 500
 
 const chipClass =
-  "relative inline-flex h-9 shrink-0 items-center gap-1 rounded-full border px-3.5 text-sm whitespace-nowrap transition-colors outline-none select-none after:absolute after:-inset-y-1 after:inset-x-0 after:content-[''] focus-visible:ring-3 focus-visible:ring-ring/50"
+  "relative inline-flex h-9 shrink-0 items-center gap-1 rounded-full border px-3.5 text-sm whitespace-nowrap transition-colors outline-none select-none after:absolute after:-inset-y-1 after:inset-x-0 after:content-[''] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
 type DrawerState = { mode: 'create' } | { mode: 'edit'; focusShelfId?: string } | null
 

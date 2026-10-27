@@ -41,7 +41,7 @@ import type { ReadingStatus } from '@/types/library'
 const isShelf = (v: string | null): v is ReadingStatus => SHELF_TABS.some((t) => t.value === v)
 
 const topLink =
-  'inline-flex min-h-11 min-w-11 items-center justify-center px-2 text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50'
+  'inline-flex min-h-11 min-w-11 items-center justify-center px-2 text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
 export function LibraryPage() {
   const [params, setParams] = useSearchParams()
@@ -157,7 +157,7 @@ function ShelfPanel({ tab }: { tab: ReadingStatus }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search my library"
-            className="min-h-11 w-full rounded-lg border border-muted-foreground bg-card pr-3 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="min-h-11 w-full rounded-lg border border-muted-foreground bg-card pr-3 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           />
         </div>
           {!selecting && (
@@ -283,7 +283,7 @@ function ViewButton({ label, pressed, onClick, children }: { label: string; pres
       aria-pressed={pressed}
       onClick={onClick}
       className={cn(
-        'flex size-11 items-center justify-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50 [&_svg]:size-5',
+        'flex size-11 items-center justify-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&_svg]:size-5',
         // Pressed = inverted fill (not color alone)
         pressed ? 'border border-muted-foreground bg-secondary text-secondary-foreground' : 'text-foreground hover:bg-muted',
       )}
@@ -302,7 +302,7 @@ function EmptyShelf({ tab }: { tab: ReadingStatus }) {
       {copy.discover && (
         <Link
           to="/discover"
-          className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           Find something on Discover
         </Link>

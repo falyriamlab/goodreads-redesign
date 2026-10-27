@@ -173,7 +173,7 @@ function MessageBubble({
           <Link
             to={`/book/${book.id}`}
             className={cn(
-              'flex min-h-11 items-center gap-2 rounded-lg p-1.5 outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
+              'flex min-h-11 items-center gap-2 rounded-lg p-1.5 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
               message.text && 'mt-2',
               mine ? 'bg-background/15 hover:bg-background/25' : 'bg-muted hover:bg-muted/70',
             )}

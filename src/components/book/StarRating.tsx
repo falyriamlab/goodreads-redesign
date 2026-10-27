@@ -139,7 +139,7 @@ function StarRatingInput({ value, onChange, label, size = 'lg', className }: Inp
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onKeyDown={onKeyDown}
-        className="cursor-pointer touch-none rounded-md py-1 outline-none select-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="cursor-pointer touch-none rounded-md py-1 outline-none select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <span ref={trackRef} className="flex">
           <Stars value={current} size={size} />

@@ -23,7 +23,7 @@ import type { Book } from '@/types/book'
 import type { BuddyComment, BuddyRead } from '@/types/community'
 
 const selectClass =
-  'min-h-11 rounded-lg border border-muted-foreground bg-card px-2 text-base outline-none focus-visible:ring-3 focus-visible:ring-ring/50'
+  'min-h-11 rounded-lg border border-muted-foreground bg-card px-2 text-base outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
 export function BuddyReadPage() {
   const { id = '' } = useParams()
@@ -75,7 +75,7 @@ function BuddyReadView({ br, book }: { br: BuddyRead; book: Book }) {
       <div className="space-y-6 px-4 pt-4 pb-6">
         <header className="space-y-4">
           <div className="flex gap-4">
-            <Link to={`/book/${book.id}`} aria-label={book.title} className="shrink-0 self-start rounded-cover outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+            <Link to={`/book/${book.id}`} aria-label={book.title} className="shrink-0 self-start rounded-cover outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
               <BookCover book={book} size="md" />
             </Link>
             <div className="min-w-0 flex-1 space-y-1">
@@ -209,7 +209,7 @@ function ChapterSection({
             aria-expanded={revealed}
             aria-controls={listId}
             onClick={onToggleReveal}
-            className="inline-flex min-h-11 items-center gap-1 rounded-md px-2 text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="inline-flex min-h-11 items-center gap-1 rounded-md px-2 text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {revealed ? 'Hide again' : 'Reveal anyway'}
             <ChevronDown className={cn('size-4 transition-transform', revealed && 'rotate-180')} aria-hidden="true" />
@@ -248,7 +248,7 @@ function CommentItem({ comment }: { comment: BuddyComment }) {
             aria-expanded={revealed}
             aria-controls={bodyId}
             onClick={() => setRevealed((v) => !v)}
-            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-dashed border-input bg-muted px-3 text-sm font-medium outline-none hover:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-dashed border-input bg-muted px-3 text-sm font-medium outline-none hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <EyeOff className="size-4" aria-hidden="true" />
             {revealed ? 'Hide spoilers' : 'Spoilers ahead · Tap to reveal'}

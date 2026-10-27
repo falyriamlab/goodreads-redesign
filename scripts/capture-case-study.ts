@@ -519,6 +519,217 @@ async function shareCards(browser: Browser) {
   await context.close()
 }
 
+/* ---------- QA phase 1 checks (docs/qa-audit-2026-10-27.md, A1–A5) ---------- */
+
+type Check = { id: string; check: string; pass: boolean; evidence: string }
+const qa: Check[] = []
+const record = (id: string, check: string, pass: boolean, evidence: string) => qa.push({ id, check, pass, evidence })
+const storedEntry = (page: Page, bookId: string) =>
+  page.evaluate((id) => JSON.parse(localStorage.getItem('goodreads-library')!).state.entries[id], bookId)
+
+async function qaChecks(browser: Browser) {
+  const context = await newContext(browser, 'light')
+  const page = await context.newPage()
+  await page.goto(BASE)
+  await resetDemo(page)
+  const drawer = page.locator(SHEET)
+
+  // A1: Back closes every drawer and sheet, on the same URL; a second Back navigates
+  const drawers: [string, string, () => Promise<unknown>][] = [
+    ['LogSheet', '/', () => page.getByRole('button', { name: 'Finished it' }).first().click()],
+    ['Discover filters', '/discover', () => page.getByRole('button', { name: /^See all/ }).first().click()],
+    ['Import', '/library', () => page.getByRole('button', { name: 'Import', exact: true }).click()],
+    ['Library filter', '/library?shelf=read', () => page.getByRole('button', { name: /^Filter/ }).click()],
+    ['New shelf', '/library', () => page.getByRole('button', { name: 'New shelf' }).click()],
+    ['Edit shelves', '/library', () => page.getByRole('button', { name: 'Edit shelves' }).click()],
+    ['New thread', '/community/groups/bogota-book-club', () => page.getByRole('button', { name: /New thread/ }).click()],
+    ['Share a book', '/messages/c-lucia', () => page.getByRole('button', { name: 'Share a book' }).click()],
+    [
+      'Favorite picker',
+      '/profile/edit',
+      async () => {
+        await page.getByRole('button', { name: /^Remove .* from top 4$/ }).first().click()
+        await page.getByRole('button', { name: /^Add a favorite/ }).click()
+      },
+    ],
+  ]
+  for (const [name, url, open] of drawers) {
+    await go(page, '/settings')
+    await go(page, url)
+    await open()
+    await sheetOpen(page)
+    await page.goBack()
+    await page.waitForTimeout(600)
+    const closed = !(await drawer.isVisible())
+    const sameUrl = page.url() === BASE + url
+    await page.goBack()
+    await page.waitForTimeout(600)
+    const navigated = page.url() === BASE + '/settings'
+    record('A1', `Back closes "${name}"`, closed && sameUrl && navigated, `closed: ${closed}, same URL: ${sameUrl}, 2nd Back → /settings: ${navigated}`)
+  }
+
+  // A1: unsaved review text survives Back and shows when the sheet reopens (typed < 500ms before Back)
+  await go(page, '/')
+  await page.getByRole('button', { name: 'Finished it' }).first().click()
+  await sheetOpen(page)
+  await page.locator(`${SHEET} textarea`).fill('Wingleader Violet, I am not okay.')
+  await page.goBack()
+  await page.waitForTimeout(600)
+  await page.getByRole('button', { name: 'Finished it' }).first().click()
+  await sheetOpen(page)
+  const draft = await page.locator(`${SHEET} textarea`).inputValue()
+  record('A1', 'LogSheet draft kept after Back', draft === 'Wingleader Violet, I am not okay.', `reopened textarea: "${draft}"`)
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(500)
+
+  // A3: Current page, empty or out of range: inline error, Save disabled, nothing saved (also with Enter)
+  for (const value of ['', '-5', '9999', '312.5']) {
+    await go(page, '/book/fourth-wing')
+    await page.getByRole('button', { name: 'Update progress' }).click()
+    const input = page.locator('[data-slot="popover-content"] input')
+    await input.fill(value)
+    await input.press('Enter')
+    await page.waitForTimeout(300)
+    const describedBy = await input.getAttribute('aria-describedby')
+    const message = describedBy ? await page.locator(`[id="${describedBy}"]`).textContent() : null
+    const disabled = await page.locator('[data-slot="popover-content"] button[type="submit"]').isDisabled()
+    const saved = (await storedEntry(page, 'fourth-wing')).currentPage
+    const pass = message === 'Enter a page between 0 and 518.' && disabled && saved === 312
+    record('A3', `Current page "${value}"`, pass, `message: "${message}", Save disabled: ${disabled}, stored page: ${saved}`)
+  }
+  await go(page, '/book/fourth-wing')
+  await page.getByRole('button', { name: 'Update progress' }).click()
+  await page.locator('[data-slot="popover-content"] input').fill('400')
+  await page.locator('[data-slot="popover-content"] button[type="submit"]').click()
+  await page.waitForTimeout(300)
+  const valid = (await storedEntry(page, 'fourth-wing')).currentPage
+  record('A3', 'Current page "400" saves', valid === 400, `stored page: ${valid}`)
+
+  // A4: focus ring is solid --ring with a background-colored offset; ratios against background, card, band
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme })
+    await go(page, '/book/fourth-wing')
+    const r = await page.evaluate(() => {
+      const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!
+      const px = (c: string) => {
+        ctx.clearRect(0, 0, 1, 1)
+        ctx.fillStyle = '#000'
+        ctx.fillStyle = c
+        ctx.fillRect(0, 0, 1, 1)
+        return [...ctx.getImageData(0, 0, 1, 1).data].map((v) => v / 255)
+      }
+      const lum = ([r, g, b]: number[]) => {
+        const f = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+      }
+      const cr = (a: number[], b: number[]) => {
+        const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m)
+        return Math.round(((x + 0.05) / (y + 0.05)) * 100) / 100
+      }
+      const v = (n: string) => px(getComputedStyle(document.documentElement).getPropertyValue(n).trim())
+      // The focused button's ring layer must be the solid token (alpha 1)
+      const button = document.querySelector<HTMLElement>('section[aria-label="Your shelf"] button')!
+      button.focus({ focusVisible: true } as FocusOptions)
+      const shadow = getComputedStyle(button).boxShadow
+      const ring = v('--ring')
+      return { shadow, background: cr(ring, v('--background')), card: cr(ring, v('--card')), band: cr(ring, v('--band')) }
+    })
+    const solid = !/\/ 0\.5|, 0\.5\)/.test(r.shadow) && r.shadow !== 'none'
+    const pass = solid && r.background >= 3 && r.card >= 3 && r.band >= 3
+    record('A4', `Focus ring (${scheme})`, pass, `vs background ${r.background}, card ${r.card}, band ${r.band}; solid: ${solid}`)
+  }
+  await page.emulateMedia({ colorScheme: 'light' })
+
+  // A5: covers shown wider than 120px use L; nothing visible is upscaled more than 1.5× at 3x (share export at 1x)
+  const dpr3 = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 3, isMobile: true, hasTouch: true })
+  const p3 = await dpr3.newPage()
+  for (const url of ['/book/fourth-wing', '/', '/library?shelf=read', '/profile']) {
+    await p3.goto(BASE + url, { waitUntil: 'networkidle' })
+    await p3.waitForTimeout(500)
+    const r = await p3.evaluate(async () => {
+      const visible = [...document.querySelectorAll('img')].filter((i) => i.naturalWidth && i.getBoundingClientRect().top < innerHeight)
+      // With a w-descriptor srcset, naturalWidth is density-corrected: read the chosen file's real pixels
+      const measured = await Promise.all(
+        visible.map(async (i) => {
+          const file = new Image()
+          file.src = i.currentSrc
+          await file.decode()
+          return { shown: i.getBoundingClientRect().width, natural: file.naturalWidth, src: i.currentSrc }
+        }),
+      )
+      return measured.map((i) => ({ ...i, upscale: Math.round(((i.shown * 3) / i.natural) * 100) / 100 })).sort((a, b) => b.upscale - a.upscale)[0]
+    })
+    const large = r.shown > 120 ? r.src.includes('/covers/l/') : true
+    record('A5', `Sharpest cover check ${url}`, large && r.upscale <= 1.5, `largest upscale ${r.upscale}× (${Math.round(r.shown)}px shown, ${r.natural}px source${r.shown > 120 ? ', L: ' + large : ''})`)
+  }
+  // Share card export (1080px PNG at 1x): the cover is painted at its layout width; L is the largest Open Library has
+  await p3.goto(BASE + '/share?type=book&book=fourth-wing&style=brand', { waitUntil: 'networkidle' })
+  await p3.waitForTimeout(800)
+  const card = await p3.evaluate(async () => {
+    const img = document.querySelector<HTMLImageElement>('[role="img"] img')!
+    const file = new Image()
+    file.src = img.currentSrc
+    await file.decode()
+    return { layout: img.offsetWidth, natural: file.naturalWidth, src: img.currentSrc }
+  })
+  const cardUpscale = Math.round((card.layout / card.natural) * 100) / 100
+  record('A5', 'Share card export uses L', card.src.includes('/covers/l/'), `cover ${card.layout}px in the 1080px PNG from a ${card.natural}px L: ${cardUpscale}× (was 2.9× from M)`)
+  await dpr3.close()
+
+  // A2: offline → a page that isn't loaded yet shows the recovery screen in the shell, and the offline notice
+  {
+    const ctx = await newContext(browser, 'light')
+    const p = await ctx.newPage()
+    await p.goto(BASE)
+    await resetDemo(p)
+    await go(p, '/')
+    await ctx.setOffline(true)
+    await p.locator('nav a', { hasText: 'Library' }).click()
+    await p.waitForTimeout(1200)
+    const title = await p.locator('h1').first().textContent()
+    const buttons = await p.locator('main button').allTextContents()
+    const toast = await p.locator('[data-sonner-toast]', { hasText: "You're offline. Some pages may not load." }).isVisible()
+    const nav = await p.locator('nav a', { hasText: 'Home' }).isVisible()
+    record('A2', 'Offline: recovery screen + notice', title === 'Something went wrong loading this page' && buttons.includes('Try again') && buttons.includes('Go home') && toast && nav, `h1: "${title}", buttons: ${buttons.join(' / ')}, offline notice: ${toast}, bottom nav: ${nav}`)
+    await ctx.setOffline(false)
+    await p.waitForTimeout(800)
+    const gone = !(await p.locator('[data-sonner-toast]', { hasText: "You're offline" }).isVisible())
+    await p.getByRole('button', { name: 'Try again' }).click()
+    await p.waitForLoadState('networkidle')
+    await p.waitForTimeout(500)
+    const recovered = (await p.locator('h1').first().textContent()) === 'Library'
+    record('A2', 'Back online: notice goes, Try again loads the page', gone && recovered, `notice gone: ${gone}, after Try again h1: Library = ${recovered}`)
+    await ctx.close()
+  }
+
+  // A2: a chunk deleted by a new deploy (404 while online): one automatic reload, then the recovery screen
+  {
+    const ctx = await newContext(browser, 'light')
+    const p = await ctx.newPage()
+    await p.goto(BASE)
+    await resetDemo(p)
+    await go(p, '/')
+    let loads = 0
+    p.on('load', () => loads++)
+    await p.route('**/assets/StatsPage-*.js', (route) => route.fulfill({ status: 404, body: '' }))
+    await p.evaluate(() => sessionStorage.removeItem('chunk-reload-at'))
+    await p.goto(BASE + '/profile', { waitUntil: 'networkidle' })
+    loads = 0
+    await p.getByRole('link', { name: 'See all stats' }).click()
+    await p.waitForTimeout(2500)
+    const title = await p.locator('h1').first().textContent()
+    record('A2', 'Missing chunk: reloads once, then recovery screen', loads === 1 && title === 'Something went wrong loading this page', `page reloads: ${loads}, then h1: "${title}"`)
+    await p.unroute('**/assets/StatsPage-*.js')
+    await p.getByRole('button', { name: 'Try again' }).click()
+    await p.waitForLoadState('networkidle')
+    await p.waitForTimeout(500)
+    const h1 = await p.locator('h1').first().textContent()
+    record('A2', 'After the deploy settles, Try again loads it', h1 !== 'Something went wrong loading this page', `h1 after Try again: "${h1}"`)
+    await ctx.close()
+  }
+  await context.close()
+}
+
 /* ---------- main ---------- */
 
 const server = await startServer()
@@ -528,8 +739,9 @@ try {
   for (const scheme of ['light', 'dark'] as const) await captureScreens(browser, scheme)
   const metrics = await measureFlows(browser)
   await shareCards(browser)
+  await qaChecks(browser)
 
-  fs.writeFileSync(path.join(OUT, 'audit.json'), JSON.stringify({ screens: audits, contrast: contrastIssues }, null, 2) + '\n')
+  fs.writeFileSync(path.join(OUT, 'audit.json'), JSON.stringify({ screens: audits, contrast: contrastIssues, qa }, null, 2) + '\n')
   fs.writeFileSync(path.join(OUT, 'metrics.json'), JSON.stringify(metrics, null, 2) + '\n')
 
   const failing = audits.filter((a) => a.overflow > 0 || a.nested > 0 || a.small.length > 0)
@@ -539,6 +751,8 @@ try {
   for (const a of failing) console.log(`  ${a.screen}:`, JSON.stringify({ overflow: a.overflow, nested: a.nested, small: a.small }))
   console.log(`Text contrast: ${contrastIssues.length} failing text nodes (light + dark)`)
   for (const c of contrastIssues) console.log(`  ${c.scheme} ${c.screen}: "${c.text}" ${c.ratio} < ${c.min} (${c.fg} on ${c.bg})`)
+  console.log(`QA phase 1: ${qa.filter((c) => c.pass).length}/${qa.length} checks pass`)
+  for (const c of qa) console.log(`  ${c.pass ? 'PASS' : 'FAIL'} ${c.id} ${c.check}: ${c.evidence}`)
 } finally {
   await browser.close()
   stopServer(server)

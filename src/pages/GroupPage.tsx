@@ -84,7 +84,7 @@ function GroupView({ group }: { group: Group }) {
                 <li key={thread.id}>
                   <Link
                     to={`/community/groups/${group.id}/threads/${thread.id}`}
-                    className="block space-y-1 px-3 py-3 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+                    className="block space-y-1 px-3 py-3 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                   >
                     <span className="block font-semibold">{thread.title}</span>
                     <span className="flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">

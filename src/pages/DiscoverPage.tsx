@@ -31,7 +31,7 @@ const WARNINGS = valuesByFrequency(books, (b) => b.contentWarnings)
 const LENGTHS: Length[] = ['short', 'medium', 'long']
 
 const linkClass =
-  'inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50'
+  'inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
 export function DiscoverPage() {
   const [params, setParams] = useSearchParams()
@@ -57,7 +57,7 @@ export function DiscoverPage() {
         <div className="flex items-center gap-2 px-4">
           <Link
             to="/discover/search"
-            className="flex min-h-11 flex-1 items-center gap-2 rounded-lg border border-muted-foreground bg-card px-3 text-sm text-muted-foreground transition-colors outline-none hover:border-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="flex min-h-11 flex-1 items-center gap-2 rounded-lg border border-muted-foreground bg-card px-3 text-sm text-muted-foreground transition-colors outline-none hover:border-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <Search className="size-4 shrink-0" aria-hidden="true" />
             <span>Books, authors, lists, people</span>
@@ -234,7 +234,7 @@ function FilterRow({ label, value, ...props }: { label: string; value: string })
     <button
       type="button"
       {...props}
-      className="flex min-h-14 w-full items-center gap-3 px-3 text-left outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+      className="flex min-h-14 w-full items-center gap-3 px-3 text-left outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
     >
       <span className="flex-1">
         <span className="block text-sm font-semibold">{label}</span>
@@ -262,7 +262,7 @@ function ListCard({ icon, title, detail }: { icon: ReactNode; title: string; det
     <button
       type="button"
       onClick={() => toast('Lists drop soon.')}
-      className="flex min-h-24 flex-col items-start justify-between gap-2 rounded-xl border border-border bg-card p-3 text-left text-card-foreground outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 [&_svg]:size-5"
+      className="flex min-h-24 flex-col items-start justify-between gap-2 rounded-xl border border-border bg-card p-3 text-left text-card-foreground outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&_svg]:size-5"
     >
       {icon}
       <span>

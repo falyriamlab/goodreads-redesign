@@ -60,7 +60,7 @@ type Props = {
 }
 
 const linkClass =
-  'inline-flex min-h-11 min-w-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/50'
+  'inline-flex min-h-11 min-w-11 items-center text-sm font-semibold underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
 const book = (id: string) => getBookById(id) as Book
 
@@ -80,7 +80,7 @@ export function ProfileView({ data, challengeCard, onAddFavorite, following, onT
           <ul className="flex gap-3 relative overflow-x-auto px-4 pb-1">
             {data.currentlyReading.map((id) => (
               <li key={id} className="shrink-0">
-                <Link to={`/book/${id}`} className="block rounded-cover outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+                <Link to={`/book/${id}`} className="block rounded-cover outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
                   <BookCover book={book(id)} size="md" />
                 </Link>
               </li>
@@ -205,7 +205,7 @@ function TopFour({ data, onAddFavorite }: { data: ProfileViewData; onAddFavorite
       <ul className="grid grid-cols-4 gap-3 px-4">
         {data.favorites.map((id) => (
           <li key={id}>
-            <Link to={`/book/${id}`} className="block rounded-cover outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+            <Link to={`/book/${id}`} className="block rounded-cover outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
               <BookCover book={book(id)} className="w-full" />
             </Link>
           </li>
@@ -215,7 +215,7 @@ function TopFour({ data, onAddFavorite }: { data: ProfileViewData; onAddFavorite
             <button
               type="button"
               onClick={onAddFavorite}
-              className="flex aspect-2/3 w-full flex-col items-center justify-center gap-1 rounded-cover border-2 border-dashed border-muted-foreground p-1 text-center text-xs font-medium outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="flex aspect-2/3 w-full flex-col items-center justify-center gap-1 rounded-cover border-2 border-dashed border-muted-foreground p-1 text-center text-xs font-medium outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <Plus className="size-5" aria-hidden="true" />
               Add a favorite
@@ -357,7 +357,7 @@ function ProfileTabs({
               <div key={r.id} className="space-y-2">
                 <Link
                   to={`/book/${r.bookId}`}
-                  className="flex min-h-11 items-center gap-2 text-sm font-semibold outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="flex min-h-11 items-center gap-2 text-sm font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   <BookCover book={book(r.bookId)} size="sm" className="w-8" />
                   {book(r.bookId).title}
@@ -421,7 +421,7 @@ function ProfileTabs({
                 <li key={g.id}>
                   <Link
                     to={`/community/groups/${g.id}`}
-                    className="flex min-h-14 flex-col justify-center outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+                    className="flex min-h-14 flex-col justify-center outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <span className="text-sm font-semibold">{g.name}</span>
                     <span className="text-xs text-muted-foreground">{(g.memberCount + 1).toLocaleString('en-US')} members</span>

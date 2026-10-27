@@ -83,7 +83,7 @@ function NotificationGroup({
                 to={n.href}
                 onClick={() => onOpen(n.id)}
                 className={cn(
-                  'flex items-start gap-3 px-3 py-3 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset',
+                  'flex items-start gap-3 px-3 py-3 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
                   unread && 'bg-muted/50',
                 )}
               >

@@ -38,7 +38,7 @@ export function MessagesPage() {
             <li key={c.id}>
               <Link
                 to={`/messages/${c.id}`}
-                className="flex items-center gap-3 py-3 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="flex items-center gap-3 py-3 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <UserAvatar author={person} link={false} />
                 <span className="min-w-0 flex-1">

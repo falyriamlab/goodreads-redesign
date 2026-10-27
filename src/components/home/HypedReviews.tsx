@@ -24,7 +24,7 @@ export function HypedReviews() {
               {/* The book link sits above the card: ReviewCard has its own buttons, so nothing is nested */}
               <Link
                 to={`/book/${book.id}#reviews`}
-                className="flex min-h-14 items-center gap-3 rounded-lg outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="flex min-h-14 items-center gap-3 rounded-lg outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <BookCover book={book} size="sm" className="w-10" />
                 <span className="min-w-0 flex-1">

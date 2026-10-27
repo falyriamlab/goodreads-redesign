@@ -23,7 +23,7 @@ export function GroupsTab() {
             {/* The link and the Join toggle are siblings, never nested */}
             <Link
               to={`/community/groups/${g.id}`}
-              className="min-w-0 flex-1 space-y-1 rounded-md outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="min-w-0 flex-1 space-y-1 rounded-md outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <span className="block text-lg leading-tight font-semibold">{g.name}</span>
               <span className="block text-sm">{(g.memberCount + (isMember ? 1 : 0)).toLocaleString('en-US')} members</span>

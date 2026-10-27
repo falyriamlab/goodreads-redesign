@@ -35,7 +35,7 @@ export function StatsPage() {
             id={yearId}
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="min-h-11 rounded-lg border border-muted-foreground bg-card px-3 text-base outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="min-h-11 rounded-lg border border-muted-foreground bg-card px-3 text-base outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {years.map((y) => (
               <option key={y} value={y}>

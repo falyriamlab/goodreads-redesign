@@ -9,7 +9,7 @@ import type { Book } from '@/types/book'
 export function BookHero({ book }: { book: Book }) {
   return (
     <div className="-mx-4 -mt-4 bg-band px-4 pt-8 pb-6 text-center text-band-foreground">
-      <BookCover book={book} className="mx-auto w-40" />
+      <BookCover book={book} large className="mx-auto w-40" />
       {book.series && (
         <p className="kicker mt-6 text-band-muted-foreground">
           {book.series} · Book {book.seriesNumber}

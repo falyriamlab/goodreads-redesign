@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Book } from '@/types/book'
+import { COVER_WIDTH, isSelfHostedCover, largeCoverUrl } from '@/lib/covers'
 import { cn } from '@/lib/utils'
 
 export type BookCoverSize = 'sm' | 'md' | 'lg' | 'xl'
@@ -13,6 +14,8 @@ type BookCoverProps = {
   reserveBottom?: boolean
   /** "anonymous" for covers that get painted into a canvas (share-card export) */
   crossOrigin?: 'anonymous'
+  /** The page's hero cover (shown wider than 120px, above the fold): always the L image, loaded first */
+  large?: boolean
 }
 
 // px: intrinsic size for <img width/height> (2:3), so the layout never jumps while covers load
@@ -23,11 +26,19 @@ const sizes: Record<BookCoverSize, { width: string; px: number; title: string; a
   lg: { width: 'w-33', px: 132, title: 'text-base leading-snug line-clamp-4', author: 'text-xs', padding: 'p-2.5 pl-3.5' },
 }
 
-export function BookCover({ book, size = 'md', className, reserveBottom = false, crossOrigin }: BookCoverProps) {
+export function BookCover({ book, size = 'md', className, reserveBottom = false, crossOrigin, large = false }: BookCoverProps) {
   const [failed, setFailed] = useState(false)
   const s = sizes[size]
   const alt = `Cover of ${book.title} by ${book.author}`
   const showImage = book.coverUrl !== null && !failed
+  // Wider than ~120px (lg, xl, the hero): always L. Smaller: M or L, picked by the browser from the real width
+  const alwaysLarge = large || size === 'lg' || size === 'xl'
+  const src = book.coverUrl && alwaysLarge ? largeCoverUrl(book.coverUrl) : book.coverUrl
+  const srcSet =
+    book.coverUrl && !alwaysLarge && isSelfHostedCover(book.coverUrl)
+      ? `${book.coverUrl} ${COVER_WIDTH.m}w, ${largeCoverUrl(book.coverUrl)} ${COVER_WIDTH.l}w`
+      : undefined
+  const eager = Boolean(crossOrigin) || large
 
   return (
     <div
@@ -41,11 +52,15 @@ export function BookCover({ book, size = 'md', className, reserveBottom = false,
     >
       {showImage ? (
         <img
-          src={book.coverUrl!}
+          src={src!}
+          srcSet={srcSet}
+          // "auto" = the rendered width (lazy images only); browsers without it use the fallback
+          sizes={srcSet ? `auto, ${s.px}px` : undefined}
           alt={alt}
           width={s.px}
           height={s.px * 1.5}
-          loading={crossOrigin ? 'eager' : 'lazy'}
+          loading={eager ? 'eager' : 'lazy'}
+          fetchPriority={large ? 'high' : undefined}
           crossOrigin={crossOrigin}
           decoding="async"
           onError={() => setFailed(true)}

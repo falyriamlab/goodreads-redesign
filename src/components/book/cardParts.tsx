@@ -35,7 +35,7 @@ export function DismissButton({ book, onDismiss, className }: { book: Book; onDi
       onClick={onDismiss}
       className={cn('group/dismiss absolute z-10 flex size-11 items-center justify-center rounded-full outline-none', className)}
     >
-      <span className="flex size-7 items-center justify-center rounded-full border border-muted-foreground bg-background text-foreground shadow-sm transition-colors group-hover/dismiss:bg-muted group-focus-visible/dismiss:ring-3 group-focus-visible/dismiss:ring-ring/50">
+      <span className="flex size-7 items-center justify-center rounded-full border border-muted-foreground bg-background text-foreground shadow-sm transition-colors group-hover/dismiss:bg-muted group-focus-visible/dismiss:ring-2 group-focus-visible/dismiss:ring-ring group-focus-visible/dismiss:ring-offset-2 group-focus-visible/dismiss:ring-offset-background">
         <X className="size-4" strokeWidth={2.5} aria-hidden="true" />
       </span>
     </button>

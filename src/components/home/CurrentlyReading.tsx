@@ -52,7 +52,7 @@ function ReadingCard({ book, currentPage }: { book: Book; currentPage: number })
           <h3 className="book-title">
             <Link
               to={`/book/${book.id}`}
-              className="inline-flex min-h-11 items-center outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="inline-flex min-h-11 items-center outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <span className="line-clamp-2">{book.title}</span>
             </Link>

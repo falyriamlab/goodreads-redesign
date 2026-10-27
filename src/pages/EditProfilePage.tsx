@@ -139,7 +139,7 @@ export function EditProfilePage() {
                   type="button"
                   aria-label={`Remove ${b.title} from top 4`}
                   onClick={() => set('favorites', removeFavorite(draft.favorites, b.id))}
-                  className="flex size-11 items-center justify-center rounded-md outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="flex size-11 items-center justify-center rounded-md outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   <X className="size-5" aria-hidden="true" />
                 </button>

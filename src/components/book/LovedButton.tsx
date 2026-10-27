@@ -21,7 +21,7 @@ export function LovedButton({ pressed, onPressedChange, iconOnly = false, classN
       aria-label="Love it"
       onClick={() => onPressedChange(!pressed)}
       className={cn(
-        'inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full text-sm text-foreground transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
+        'inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full text-sm text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         !iconOnly && 'border px-4',
         // Pressed = filled heart + bold label + filled surface (not hue alone)
         pressed

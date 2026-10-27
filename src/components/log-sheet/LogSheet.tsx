@@ -7,6 +7,7 @@ import { LovedButton } from '@/components/book/LovedButton'
 import { StarRating } from '@/components/book/StarRating'
 import { statusMeta, statusOrder } from '@/components/book/statusMeta'
 import { SegmentedRadio } from '@/components/common/SegmentedRadio'
+import { SelectedCheck } from '@/components/common/SelectedCheck'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -22,13 +23,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { todayISO } from '@/lib/date'
+import { parsePageInput } from '@/lib/pageInput'
 import { cn } from '@/lib/utils'
 import { books, getBookById } from '@/mocks/books'
 import { EMPTY_ENTRY, useChallengeProgress, useLibrary } from '@/state/library'
 import type { Book } from '@/types/book'
 import type { DnfReason, ReadingStatus } from '@/types/library'
 import type { LogSheetOptions } from './context'
-import { SelectedCheck } from '@/components/common/SelectedCheck'
 
 type LogSheetProps = {
   bookId: string
@@ -90,19 +91,22 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
   const [reviewText, setReviewText] = useState(() => readDraft(bookId) ?? initial.reviewText ?? '')
   const [containsSpoilers, setContainsSpoilers] = useState(initial.containsSpoilers)
   const [isReread, setIsReread] = useState(false)
-  const [dnfPage, setDnfPage] = useState(initial.dnfPage ?? (initial.currentPage || null))
+  const [dnfPageText, setDnfPageText] = useState(String(initial.dnfPage ?? (initial.currentPage || '')))
   const [dnfReason, setDnfReason] = useState<DnfReason | null>(initial.dnfReason)
   const [draftStatus, setDraftStatus] = useState('')
 
   const reviewRef = useRef<HTMLTextAreaElement>(null)
   const nextHeadingRef = useRef<HTMLHeadingElement>(null)
   const dirtyRef = useRef(false)
+  // Text typed in the last 500ms, not on disk yet
+  const pendingDraftRef = useRef<string | null>(null)
   const ids = {
     status: useId(),
     started: useId(),
     finished: useId(),
     dateError: useId(),
     dnfPage: useId(),
+    dnfPageError: useId(),
     dnfReason: useId(),
     review: useId(),
     reviewHelp: useId(),
@@ -113,16 +117,35 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
   const finishing = status === 'read' || status === 'dnf'
   const reviewAllowed = book.isPublished && finishing
   const dateError = finishing && startedAt !== '' && finishedAt !== '' && finishedAt < startedAt
+  // DNF "Stopped at page" is optional, but never out of range
+  const dnfPage = parsePageInput(dnfPageText, book.pages, { required: false })
+  const pageError = status === 'dnf' && !dnfPage.valid
+  const blocked = dateError || pageError
 
   // Review draft: saved per book, debounced 500ms, announced politely
   useEffect(() => {
     if (!dirtyRef.current) return
+    pendingDraftRef.current = reviewText
     const timer = setTimeout(() => {
       writeDraft(bookId, reviewText)
+      pendingDraftRef.current = null
       setDraftStatus(reviewText ? 'Draft saved' : '')
     }, 500)
     return () => clearTimeout(timer)
   }, [bookId, reviewText])
+
+  // Closing inside the debounce window (Back, swipe, ×) still keeps the last words: flush on close and unmount
+  useEffect(() => {
+    if (open || pendingDraftRef.current === null) return
+    writeDraft(bookId, pendingDraftRef.current)
+    pendingDraftRef.current = null
+  }, [open, bookId])
+  useEffect(
+    () => () => {
+      if (pendingDraftRef.current !== null) writeDraft(bookId, pendingDraftRef.current)
+    },
+    [bookId],
+  )
 
   useEffect(() => {
     if (step === 'next') nextHeadingRef.current?.focus()
@@ -140,7 +163,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
         : { title: `Log ${book.title}`, subtitle: `by ${book.author}` }
 
   function save(share: boolean) {
-    if (dateError) return
+    if (blocked) return
     const snapshot = takeSnapshot()
     logBook(bookId, {
       status,
@@ -150,10 +173,11 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
       loved,
       reviewText: reviewAllowed ? reviewText : '',
       containsSpoilers,
-      dnfPage: status === 'dnf' ? dnfPage : null,
+      dnfPage: status === 'dnf' ? dnfPage.page : null,
       dnfReason: status === 'dnf' ? dnfReason : null,
       isReread,
     })
+    pendingDraftRef.current = null
     if (reviewAllowed) writeDraft(bookId, null)
     toast('Logged.', { action: { label: 'Undo', onClick: () => restoreSnapshot(snapshot) } })
 
@@ -262,12 +286,18 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
                       id={ids.dnfPage}
                       type="number"
                       inputMode="numeric"
-                      min={0}
-                      max={book.pages}
-                      value={dnfPage ?? ''}
-                      onChange={(e) => setDnfPage(e.target.value === '' ? null : Number(e.target.value))}
+                      value={dnfPageText}
+                      onChange={(e) => setDnfPageText(e.target.value)}
+                      aria-invalid={pageError || undefined}
+                      aria-describedby={pageError ? ids.dnfPageError : undefined}
                       className={cn(fieldClass, 'w-32')}
                     />
+                    {pageError && (
+                      <p id={ids.dnfPageError} className="flex items-center gap-1.5 text-sm font-medium">
+                        <CircleAlert className="size-4 shrink-0 text-destructive" aria-hidden="true" />
+                        {dnfPage.message}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-1.5">
                     <p id={ids.dnfReason} className="text-sm font-medium">
@@ -367,10 +397,10 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
 
             {/* 9. Actions */}
             <DrawerFooter className="grid grid-cols-2 gap-3 border-t border-border pb-[calc(1rem+env(safe-area-inset-bottom))]">
-              <Button variant="secondary" size="lg" className="min-h-11" disabled={dateError} onClick={() => save(true)}>
+              <Button variant="secondary" size="lg" className="min-h-11" disabled={blocked} onClick={() => save(true)}>
                 Save & share
               </Button>
-              <Button size="lg" className="min-h-11" disabled={dateError} onClick={() => save(false)}>
+              <Button size="lg" className="min-h-11" disabled={blocked} onClick={() => save(false)}>
                 Save
               </Button>
             </DrawerFooter>

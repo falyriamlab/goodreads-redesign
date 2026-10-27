@@ -28,7 +28,7 @@ export function BuddyReads() {
             <li key={br.id}>
               <Link
                 to={`/community/buddy/${br.id}`}
-                className="flex min-h-14 items-center gap-3 rounded-lg border border-border p-2 pr-3 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="flex min-h-14 items-center gap-3 rounded-lg border border-border p-2 pr-3 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <BookCover book={book} size="sm" className="w-10" />
                 <span className="min-w-0 flex-1">

@@ -223,5 +223,163 @@
       "small": []
     }
   ],
-  "contrast": []
+  "contrast": [],
+  "qa": [
+    {
+      "id": "A1",
+      "check": "Back closes \"LogSheet\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "A1",
+      "check": "Back closes \"Discover filters\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "A1",
+      "check": "Back closes \"Import\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "A1",
+      "check": "Back closes \"Library filter\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "A1",
+      "check": "Back closes \"New shelf\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "A1",
+      "check": "Back closes \"Edit shelves\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "A1",
+      "check": "Back closes \"New thread\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "A1",
+      "check": "Back closes \"Share a book\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "A1",
+      "check": "Back closes \"Favorite picker\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "A1",
+      "check": "LogSheet draft kept after Back",
+      "pass": true,
+      "evidence": "reopened textarea: \"Wingleader Violet, I am not okay.\""
+    },
+    {
+      "id": "A3",
+      "check": "Current page \"\"",
+      "pass": true,
+      "evidence": "message: \"Enter a page between 0 and 518.\", Save disabled: true, stored page: 312"
+    },
+    {
+      "id": "A3",
+      "check": "Current page \"-5\"",
+      "pass": true,
+      "evidence": "message: \"Enter a page between 0 and 518.\", Save disabled: true, stored page: 312"
+    },
+    {
+      "id": "A3",
+      "check": "Current page \"9999\"",
+      "pass": true,
+      "evidence": "message: \"Enter a page between 0 and 518.\", Save disabled: true, stored page: 312"
+    },
+    {
+      "id": "A3",
+      "check": "Current page \"312.5\"",
+      "pass": true,
+      "evidence": "message: \"Enter a page between 0 and 518.\", Save disabled: true, stored page: 312"
+    },
+    {
+      "id": "A3",
+      "check": "Current page \"400\" saves",
+      "pass": true,
+      "evidence": "stored page: 400"
+    },
+    {
+      "id": "A4",
+      "check": "Focus ring (light)",
+      "pass": true,
+      "evidence": "vs background 3.96, card 4.56, band 4.47; solid: true"
+    },
+    {
+      "id": "A4",
+      "check": "Focus ring (dark)",
+      "pass": true,
+      "evidence": "vs background 5.75, card 4.9, band 5.15; solid: true"
+    },
+    {
+      "id": "A5",
+      "check": "Sharpest cover check /book/fourth-wing",
+      "pass": true,
+      "evidence": "largest upscale 1.44× (160px shown, 333px source, L: true)"
+    },
+    {
+      "id": "A5",
+      "check": "Sharpest cover check /",
+      "pass": true,
+      "evidence": "largest upscale 0.91× (96px shown, 317px source)"
+    },
+    {
+      "id": "A5",
+      "check": "Sharpest cover check /library?shelf=read",
+      "pass": true,
+      "evidence": "largest upscale 1.06× (111px shown, 315px source)"
+    },
+    {
+      "id": "A5",
+      "check": "Sharpest cover check /profile",
+      "pass": true,
+      "evidence": "largest upscale 0.77× (81px shown, 315px source)"
+    },
+    {
+      "id": "A5",
+      "check": "Share card export uses L",
+      "pass": true,
+      "evidence": "cover 520px in the 1080px PNG from a 333px L: 1.56× (was 2.9× from M)"
+    },
+    {
+      "id": "A2",
+      "check": "Offline: recovery screen + notice",
+      "pass": true,
+      "evidence": "h1: \"Something went wrong loading this page\", buttons: Try again / Go home, offline notice: true, bottom nav: true"
+    },
+    {
+      "id": "A2",
+      "check": "Back online: notice goes, Try again loads the page",
+      "pass": true,
+      "evidence": "notice gone: true, after Try again h1: Library = true"
+    },
+    {
+      "id": "A2",
+      "check": "Missing chunk: reloads once, then recovery screen",
+      "pass": true,
+      "evidence": "page reloads: 1, then h1: \"Something went wrong loading this page\""
+    },
+    {
+      "id": "A2",
+      "check": "After the deploy settles, Try again loads it",
+      "pass": true,
+      "evidence": "h1 after Try again: \"Stats\""
+    }
+  ]
 }

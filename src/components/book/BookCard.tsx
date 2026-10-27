@@ -41,7 +41,7 @@ type BookCardProps = {
  * link with z-10; interactive elements are never nested.
  */
 const stretchedLink =
-  "outline-none after:absolute after:inset-0 after:z-0 after:rounded-lg after:content-[''] focus-visible:after:ring-3 focus-visible:after:ring-ring/50"
+  "outline-none after:absolute after:inset-0 after:z-0 after:rounded-lg after:content-[''] focus-visible:after:ring-2 focus-visible:after:ring-ring"
 
 export function BookCard({
   book,

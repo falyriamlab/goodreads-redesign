@@ -57,7 +57,7 @@ export function LibraryItem({ book, entry, view, selecting, selected, onToggleSe
       aria-label={`${book.title} by ${book.author}`}
       onClick={onToggleSelect}
       className={cn(
-        'w-full rounded-lg text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
+        'w-full rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         // Selected = thick outline + filled check (never color alone)
         selected && 'ring-3 ring-foreground ring-offset-2 ring-offset-background',
         view === 'grid' ? 'relative' : 'flex min-h-14 items-center gap-3 p-2',

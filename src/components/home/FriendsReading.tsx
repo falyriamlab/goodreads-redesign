@@ -35,7 +35,7 @@ export function FriendsReading() {
               <Link
                 to={`/book/${book.id}`}
                 aria-label={label}
-                className="flex flex-col items-center gap-1.5 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="flex flex-col items-center gap-1.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <span aria-hidden="true" className="w-full">
                   <BookCover book={book} size="sm" className="w-full" />
@@ -52,7 +52,7 @@ export function FriendsReading() {
               <Link
                 to={`/u/${friend.handle}`}
                 aria-label={`${friend.name}'s profile`}
-                className="absolute -right-3 bottom-3 z-10 flex size-11 items-center justify-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="absolute -right-3 bottom-3 z-10 flex size-11 items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <Avatar size="sm" className="ring-2 ring-background">
                   <AvatarFallback className="bg-secondary text-[0.625rem] font-semibold text-secondary-foreground">

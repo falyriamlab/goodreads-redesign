@@ -8,6 +8,7 @@ import { TopBar } from '@/components/layout/TopBar'
 import { CARD_HEIGHT, CARD_WIDTH, ShareCard, type ShareCardContent } from '@/components/share/ShareCard'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { largeCoverUrl } from '@/lib/covers'
 import { formatDate } from '@/lib/date'
 import { formatRating } from '@/lib/rating'
 import { parseShareParams, shareSearch, type ShareStyle, type ShareTarget } from '@/lib/shareParams'
@@ -47,7 +48,7 @@ function useCanvasSafeCovers(books: Book[]) {
   useEffect(() => {
     let cancelled = false
     Promise.all(
-      booksRef.current.map(async (b) => [b.id, b.coverUrl ? await readableCoverUrl(b.coverUrl) : null] as const),
+      booksRef.current.map(async (b) => [b.id, b.coverUrl ? await readableCoverUrl(largeCoverUrl(b.coverUrl)) : null] as const),
     ).then((results) => {
       if (!cancelled) setState({ key, urls: new Map(results) })
     })

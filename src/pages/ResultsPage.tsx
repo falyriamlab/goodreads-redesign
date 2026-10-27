@@ -87,7 +87,8 @@ export function ResultsPage() {
                 className="[&>button]:text-sm"
               />
             </div>
-            <ul className="grid grid-cols-3 gap-x-3 gap-y-6 px-4 pt-2">
+            {/* As many 7rem columns as fit: 3 on a phone, fewer with large text */}
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(7rem,1fr))] gap-x-3 gap-y-6 px-4 pt-2">
               {results.map((book) => (
                 <li key={book.id} className="flex justify-center">
                   <BookCard book={book} caption={matchSummary(book, filters) || undefined} />

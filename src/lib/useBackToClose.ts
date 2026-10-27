@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 
 /**
  * Back closes the top overlay (Android back button, iOS edge swipe, browser Back), instead of leaving the page.
@@ -61,4 +61,31 @@ export function useBackToClose(open: boolean, close: () => void) {
       }, 0)
     }
   }, [open, id])
+}
+
+/**
+ * Open state for an overlay root (Drawer, Popover, DropdownMenu), controlled or not, with Back wired in.
+ * Returns the props to spread on the primitive's Root.
+ */
+export function useBackClosableState({
+  open: openProp,
+  defaultOpen,
+  onOpenChange,
+}: {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+}) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen ?? false)
+  const controlled = openProp !== undefined
+  const open = controlled ? openProp : uncontrolledOpen
+  const setOpen = useCallback(
+    (next: boolean) => {
+      if (!controlled) setUncontrolledOpen(next)
+      onOpenChange?.(next)
+    },
+    [controlled, onOpenChange],
+  )
+  useBackToClose(open, () => setOpen(false))
+  return { open, onOpenChange: setOpen }
 }

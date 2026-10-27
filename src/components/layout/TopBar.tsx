@@ -1,7 +1,9 @@
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { ChevronLeft } from 'lucide-react'
 import { Link, useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
+import { useBarInset } from '@/lib/useBarInset'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { cn } from '@/lib/utils'
 
 type TopBarProps = {
@@ -13,11 +15,16 @@ type TopBarProps = {
   back?: boolean
   /** Where Back goes on a direct visit with no history */
   backFallback?: string
+  /** The browser tab title ("{documentTitle} · Goodreads Concept"), when it isn't the visible title */
+  documentTitle?: string
   className?: string
 }
 
-export function TopBar({ title, actions, back = false, backFallback = '/', className }: TopBarProps) {
+export function TopBar({ title, actions, back = false, backFallback = '/', documentTitle, className }: TopBarProps) {
   const navigate = useNavigate()
+  const ref = useRef<HTMLElement>(null)
+  useBarInset(ref, 'top')
+  useDocumentTitle(documentTitle ?? title)
 
   function goBack() {
     // react-router stores the history index; fall back on a direct visit
@@ -28,8 +35,9 @@ export function TopBar({ title, actions, back = false, backFallback = '/', class
 
   return (
     <header
+      ref={ref}
       className={cn(
-        'sticky top-0 z-40 border-b border-border bg-background/95 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-background/80',
+        'sticky top-0 z-40 border-b border-border short:static bg-background/95 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-background/80',
         className,
       )}
     >

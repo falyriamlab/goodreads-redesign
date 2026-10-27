@@ -135,17 +135,18 @@ function SortableRow({
     <li
       ref={setNodeRef}
       style={{ transform: DndCSS.Transform.toString(transform), transition }}
-      className={cn('flex items-center gap-2 bg-background py-2', isDragging && 'relative z-10 shadow-lg ring-2 ring-foreground')}
+      className={cn('flex flex-wrap items-center gap-2 bg-background py-2', isDragging && 'relative z-10 shadow-lg ring-2 ring-foreground')}
     >
       <span className="w-6 shrink-0 text-center font-mono text-sm font-semibold tabular-nums" aria-hidden="true">
         {position}
       </span>
       <BookCover book={book} size="sm" />
-      <div className="min-w-0 flex-1">
+      {/* With large text the controls wrap to their own line instead of squeezing the title */}
+      <div className="min-w-0 flex-1 basis-24">
         {linkTitle ? (
           <Link
             to={`/book/${book.id}`}
-            className="flex min-h-11 items-center text-sm leading-snug font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="flex min-h-11 items-center book-title outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <span className="line-clamp-2">{book.title}</span>
           </Link>

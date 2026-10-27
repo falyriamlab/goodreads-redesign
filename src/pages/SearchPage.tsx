@@ -66,7 +66,7 @@ export function SearchPage() {
 
   return (
     <>
-      <TopBar back backFallback="/discover" />
+      <TopBar back backFallback="/discover" documentTitle="Search" />
       <h1 className="sr-only">Search</h1>
 
       <form role="search" onSubmit={onSubmit} className="flex items-center gap-2 px-4 pt-3">

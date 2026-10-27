@@ -2,11 +2,17 @@ import * as React from "react"
 import { cn } from "cn"
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 import { CheckIcon, ChevronRightIcon } from "lucide-react"
+import { useBackClosableState } from "@/lib/useBackToClose"
 
+/** Back (Android button, iOS swipe) closes the menu and stays on the page, like drawers */
 function DropdownMenu({
+  open,
+  defaultOpen,
+  onOpenChange,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+  const state = useBackClosableState({ open, defaultOpen, onOpenChange })
+  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...state} {...props} />
 }
 
 function DropdownMenuPortal({

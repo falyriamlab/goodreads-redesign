@@ -64,6 +64,7 @@ export function ProfilePage() {
   return (
     <>
       <TopBar
+        documentTitle="Profile"
         actions={<TopBarIconButton label="Settings" icon={<Settings aria-hidden="true" />} onClick={() => navigate('/settings')} />}
       />
       <ProfileView
@@ -157,7 +158,7 @@ function FriendProfile({ friend, myEntries }: { friend: FriendActivity; myEntrie
 
   return (
     <>
-      <TopBar back />
+      <TopBar back documentTitle={friend.name} />
       <ProfileView data={data} following={following} onToggleFollow={() => (following ? unfollow(friend.id) : follow(friend.id))} />
     </>
   )

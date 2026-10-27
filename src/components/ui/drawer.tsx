@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "cn"
 import { Drawer as DrawerPrimitive } from "vaul"
-import { useBackToClose } from "@/lib/useBackToClose"
+import { useBackClosableState } from "@/lib/useBackToClose"
 
 /**
  * Every drawer and sheet in the app goes through here, so Back (Android button, iOS swipe) closes it
@@ -15,18 +15,8 @@ function Drawer({
   onOpenChange,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false)
-  const controlled = openProp !== undefined
-  const open = controlled ? openProp : uncontrolledOpen
-  const setOpen = React.useCallback(
-    (next: boolean) => {
-      if (!controlled) setUncontrolledOpen(next)
-      onOpenChange?.(next)
-    },
-    [controlled, onOpenChange],
-  )
-  useBackToClose(open, () => setOpen(false))
-  return <DrawerPrimitive.Root data-slot="drawer" open={open} onOpenChange={setOpen} {...props} />
+  const state = useBackClosableState({ open: openProp, defaultOpen, onOpenChange })
+  return <DrawerPrimitive.Root data-slot="drawer" {...state} {...props} />
 }
 
 function DrawerTrigger({

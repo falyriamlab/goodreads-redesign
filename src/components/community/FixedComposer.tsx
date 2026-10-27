@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { useActionBar, useBarInset } from '@/lib/useBarInset'
 
 type Props = {
   /** Accessible name of the form landmark, e.g. "Comment on this buddy read" */
@@ -14,6 +15,8 @@ type Props = {
 export function FixedComposer({ label, onSubmit, children }: Props) {
   const ref = useRef<HTMLFormElement>(null)
   const [height, setHeight] = useState(0)
+  useBarInset(ref, 'bottom')
+  useActionBar()
 
   useLayoutEffect(() => {
     const el = ref.current
@@ -35,7 +38,7 @@ export function FixedComposer({ label, onSubmit, children }: Props) {
           e.preventDefault()
           onSubmit(e)
         }}
-        className="fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-40 mx-auto w-full max-w-app border-t border-border bg-background px-4 py-3"
+        className="fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] short:bottom-[env(safe-area-inset-bottom)] z-40 mx-auto w-full max-w-app border-t border-border bg-background px-4 py-3 short:flex short:items-end short:gap-3 short:py-2"
       >
         {children}
       </form>

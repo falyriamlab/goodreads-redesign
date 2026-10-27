@@ -124,14 +124,14 @@ function Header({ data, following, onToggleFollow }: Pick<Props, 'following' | '
   return (
     // Rule 1: the profile header is this screen's one paper band (its hero moment)
     <div className="space-y-4 bg-band px-4 pt-6 pb-6 text-band-foreground">
-      <div className="flex items-start gap-4">
+      <div className="flex flex-wrap items-start gap-4">
         <div
           aria-hidden="true"
           className="flex size-18 shrink-0 items-center justify-center rounded-full bg-secondary text-2xl font-bold text-secondary-foreground"
         >
           {initials(data.name)}
         </div>
-        <div className="min-w-0 flex-1 space-y-1">
+        <div className="min-w-0 flex-1 basis-40 space-y-1">
           <h1 className="text-2xl leading-tight font-bold tracking-tight">{data.name}</h1>
           <p className="text-sm text-band-muted-foreground">
             @{data.handle}
@@ -146,7 +146,7 @@ function Header({ data, following, onToggleFollow }: Pick<Props, 'following' | '
           You both loved {data.sharedLoved.title}
         </p>
       )}
-      <dl className="flex gap-5 text-sm">
+      <dl className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
         {(
           [
             ['read', data.counts.read],

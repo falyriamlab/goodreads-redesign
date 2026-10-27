@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Book } from '@/types/book'
-import { COVER_WIDTH, isSelfHostedCover, largeCoverUrl } from '@/lib/covers'
+import { coverSrcSets, largeCoverUrl } from '@/lib/covers'
 import { cn } from '@/lib/utils'
 
 export type BookCoverSize = 'sm' | 'md' | 'lg' | 'xl'
@@ -14,8 +14,10 @@ type BookCoverProps = {
   reserveBottom?: boolean
   /** "anonymous" for covers that get painted into a canvas (share-card export) */
   crossOrigin?: 'anonymous'
-  /** The page's hero cover (shown wider than 120px, above the fold): always the L image, loaded first */
+  /** The page's hero cover (above the fold, the biggest thing on screen): loaded first */
   large?: boolean
+  /** Rendered width for picking a size, when className changes it (e.g. "160px" for the book page hero) */
+  sizes?: string
 }
 
 // px: intrinsic size for <img width/height> (2:3), so the layout never jumps while covers load
@@ -26,19 +28,19 @@ const sizes: Record<BookCoverSize, { width: string; px: number; title: string; a
   lg: { width: 'w-33', px: 132, title: 'text-base leading-snug line-clamp-4', author: 'text-xs', padding: 'p-2.5 pl-3.5' },
 }
 
-export function BookCover({ book, size = 'md', className, reserveBottom = false, crossOrigin, large = false }: BookCoverProps) {
+export function BookCover({ book, size = 'md', className, reserveBottom = false, crossOrigin, large = false, sizes: sizesProp }: BookCoverProps) {
   const [failed, setFailed] = useState(false)
   const s = sizes[size]
   const alt = `Cover of ${book.title} by ${book.author}`
   const showImage = book.coverUrl !== null && !failed
-  // Wider than ~120px (lg, xl, the hero): always L. Smaller: M or L, picked by the browser from the real width
-  const alwaysLarge = large || size === 'lg' || size === 'xl'
-  const src = book.coverUrl && alwaysLarge ? largeCoverUrl(book.coverUrl) : book.coverUrl
-  const srcSet =
-    book.coverUrl && !alwaysLarge && isSelfHostedCover(book.coverUrl)
-      ? `${book.coverUrl} ${COVER_WIDTH.m}w, ${largeCoverUrl(book.coverUrl)} ${COVER_WIDTH.l}w`
-      : undefined
-  const eager = Boolean(crossOrigin) || large
+  // Share cards (painted into the export canvas): the largest JPG, one URL that the CORS check can verify.
+  // Everywhere else: WebP at 180/240/333px with the M/L JPGs as fallback, picked by the browser from the real width.
+  const exported = Boolean(crossOrigin)
+  const srcSets = book.coverUrl && !exported ? coverSrcSets(book.coverUrl) : null
+  const src = book.coverUrl && exported ? largeCoverUrl(book.coverUrl) : book.coverUrl
+  const eager = exported || large
+  // "auto" = the rendered width (lazy images only); browsers without it use the fallback width
+  const imgSizes = sizesProp ?? (eager ? `${s.px}px` : `auto, ${s.px}px`)
 
   return (
     <div
@@ -51,21 +53,23 @@ export function BookCover({ book, size = 'md', className, reserveBottom = false,
       )}
     >
       {showImage ? (
-        <img
-          src={src!}
-          srcSet={srcSet}
-          // "auto" = the rendered width (lazy images only); browsers without it use the fallback
-          sizes={srcSet ? `auto, ${s.px}px` : undefined}
-          alt={alt}
-          width={s.px}
-          height={s.px * 1.5}
-          loading={eager ? 'eager' : 'lazy'}
-          fetchPriority={large ? 'high' : undefined}
-          crossOrigin={crossOrigin}
-          decoding="async"
-          onError={() => setFailed(true)}
-          className="size-full object-cover"
-        />
+        <picture className="contents">
+          {srcSets && <source type="image/webp" srcSet={srcSets.webp} sizes={imgSizes} />}
+          <img
+            src={src!}
+            srcSet={srcSets?.jpg}
+            sizes={srcSets ? imgSizes : undefined}
+            alt={alt}
+            width={s.px}
+            height={s.px * 1.5}
+            loading={eager ? 'eager' : 'lazy'}
+            fetchPriority={large ? 'high' : undefined}
+            crossOrigin={crossOrigin}
+            decoding="async"
+            onError={() => setFailed(true)}
+            className="size-full object-cover"
+          />
+        </picture>
       ) : (
         // Placeholder that still reads as a book: spine shadow, serif title, author at the bottom
         <div role="img" aria-label={alt} className={cn('flex size-full flex-col justify-between', s.padding, reserveBottom && 'pb-6')}>

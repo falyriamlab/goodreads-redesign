@@ -21,13 +21,14 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
 
   return (
     <article className={cn('space-y-3 rounded-lg border border-border bg-card p-4 text-card-foreground', className)}>
-      <header className="flex items-start gap-3">
+      {/* Wraps under the avatar when there's no room (large text) */}
+      <header className="flex flex-wrap items-start gap-3">
         <Avatar size="lg">
           {review.author.avatarUrl && <AvatarImage src={review.author.avatarUrl} alt="" />}
           <AvatarFallback className="font-semibold">{initials(review.author.name)}</AvatarFallback>
         </Avatar>
-        <div className="min-w-0 flex-1 space-y-1">
-          <div className="flex items-center gap-2">
+        <div className="min-w-0 flex-1 basis-48 space-y-1">
+          <div className="flex flex-wrap items-center gap-x-2">
             <h3 className="truncate text-sm font-semibold">{review.author.name}</h3>
             {review.author.isFriend && <span className="text-xs font-medium">· Friend</span>}
             <span className="text-xs text-muted-foreground">
@@ -71,7 +72,7 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
         </ClampText>
       </div>
 
-      <footer className="flex items-center gap-1 text-sm text-muted-foreground">
+      <footer className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
         {/* Likes live in the store, shared with the same review in the Community feed */}
         <LikeButton kind="review" id={review.id} base={review.likes} className="mr-2" />
         <button

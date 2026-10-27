@@ -71,14 +71,14 @@ function BuddyReadView({ br, book }: { br: BuddyRead; book: Book }) {
 
   return (
     <>
-      <TopBar back backFallback="/community?tab=buddy-reads" />
+      <TopBar back backFallback="/community?tab=buddy-reads" documentTitle={`${book.title} buddy read`} />
       <div className="space-y-6 px-4 pt-4 pb-6">
         <header className="space-y-4">
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <Link to={`/book/${book.id}`} aria-label={book.title} className="shrink-0 self-start rounded-cover outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
               <BookCover book={book} size="md" />
             </Link>
-            <div className="min-w-0 flex-1 space-y-1">
+            <div className="min-w-0 flex-1 basis-40 space-y-1">
               <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Buddy read</p>
               <h1 className="text-2xl leading-tight font-bold">{book.title}</h1>
               <p className="text-sm">
@@ -300,8 +300,9 @@ function BuddyComposer({
         textRef.current?.focus()
       }}
     >
-      <div className="flex items-center gap-3">
-        <label htmlFor={ids.chapter} className="text-sm font-semibold">
+      {/* Landscape: chapter and spoiler toggle sit left of the text field (FixedComposer is a row there) */}
+      <div className="flex flex-wrap items-center gap-x-3 short:shrink-0">
+        <label htmlFor={ids.chapter} className="text-sm font-semibold short:sr-only">
           Chapter
         </label>
         <select
@@ -325,11 +326,13 @@ function BuddyComposer({
             className="size-5 border-muted-foreground"
           />
           <Label htmlFor={ids.spoilers} className="min-h-11">
-            Contains spoilers
+            {/* Landscape: the short label leaves the comment field room in the one-row composer */}
+            <span className="short:hidden">Contains spoilers</span>
+            <span className="hidden short:inline">Spoilers</span>
           </Label>
         </div>
       </div>
-      <div className="mt-2 flex items-end gap-2">
+      <div className="mt-2 flex items-end gap-2 short:mt-0 short:flex-1">
         <label htmlFor={ids.text} className="sr-only">
           Comment on chapter {chapter}
         </label>

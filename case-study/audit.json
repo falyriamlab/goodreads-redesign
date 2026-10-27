@@ -329,27 +329,57 @@
     },
     {
       "id": "A5",
-      "check": "Sharpest cover check /book/fourth-wing",
+      "check": "Sharpest cover /book/fourth-wing at 2x",
       "pass": true,
-      "evidence": "largest upscale 1.44× (160px shown, 333px source, L: true)"
+      "evidence": "largest upscale 0.96× (160px shown, w/9780349437002-333.webp, 333px)"
     },
     {
       "id": "A5",
-      "check": "Sharpest cover check /",
+      "check": "Sharpest cover / at 2x",
       "pass": true,
-      "evidence": "largest upscale 0.91× (96px shown, 317px source)"
+      "evidence": "largest upscale 0.8× (96px shown, w/9780316310277-240.webp, 240px)"
     },
     {
       "id": "A5",
-      "check": "Sharpest cover check /library?shelf=read",
+      "check": "Sharpest cover /library?shelf=read at 2x",
       "pass": true,
-      "evidence": "largest upscale 1.06× (111px shown, 315px source)"
+      "evidence": "largest upscale 0.93× (111px shown, w/9780593440872-240.webp, 240px)"
     },
     {
       "id": "A5",
-      "check": "Sharpest cover check /profile",
+      "check": "Sharpest cover /profile at 2x",
       "pass": true,
-      "evidence": "largest upscale 0.77× (81px shown, 315px source)"
+      "evidence": "largest upscale 0.89× (81px shown, w/9781529100624-180.webp, 180px)"
+    },
+    {
+      "id": "A5",
+      "check": "Sharpest cover /book/fourth-wing at 3x",
+      "pass": true,
+      "evidence": "largest upscale 1.44× (160px shown, w/9780349437002-333.webp, 333px)"
+    },
+    {
+      "id": "A5",
+      "check": "Sharpest cover / at 3x",
+      "pass": true,
+      "evidence": "largest upscale 0.91× (96px shown, w/9780316310277-333.webp, 317px)"
+    },
+    {
+      "id": "A5",
+      "check": "Sharpest cover /library?shelf=read at 3x",
+      "pass": true,
+      "evidence": "largest upscale 1.06× (111px shown, w/9780316556330-333.webp, 315px)"
+    },
+    {
+      "id": "A5",
+      "check": "Sharpest cover /profile at 3x",
+      "pass": true,
+      "evidence": "largest upscale 0.77× (81px shown, w/9780316556330-333.webp, 315px)"
+    },
+    {
+      "id": "A",
+      "check": "Home cover bytes at 3x < 450 KB",
+      "pass": true,
+      "evidence": "389 KB (273 KB before A5, 805 KB with L JPGs)"
     },
     {
       "id": "A5",
@@ -380,6 +410,126 @@
       "check": "After the deploy settles, Try again loads it",
       "pass": true,
       "evidence": "h1 after Try again: \"Stats\""
+    },
+    {
+      "id": "M1",
+      "check": "Tab panel focus visible /library",
+      "pass": true,
+      "evidence": "panel box-shadow: solid --ring, 2px inset"
+    },
+    {
+      "id": "M1",
+      "check": "Tab panel focus visible /profile",
+      "pass": true,
+      "evidence": "panel box-shadow: solid --ring, 2px inset"
+    },
+    {
+      "id": "M1",
+      "check": "Tab panel focus visible /community",
+      "pass": true,
+      "evidence": "panel box-shadow: solid --ring, 2px inset"
+    },
+    {
+      "id": "M2",
+      "check": "Focus never under a bar /discover",
+      "pass": true,
+      "evidence": "0 covered of 70 Tab presses (26 before)"
+    },
+    {
+      "id": "M2",
+      "check": "Focus never under a bar /book/fourth-wing",
+      "pass": true,
+      "evidence": "0 covered of 70 Tab presses"
+    },
+    {
+      "id": "M2",
+      "check": "Focus never under a bar /",
+      "pass": true,
+      "evidence": "0 covered of 70 Tab presses"
+    },
+    {
+      "id": "M2",
+      "check": "Focus never under a bar /library",
+      "pass": true,
+      "evidence": "0 covered of 70 Tab presses"
+    },
+    {
+      "id": "M3",
+      "check": "No overflow at 320px (27 routes)",
+      "pass": true,
+      "evidence": "0 of 27 routes overflow (Edit profile was +32px)"
+    },
+    {
+      "id": "M3",
+      "check": "No overflow at 360px (27 routes)",
+      "pass": true,
+      "evidence": "0 of 27 routes overflow"
+    },
+    {
+      "id": "M3",
+      "check": "No overflow at 430px (27 routes)",
+      "pass": true,
+      "evidence": "0 of 27 routes overflow"
+    },
+    {
+      "id": "M4",
+      "check": "Landscape: bars ≤ 25% of the height",
+      "pass": true,
+      "evidence": "worst: /community/buddy/br-fourth-wing 19%, /community/buddy/br-fourth-wing (scrolled) 19%, /library?shelf=read#select 17% (was up to 60%)"
+    },
+    {
+      "id": "M5",
+      "check": "200% text: no overflow (27 routes)",
+      "pass": true,
+      "evidence": "0 of 27 routes (was up to +233px)"
+    },
+    {
+      "id": "M5",
+      "check": "200% text: nav is icons only, 44px, still named",
+      "pass": true,
+      "evidence": "Home 78×112, Discover 78×112, Library 78×112, Community 78×112, Profile 78×112"
+    },
+    {
+      "id": "M6",
+      "check": "Title per screen, updated on navigation",
+      "pass": true,
+      "evidence": "/: \"Home · Goodreads Concept\"; nav → Library: \"Library · Goodreads Concept\"; /book/fourth-wing: \"Fourth Wing · Goodreads Concept\"; /profile/stats: \"Stats · Goodreads Concept\"; /community/groups/bogota-book-club: \"Bogotá Book Club · Goodreads Concept\""
+    },
+    {
+      "id": "M6",
+      "check": "A distinct title per screen (23 screens)",
+      "pass": true,
+      "evidence": "23 distinct titles for 23 screens (27 routes; the tabs of Library and Community share their screen's)"
+    },
+    {
+      "id": "C",
+      "check": "Back closes \"Update progress popover\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "C",
+      "check": "Back closes \"Shelf menu (status chip)\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "C",
+      "check": "Back closes \"Sort menu\"",
+      "pass": true,
+      "evidence": "closed: true, same URL: true, 2nd Back → /settings: true"
+    },
+    {
+      "id": "C",
+      "check": "Inset focus rings vs row background (light)",
+      "pass": true,
+      "evidence": "Segment (checked) 3.34, Segment (unchecked) 3.96, Bottom nav tab 3.96, Notification row (unread) 3.84, Book page row 3.96"
+    },
+    {
+      "id": "C",
+      "check": "Inset focus rings vs row background (dark)",
+      "pass": true,
+      "evidence": "Segment (checked) 4.01, Segment (unchecked) 5.75, Bottom nav tab 5.75, Notification row (unread) 5.29, Book page row 5.75"
     }
   ]
 }

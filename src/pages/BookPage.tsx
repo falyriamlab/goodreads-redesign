@@ -53,6 +53,7 @@ function BookDetails({ book }: { book: Book }) {
       <TopBar
         back
         backFallback="/discover"
+        documentTitle={book.title}
         actions={
           <TopBarIconButton
             label={`Share ${book.title}`}

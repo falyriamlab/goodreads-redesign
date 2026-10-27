@@ -42,7 +42,7 @@ function ThreadView({ group, thread }: { group: Group; thread: GroupThread }) {
 
   return (
     <>
-      <TopBar back backFallback={`/community/groups/${group.id}`} />
+      <TopBar back backFallback={`/community/groups/${group.id}`} documentTitle={thread.title} />
       <div className="space-y-6 px-4 pt-4 pb-6">
         <article className="space-y-3">
           <Link

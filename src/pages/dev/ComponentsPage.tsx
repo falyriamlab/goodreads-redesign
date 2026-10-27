@@ -13,6 +13,7 @@ import { useIsDark } from '@/lib/theme'
 import { LIBRARY_SEED, useLibrary } from '@/state/library'
 import type { Book } from '@/types/book'
 import type { ReadingStatus } from '@/types/library'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 const book = (id: string) => getBookById(id) as Book
 
@@ -69,6 +70,7 @@ function ChipDemo({
 }
 
 export function ComponentsPage() {
+  useDocumentTitle('Component lab')
   // Theme lives in the store (Settings → Appearance); this switch is a shortcut
   const dark = useIsDark()
   const setThemeMode = useLibrary((s) => s.setThemeMode)

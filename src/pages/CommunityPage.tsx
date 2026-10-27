@@ -32,7 +32,7 @@ export function CommunityPage() {
         onValueChange={(v) => setParams(v === 'feed' ? {} : { tab: v }, { replace: true })}
         className="gap-0"
       >
-        <TabsList variant="line" aria-label="Community sections" className="h-auto w-full justify-start gap-0 border-b border-border px-2">
+        <TabsList variant="line" aria-label="Community sections" className="h-auto w-full justify-start gap-0 relative overflow-x-auto border-b border-border px-2">
           {TABS.map((t) => (
             <TabsTrigger
               key={t.value}

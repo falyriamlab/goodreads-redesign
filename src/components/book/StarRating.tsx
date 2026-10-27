@@ -9,7 +9,8 @@ const starSize: Record<StarSize, string> = {
   xs: 'size-3',
   sm: 'size-4',
   md: 'size-5',
-  lg: 'size-9',
+  // Input stars: 36px, but never wider than the screen allows with large text (5 × 14vw)
+  lg: 'size-[min(2.25rem,14vw)]',
   xl: 'size-16',
 }
 
@@ -74,7 +75,7 @@ export function StarRating(props: DisplayProps | InputProps) {
     return <span className={cn('text-xs text-muted-foreground', className)}>Not rated yet</span>
   }
   return (
-    <span className={cn('inline-flex items-center gap-1.5', className)}>
+    <span className={cn('inline-flex flex-wrap items-center gap-1.5', className)}>
       <span role="img" aria-label={`Rated ${formatRating(value)} out of 5 stars`}>
         <Stars value={value} size={size} tone={tone} />
       </span>
@@ -127,7 +128,7 @@ function StarRatingInput({ value, onChange, label, size = 'lg', className }: Inp
   }
 
   return (
-    <div className={cn('inline-flex items-center gap-3', className)}>
+    <div className={cn('inline-flex flex-wrap items-center gap-3', className)}>
       <div
         role="slider"
         tabIndex={0}

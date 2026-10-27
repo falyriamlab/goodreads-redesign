@@ -124,7 +124,8 @@ export function EditProfilePage() {
           </p>
         </div>
 
-        <fieldset className="space-y-2">
+        {/* min-w-0: a fieldset is min-content wide by default, which pushed long titles past 320px */}
+        <fieldset className="min-w-0 space-y-2">
           <legend id={ids.top4} className="text-sm font-semibold">
             Top 4
           </legend>
@@ -154,7 +155,7 @@ export function EditProfilePage() {
           )}
         </fieldset>
 
-        <fieldset className="space-y-1">
+        <fieldset className="min-w-0 space-y-1">
           <legend className="text-sm font-semibold">Show on my profile</legend>
           <p className="text-xs text-muted-foreground">Hidden sections stay visible to you, marked "Only you".</p>
           {SECTIONS.map((s) => {

@@ -223,7 +223,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
             {/* data-vaul-no-drag: drags inside the form (star slider, text selection) never close the sheet */}
             <div data-vaul-no-drag className="flex-1 space-y-6 overflow-y-auto px-4 pb-4">
               {/* 2. Status */}
-              <fieldset className="space-y-2">
+              <fieldset className="min-w-0 space-y-2">
                 <legend id={ids.status} className="text-sm font-semibold">
                   Status
                 </legend>

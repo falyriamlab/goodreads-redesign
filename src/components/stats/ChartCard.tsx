@@ -29,7 +29,7 @@ export function ChartCard({ title, columns, data, kind }: ChartCardProps) {
 
   return (
     <section aria-labelledby={ids.title} className="space-y-4 rounded-xl border border-border bg-card p-4 text-card-foreground">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id={ids.title} className="section-title">
           {title}
         </h2>

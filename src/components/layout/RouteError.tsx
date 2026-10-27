@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useNavigate, useRouteError } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { reloadOnceForChunkError } from '@/lib/chunkReload'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { useOnline } from '@/lib/useOnline'
 
 /**
@@ -14,6 +15,7 @@ export function RouteError() {
   const navigate = useNavigate()
   const online = useOnline()
   const [stillOffline, setStillOffline] = useState(false)
+  useDocumentTitle("Couldn't load")
   // A chunk from an old deploy: reload once (render-time is fine: the page is about to go away)
   const [reloading] = useState(() => reloadOnceForChunkError(error))
   if (reloading) return null

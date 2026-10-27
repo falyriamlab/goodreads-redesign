@@ -3,6 +3,8 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+/* A phone on its side: so little height that fixed bars must step aside (TopBar scrolls away, CTAs go inline) */
+@custom-variant short (@media (max-height: 500px) and (orientation: landscape));
 
 @theme inline {
     --container-app: 26.875rem; /* 430px — mobile app column */
@@ -243,6 +245,20 @@
   }
   html.dark {
     color-scheme: dark;
+  }
+  /*
+   * Keyboard focus and scrollIntoView stop short of the fixed and sticky bars (their real heights, published by
+   * useBarInset), so a focused control is never left underneath one.
+   */
+  html {
+    scroll-padding-top: calc(var(--bar-inset-top, 0px) + 8px);
+    scroll-padding-bottom: calc(var(--bar-inset-bottom, 0px) + 8px);
+  }
+  /* Landscape: a screen with its own action bar (composer, selection actions) hides the bottom nav, like a chat app */
+  @media (max-height: 500px) and (orientation: landscape) {
+    html[data-action-bar] [data-slot="bottom-nav"] {
+      display: none;
+    }
   }
   body {
     @apply bg-background text-foreground antialiased;

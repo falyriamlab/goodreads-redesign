@@ -1,11 +1,17 @@
 import * as React from "react"
 import { cn } from "cn"
 import { Popover as PopoverPrimitive } from "radix-ui"
+import { useBackClosableState } from "@/lib/useBackToClose"
 
+/** Back (Android button, iOS swipe) closes the popover and stays on the page, like drawers */
 function Popover({
+  open,
+  defaultOpen,
+  onOpenChange,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Root>) {
-  return <PopoverPrimitive.Root data-slot="popover" {...props} />
+  const state = useBackClosableState({ open, defaultOpen, onOpenChange })
+  return <PopoverPrimitive.Root data-slot="popover" {...state} {...props} />
 }
 
 function PopoverTrigger({

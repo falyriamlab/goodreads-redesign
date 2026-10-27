@@ -45,7 +45,7 @@ export function LibraryFilterDrawer({ value, onChange, genres, years, trigger }:
           <DrawerDescription>Narrow down this shelf. Filters apply as you pick.</DrawerDescription>
         </DrawerHeader>
         <div data-vaul-no-drag className="flex-1 space-y-6 overflow-y-auto px-4 pb-2">
-          <fieldset className="space-y-1">
+          <fieldset className="min-w-0 space-y-1">
             <legend id={ids.genre} className="text-sm font-semibold">
               Genre
             </legend>

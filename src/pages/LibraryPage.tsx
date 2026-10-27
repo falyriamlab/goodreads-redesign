@@ -167,7 +167,7 @@ function ShelfPanel({ tab }: { tab: ReadingStatus }) {
             </Button>
           )}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="min-h-11 border-muted-foreground px-2.5">

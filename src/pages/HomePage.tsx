@@ -12,7 +12,7 @@ export function HomePage() {
   const data = useHomeData()
   return (
     <>
-      <TopBar actions={<HomeActions />} />
+      <TopBar documentTitle="Home" actions={<HomeActions />} />
       <header className="px-4 pt-6">
         <p className="kicker text-muted-foreground">{data.today}</p>
         {/* One of the three places Playfair is used (with the book hero title and the share cards) */}

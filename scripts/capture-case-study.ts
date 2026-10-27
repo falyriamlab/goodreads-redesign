@@ -287,6 +287,8 @@ async function captureScreens(browser: Browser, scheme: Scheme) {
   await page.waitForTimeout(500)
   await save('whats-next')
   await page.keyboard.press('Escape')
+  // Let the drawer close (and give its Back entry back) before the next navigation
+  await page.waitForTimeout(500)
   await resetDemo(page)
 
   await go(page, '/library?shelf=read')
@@ -302,6 +304,8 @@ async function captureScreens(browser: Browser, scheme: Scheme) {
   await page.waitForTimeout(600)
   await save('import-summary')
   await page.keyboard.press('Escape')
+  // Let the drawer close (and give its Back entry back) before the next navigation
+  await page.waitForTimeout(500)
 
   await go(page, '/library/journal')
   await save('journal')
@@ -580,6 +584,8 @@ async function qaChecks(browser: Browser) {
   const draft = await page.locator(`${SHEET} textarea`).inputValue()
   record('A1', 'LogSheet draft kept after Back', draft === 'Wingleader Violet, I am not okay.', `reopened textarea: "${draft}"`)
   await page.keyboard.press('Escape')
+  // Let the drawer close (and give its Back entry back) before the next navigation
+  await page.waitForTimeout(500)
   await page.waitForTimeout(500)
 
   // A3: Current page, empty or out of range: inline error, Save disabled, nothing saved (also with Enter)
@@ -640,28 +646,52 @@ async function qaChecks(browser: Browser) {
   }
   await page.emulateMedia({ colorScheme: 'light' })
 
-  // A5: covers shown wider than 120px use L; nothing visible is upscaled more than 1.5× at 3x (share export at 1x)
+  // A5: nothing visible is upscaled more than 1.5× at 2x or 3x; covers shown wider than 120px get a ≥300px source
+  for (const dpr of [2, 3]) {
+    const ctx = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: dpr, isMobile: true, hasTouch: true })
+    const p = await ctx.newPage()
+    for (const url of ['/book/fourth-wing', '/', '/library?shelf=read', '/profile']) {
+      await p.goto(BASE + url, { waitUntil: 'networkidle' })
+      await p.waitForTimeout(500)
+      const r = await p.evaluate(async (density) => {
+        const visible = [...document.querySelectorAll('img')].filter((i) => i.naturalWidth && i.getBoundingClientRect().top < innerHeight)
+        // With a w-descriptor srcset, naturalWidth is density-corrected: read the chosen file's real pixels
+        const measured = await Promise.all(
+          visible.map(async (i) => {
+            const file = new Image()
+            file.src = i.currentSrc
+            await file.decode()
+            return { shown: i.getBoundingClientRect().width, natural: file.naturalWidth, src: i.currentSrc }
+          }),
+        )
+        return measured.map((i) => ({ ...i, upscale: Math.round(((i.shown * density) / i.natural) * 100) / 100 })).sort((a, b) => b.upscale - a.upscale)[0]
+      }, dpr)
+      const large = r.shown > 120 ? r.natural >= 300 : true
+      const file = r.src.split('/covers/')[1]
+      record('A5', `Sharpest cover ${url} at ${dpr}x`, large && r.upscale <= 1.5, `largest upscale ${r.upscale}× (${Math.round(r.shown)}px shown, ${file}, ${r.natural}px)`)
+    }
+    // Phase 2 A: cover bytes on Home after scrolling the whole page (a fresh context: cached covers report 0 bytes)
+    if (dpr === 3) {
+      const fresh = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 3, isMobile: true, hasTouch: true })
+      const f = await fresh.newPage()
+      await f.goto(BASE + '/', { waitUntil: 'networkidle' })
+      await f.evaluate(async () => {
+        for (let y = 0; y < document.documentElement.scrollHeight; y += 400) {
+          window.scrollTo(0, y)
+          await new Promise((r) => setTimeout(r, 120))
+        }
+      })
+      await f.waitForTimeout(1200)
+      const kb = await f.evaluate(() =>
+        Math.round(performance.getEntriesByType('resource').filter((e) => e.name.includes('/covers/')).reduce((s, e) => s + (e as PerformanceResourceTiming).encodedBodySize, 0) / 1024),
+      )
+      record('A', 'Home cover bytes at 3x < 450 KB', kb > 0 && kb < 450, `${kb} KB (273 KB before A5, 805 KB with L JPGs)`)
+      await fresh.close()
+    }
+    await ctx.close()
+  }
   const dpr3 = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 3, isMobile: true, hasTouch: true })
   const p3 = await dpr3.newPage()
-  for (const url of ['/book/fourth-wing', '/', '/library?shelf=read', '/profile']) {
-    await p3.goto(BASE + url, { waitUntil: 'networkidle' })
-    await p3.waitForTimeout(500)
-    const r = await p3.evaluate(async () => {
-      const visible = [...document.querySelectorAll('img')].filter((i) => i.naturalWidth && i.getBoundingClientRect().top < innerHeight)
-      // With a w-descriptor srcset, naturalWidth is density-corrected: read the chosen file's real pixels
-      const measured = await Promise.all(
-        visible.map(async (i) => {
-          const file = new Image()
-          file.src = i.currentSrc
-          await file.decode()
-          return { shown: i.getBoundingClientRect().width, natural: file.naturalWidth, src: i.currentSrc }
-        }),
-      )
-      return measured.map((i) => ({ ...i, upscale: Math.round(((i.shown * 3) / i.natural) * 100) / 100 })).sort((a, b) => b.upscale - a.upscale)[0]
-    })
-    const large = r.shown > 120 ? r.src.includes('/covers/l/') : true
-    record('A5', `Sharpest cover check ${url}`, large && r.upscale <= 1.5, `largest upscale ${r.upscale}× (${Math.round(r.shown)}px shown, ${r.natural}px source${r.shown > 120 ? ', L: ' + large : ''})`)
-  }
   // Share card export (1080px PNG at 1x): the cover is painted at its layout width; L is the largest Open Library has
   await p3.goto(BASE + '/share?type=book&book=fourth-wing&style=brand', { waitUntil: 'networkidle' })
   await p3.waitForTimeout(800)
@@ -730,6 +760,251 @@ async function qaChecks(browser: Browser) {
   await context.close()
 }
 
+/* ---------- QA phase 2 checks (M1–M6, plus Back for popovers and menus) ---------- */
+
+const ROUTES = [
+  '/', '/discover', '/discover/search', '/discover/results?mood=dark&pace=fast', '/library', '/library?shelf=want', '/library?shelf=read',
+  '/library/journal', '/community', '/community?tab=buddy-reads', '/community?tab=groups', '/community/find',
+  '/community/buddy/br-fourth-wing', '/community/groups/bogota-book-club', '/community/groups/bogota-book-club/threads/t-bb-2',
+  '/notifications', '/messages', '/messages/c-lucia', '/profile', '/profile/edit', '/profile/stats', '/settings',
+  '/u/mayareadsdragons', '/book/fourth-wing', '/share?type=month&month=2026-10&style=brand', '/invite/sofiareads', '/nope',
+]
+
+/** Tabs through the page; returns focused elements whose center sits under a fixed or sticky bar */
+async function coveredFocus(page: Page, presses: number) {
+  const covered: string[] = []
+  for (let i = 0; i < presses; i++) {
+    await page.keyboard.press('Tab')
+    const hit = await page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null
+      if (!el || el === document.body) return null
+      const b = el.getBoundingClientRect()
+      const x = Math.min(Math.max(b.left + b.width / 2, 0), innerWidth - 1)
+      const y = Math.min(Math.max(b.top + b.height / 2, 0), innerHeight - 1)
+      const top = document.elementFromPoint(x, y)
+      if (!top || el.contains(top) || top.contains(el)) return null
+      for (let n: Element | null = top; n; n = n.parentElement) {
+        if (['fixed', 'sticky'].includes(getComputedStyle(n).position) && !n.contains(el)) return (el.getAttribute('aria-label') || el.textContent || el.tagName).trim().slice(0, 30)
+      }
+      return null
+    })
+    if (hit) covered.push(hit)
+  }
+  return covered
+}
+
+async function qaPhase2(browser: Browser) {
+  const context = await newContext(browser, 'light')
+  const page = await context.newPage()
+  await page.goto(BASE)
+  await resetDemo(page)
+
+  // M1: a focused tab panel shows the indicator
+  for (const url of ['/library', '/profile', '/community']) {
+    await go(page, url)
+    let ring = 'not reached'
+    for (let i = 0; i < 40; i++) {
+      await page.keyboard.press('Tab')
+      const r = await page.evaluate(() => {
+        const el = document.activeElement
+        return el?.getAttribute('role') === 'tabpanel' ? getComputedStyle(el).boxShadow : null
+      })
+      if (r !== null) {
+        ring = r
+        break
+      }
+    }
+    record('M1', `Tab panel focus visible ${url}`, ring !== 'none' && ring !== 'not reached', `panel box-shadow: ${ring === 'none' || ring === 'not reached' ? ring : 'solid --ring, 2px inset'}`)
+  }
+
+  // M2: keyboard focus never ends up under a fixed or sticky bar
+  {
+    const ctx = await browser.newContext({ viewport: VIEWPORT, colorScheme: 'light' })
+    const p = await ctx.newPage()
+    await p.goto(BASE)
+    for (const url of ['/discover', '/book/fourth-wing', '/', '/library']) {
+      await p.goto(BASE + url, { waitUntil: 'networkidle' })
+      const covered = await coveredFocus(p, 70)
+      record('M2', `Focus never under a bar ${url}`, covered.length === 0, `${covered.length} covered of 70 Tab presses${url === '/discover' ? ' (26 before)' : ''}${covered.length ? ': ' + covered.slice(0, 3).join(', ') : ''}`)
+    }
+    await ctx.close()
+  }
+
+  // M3: no horizontal overflow at 320, 360 and 430px on any route
+  for (const width of [320, 360, 430]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 740 }, isMobile: true, hasTouch: true })
+    const p = await ctx.newPage()
+    const over: string[] = []
+    for (const url of ROUTES) {
+      await p.goto(BASE + url, { waitUntil: 'networkidle' })
+      const o = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
+      if (o > 0) over.push(`${url} +${o}px`)
+    }
+    record('M3', `No overflow at ${width}px (${ROUTES.length} routes)`, over.length === 0, over.length ? over.join(', ') : `0 of ${ROUTES.length} routes overflow${width === 320 ? ' (Edit profile was +32px)' : ''}`)
+    await ctx.close()
+  }
+
+  // M4: landscape (844×390), fixed and sticky bars cover at most 25% of the height, at the top and scrolled
+  {
+    const ctx = await browser.newContext({ viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true })
+    const p = await ctx.newPage()
+    const worst: { url: string; share: number }[] = []
+    for (const url of [...ROUTES, '/library?shelf=read#select']) {
+      await p.goto(BASE + url.replace('#select', ''), { waitUntil: 'networkidle' })
+      if (url.endsWith('#select')) {
+        await p.getByRole('button', { name: 'Select' }).click()
+        await p.getByRole('checkbox').first().click()
+      }
+      for (const y of [0, 600]) {
+        await p.evaluate((top) => window.scrollTo(0, top), y)
+        await p.waitForTimeout(150)
+        const share = await p.evaluate(() => {
+          const bars = [...document.querySelectorAll('body *')].filter((el) => {
+            const s = getComputedStyle(el)
+            const r = el.getBoundingClientRect()
+            return ['fixed', 'sticky'].includes(s.position) && r.height > 0 && r.bottom > 0 && r.top < innerHeight && !el.closest('[data-sonner-toaster]')
+          })
+          const outer = bars.filter((el) => !bars.some((o) => o !== el && o.contains(el)))
+          const covering = outer.filter((el) => getComputedStyle(el).position === 'fixed' || window.scrollY > 0)
+          return Math.round((covering.reduce((s, el) => s + Math.min(el.getBoundingClientRect().height, innerHeight), 0) / innerHeight) * 100)
+        })
+        worst.push({ url: url + (y ? ' (scrolled)' : ''), share })
+      }
+    }
+    worst.sort((a, b) => b.share - a.share)
+    record('M4', 'Landscape: bars ≤ 25% of the height', worst[0].share <= 25, `worst: ${worst.slice(0, 3).map((w) => `${w.url} ${w.share}%`).join(', ')} (was up to 60%)`)
+    await ctx.close()
+  }
+
+  // M5: 200% text, no horizontal overflow anywhere; the nav keeps 44px targets (icons only, labels for screen readers)
+  {
+    const ctx = await browser.newContext({ viewport: VIEWPORT, isMobile: true, hasTouch: true })
+    const p = await ctx.newPage()
+    const over: string[] = []
+    for (const url of ROUTES) {
+      await p.goto(BASE + url, { waitUntil: 'networkidle' })
+      await p.addStyleTag({ content: 'html { font-size: 200% !important }' })
+      await p.waitForTimeout(250)
+      const o = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
+      if (o > 0) over.push(`${url} +${o}px`)
+    }
+    record('M5', `200% text: no overflow (${ROUTES.length} routes)`, over.length === 0, over.length ? over.join(', ') : `0 of ${ROUTES.length} routes (was up to +233px)`)
+    await p.goto(BASE + '/', { waitUntil: 'networkidle' })
+    await p.addStyleTag({ content: 'html { font-size: 200% !important }' })
+    await p.waitForTimeout(250)
+    const nav = await p.evaluate(() =>
+      [...document.querySelectorAll('[data-slot="bottom-nav"] a')].map((a) => ({
+        w: Math.round(a.getBoundingClientRect().width),
+        h: Math.round(a.getBoundingClientRect().height),
+        hidden: getComputedStyle(a.querySelector('span')!).position === 'absolute',
+        name: a.textContent?.trim(),
+      })),
+    )
+    const ok = nav.every((n) => n.w >= 44 && n.h >= 44 && n.hidden && n.name)
+    record('M5', '200% text: nav is icons only, 44px, still named', ok, nav.map((n) => `${n.name} ${n.w}×${n.h}`).join(', '))
+    await ctx.close()
+  }
+
+  // M6: a title per screen, updated on navigation
+  {
+    const titles: string[] = []
+    const expect: [string, string, () => Promise<unknown>][] = [
+      ['/', 'Home · Goodreads Concept', () => go(page, '/')],
+      ['nav → Library', 'Library · Goodreads Concept', () => page.locator('nav a', { hasText: 'Library' }).click()],
+      ['/book/fourth-wing', 'Fourth Wing · Goodreads Concept', () => go(page, '/book/fourth-wing')],
+      ['/profile/stats', 'Stats · Goodreads Concept', () => go(page, '/profile/stats')],
+      ['/community/groups/bogota-book-club', 'Bogotá Book Club · Goodreads Concept', () => go(page, '/community/groups/bogota-book-club')],
+    ]
+    let ok = true
+    for (const [label, want, nav] of expect) {
+      await nav()
+      await page.waitForTimeout(300)
+      const t = await page.title()
+      titles.push(`${label}: "${t}"`)
+      if (t !== want) ok = false
+    }
+    // One title per screen: the shelf and community tabs are the same screen (same path), so they share it
+    const titleByPath = new Map<string, Set<string>>()
+    for (const url of ROUTES) {
+      await go(page, url)
+      const path = url.split('?')[0]
+      titleByPath.set(path, (titleByPath.get(path) ?? new Set()).add(await page.title()))
+    }
+    const distinct = new Set([...titleByPath.values()].flatMap((s) => [...s]))
+    record('M6', 'Title per screen, updated on navigation', ok, titles.join('; '))
+    record('M6', `A distinct title per screen (${titleByPath.size} screens)`, distinct.size === titleByPath.size, `${distinct.size} distinct titles for ${titleByPath.size} screens (${ROUTES.length} routes; the tabs of Library and Community share their screen's)`)
+  }
+
+  // C: Back also closes popovers and menus, on the same URL; a second Back navigates
+  const overlays: [string, string, () => Promise<unknown>, string][] = [
+    ['Update progress popover', '/book/fourth-wing', () => page.getByRole('button', { name: 'Update progress' }).click(), '[data-slot="popover-content"]'],
+    ['Shelf menu (status chip)', '/book/fourth-wing', () => page.locator('[data-slot="dropdown-menu-trigger"]', { hasText: 'Reading · p. 312' }).click(), '[data-slot="dropdown-menu-content"]'],
+    ['Sort menu', '/library?shelf=read', () => page.getByRole('button', { name: /^Sort:/ }).click(), '[data-slot="dropdown-menu-content"]'],
+  ]
+  for (const [name, url, open, selector] of overlays) {
+    await go(page, '/settings')
+    await go(page, url)
+    await open()
+    await page.locator(selector).waitFor({ state: 'visible' })
+    await page.goBack()
+    await page.waitForTimeout(500)
+    const closed = !(await page.locator(selector).isVisible())
+    const sameUrl = page.url() === BASE + url
+    await page.goBack()
+    await page.waitForTimeout(500)
+    const navigated = page.url() === BASE + '/settings'
+    record('C', `Back closes "${name}"`, closed && sameUrl && navigated, `closed: ${closed}, same URL: ${sameUrl}, 2nd Back → /settings: ${navigated}`)
+  }
+
+  // C: the inset focus rings (rows, segments, nav) against the row's own background, light and dark
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme })
+    const results: { name: string; ratio: number }[] = []
+    for (const [name, url, selector] of [
+      ['Segment (checked)', '/discover', '[role="radio"][aria-checked="true"]'],
+      ['Segment (unchecked)', '/discover', '[role="radio"][aria-checked="false"]'],
+      ['Bottom nav tab', '/discover', '[data-slot="bottom-nav"] a'],
+      ['Notification row (unread)', '/notifications', 'main ul a'],
+      ['Book page row', '/book/fourth-wing', 'main a.focus-visible\\:ring-inset'],
+    ] as const) {
+      await go(page, url)
+      const ratio = await page.evaluate((sel) => {
+        const el = document.querySelector<HTMLElement>(sel)!
+        el.focus({ focusVisible: true } as FocusOptions)
+        const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!
+        const px = (c: string) => {
+          ctx.clearRect(0, 0, 1, 1)
+          ctx.fillStyle = '#000'
+          ctx.fillStyle = c
+          ctx.fillRect(0, 0, 1, 1)
+          return [...ctx.getImageData(0, 0, 1, 1).data].map((v) => v / 255)
+        }
+        // The row's own background, composited over its ancestors
+        const layers: number[][] = []
+        for (let n: Element | null = el; n; n = n.parentElement) {
+          const c = px(getComputedStyle(n).backgroundColor)
+          if (c[3] > 0) layers.push(c)
+          if (c[3] >= 1) break
+        }
+        let bg = [1, 1, 1]
+        for (const l of layers.reverse()) bg = l.slice(0, 3).map((v, i) => l[3] * v + (1 - l[3]) * bg[i])
+        const ring = px(getComputedStyle(document.documentElement).getPropertyValue('--ring').trim())
+        const lum = ([r, g, b]: number[]) => {
+          const f = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+          return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+        }
+        const [a, b] = [lum(ring), lum(bg)].sort((x, y) => y - x)
+        return Math.round(((a + 0.05) / (b + 0.05)) * 100) / 100
+      }, selector)
+      results.push({ name, ratio })
+    }
+    const min = Math.min(...results.map((r) => r.ratio))
+    record('C', `Inset focus rings vs row background (${scheme})`, min >= 3, results.map((r) => `${r.name} ${r.ratio}`).join(', '))
+  }
+  await page.emulateMedia({ colorScheme: 'light' })
+  await context.close()
+}
+
 /* ---------- main ---------- */
 
 const server = await startServer()
@@ -740,6 +1015,7 @@ try {
   const metrics = await measureFlows(browser)
   await shareCards(browser)
   await qaChecks(browser)
+  await qaPhase2(browser)
 
   fs.writeFileSync(path.join(OUT, 'audit.json'), JSON.stringify({ screens: audits, contrast: contrastIssues, qa }, null, 2) + '\n')
   fs.writeFileSync(path.join(OUT, 'metrics.json'), JSON.stringify(metrics, null, 2) + '\n')
@@ -751,7 +1027,7 @@ try {
   for (const a of failing) console.log(`  ${a.screen}:`, JSON.stringify({ overflow: a.overflow, nested: a.nested, small: a.small }))
   console.log(`Text contrast: ${contrastIssues.length} failing text nodes (light + dark)`)
   for (const c of contrastIssues) console.log(`  ${c.scheme} ${c.screen}: "${c.text}" ${c.ratio} < ${c.min} (${c.fg} on ${c.bg})`)
-  console.log(`QA phase 1: ${qa.filter((c) => c.pass).length}/${qa.length} checks pass`)
+  console.log(`QA checks (phases 1–2): ${qa.filter((c) => c.pass).length}/${qa.length} pass`)
   for (const c of qa) console.log(`  ${c.pass ? 'PASS' : 'FAIL'} ${c.id} ${c.check}: ${c.evidence}`)
 } finally {
   await browser.close()

@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from 'react'
+import { useId, useRef, type ReactNode } from 'react'
 import { Award, ChevronRight, ListOrdered, ScanBarcode, Search } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
@@ -20,6 +20,7 @@ import {
   type Filters,
   type Length,
 } from '@/lib/filters'
+import { useBarInset } from '@/lib/useBarInset'
 import { books } from '@/mocks/books'
 import type { Pace } from '@/types/book'
 
@@ -35,6 +36,8 @@ const linkClass =
 
 export function DiscoverPage() {
   const [params, setParams] = useSearchParams()
+  const ctaRef = useRef<HTMLDivElement>(null)
+  useBarInset(ctaRef, 'bottom')
   const filters = filtersFromParams(params)
   const n = filterBooks(books, filters).length
   const active = countActive(filters)
@@ -52,7 +55,7 @@ export function DiscoverPage() {
     <>
       <TopBar title="Discover" />
       {/* Bottom padding clears the sticky "Show n books" bar */}
-      <div className="space-y-10 pt-3 pb-40">
+      <div className="space-y-10 pt-3 pb-40 short:pb-6">
         {/* 2. Search entry + scanner */}
         <div className="flex items-center gap-2 px-4">
           <Link
@@ -203,8 +206,8 @@ export function DiscoverPage() {
         </section>
       </div>
 
-      {/* 7. Sticky results button, above the bottom nav */}
-      <div className="fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-30 mx-auto w-full max-w-app border-t border-border bg-background/95 px-4 pt-3 pb-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      {/* 7. Sticky results button, above the bottom nav. In landscape it's the end of the page instead */}
+      <div ref={ctaRef} className="fixed short:static inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-30 mx-auto w-full max-w-app border-t border-border bg-background/95 px-4 pt-3 pb-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         {n > 0 ? (
           <Button asChild size="lg" className="min-h-11 w-full">
             <Link to={`/discover/results?${params}`}>Show {n} books</Link>

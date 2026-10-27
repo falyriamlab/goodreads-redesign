@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 import { BookCover } from '@/components/book/BookCover'
 import { ConceptNote } from '@/components/common/ConceptNote'
 import { Button } from '@/components/ui/button'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { initials } from '@/lib/initials'
 import { getBookById } from '@/mocks/books'
 import { getReaderByHandle } from '@/mocks/community'
@@ -18,6 +19,7 @@ export function InvitePage() {
     handle === profile.handle
       ? { name: profile.displayName, handle: profile.handle, favorites: profile.favorites }
       : reader && { name: reader.name, handle: reader.handle, favorites: reader.favorites }
+  useDocumentTitle(inviter ? `${inviter.name} invited you` : 'Invalid invite')
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-app flex-col justify-center gap-8 bg-background px-6 py-10 sm:border-x sm:border-border">

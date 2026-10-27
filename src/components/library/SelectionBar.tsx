@@ -1,4 +1,5 @@
 import { ChevronDown } from 'lucide-react'
+import { useRef } from 'react'
 import { toast } from 'sonner'
 import { statusMeta, statusOrder } from '@/components/book/statusMeta'
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useActionBar, useBarInset } from '@/lib/useBarInset'
 import { useLibrary } from '@/state/library'
 import type { ReadingStatus } from '@/types/library'
 
@@ -29,6 +31,9 @@ export function SelectionBar({ selected, onDone, onCancel }: Props) {
   const takeSnapshot = useLibrary((s) => s.takeSnapshot)
   const restoreSnapshot = useLibrary((s) => s.restoreSnapshot)
   const n = selected.length
+  const ref = useRef<HTMLDivElement>(null)
+  useBarInset(ref, 'bottom')
+  useActionBar()
 
   function run(action: () => void, message: string) {
     const snapshot = takeSnapshot()
@@ -44,9 +49,10 @@ export function SelectionBar({ selected, onDone, onCancel }: Props) {
     <div
       role="region"
       aria-label="Selection actions"
-      className="fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-30 mx-auto w-full max-w-app space-y-2 border-t border-border bg-background/95 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+      ref={ref}
+      className="fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] short:bottom-[env(safe-area-inset-bottom)] z-30 mx-auto w-full max-w-app space-y-2 short:flex short:items-center short:gap-3 short:space-y-0 border-t border-border bg-background/95 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/80"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between short:shrink-0 short:gap-2">
         <p aria-live="polite" className="text-sm font-semibold">
           {n} selected
         </p>
@@ -54,7 +60,7 @@ export function SelectionBar({ selected, onDone, onCancel }: Props) {
           Cancel
         </Button>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2 short:flex-1">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="min-h-11 border-muted-foreground px-2" disabled={n === 0}>

@@ -546,12 +546,14 @@ async function shareCards(browser: Browser) {
 
 /* ---------- QA phase 1 checks (docs/qa-audit-2026-10-27.md, A1–A5) ---------- */
 
-type Check = { id: string; check: string; pass: boolean; evidence: string }
+/** accepted: a known miss the team decided to live with (docs/qa-audit-2026-10-27.md, Resolution): still measured, not a failure */
+type Check = { id: string; check: string; pass: boolean; evidence: string; accepted?: string }
 const qa: Check[] = []
-const record = (id: string, check: string, pass: boolean, evidence: string) => {
-  qa.push({ id, check, pass, evidence })
+const verdict = (c: Check) => (c.pass ? 'PASS' : c.accepted ? 'ACCEPTED' : 'FAIL')
+const record = (id: string, check: string, pass: boolean, evidence: string, accepted?: string) => {
+  qa.push({ id, check, pass, evidence, accepted })
   // Progress as it goes: the QA phases take minutes
-  console.log(`  ${pass ? 'pass' : 'FAIL'} ${id} ${check}`)
+  console.log(`  ${verdict(qa[qa.length - 1]).toLowerCase()} ${id} ${check}`)
 }
 const storedEntry = (page: Page, bookId: string) =>
   page.evaluate((id) => JSON.parse(localStorage.getItem('goodreads-library')!).state.entries[id], bookId)
@@ -1226,6 +1228,23 @@ async function qaPhase3(browser: Browser) {
   await go(page, '/discover/results?mood=adventurous&length=short&pace=slow')
   const zeroTitle = await h1()
   const zeroCopy = await page.getByText('No books match all of that.').isVisible()
+  // B2: a share link to a book that doesn't exist gets the app's "not found" state, not another card
+  await go(page, '/share?type=book&book=nope')
+  const missingTitle = await h1()
+  const missingText = await page.getByText("We couldn't find that book.").isVisible()
+  const homeHref = await page.getByRole('link', { name: 'Go home', exact: true }).getAttribute('href')
+  const allBooks = page.getByRole('link', { name: 'See all books', exact: true })
+  const allHref = await allBooks.getAttribute('href')
+  const card = await page.locator('[role="img"]').count()
+  await allBooks.click()
+  await page.locator('h1', { hasText: 'books' }).first().waitFor()
+  const landed = await h1()
+  record(
+    'B2',
+    'Share card for a missing book → not found',
+    missingTitle === 'Book not found' && missingText && homeHref === '/' && allHref === '/discover/results' && card === 0 && landed === '40 books',
+    `/share?type=book&book=nope: h1 "${missingTitle}", "We couldn't find that book." ${missingText}, Go home → ${homeHref}, See all books → ${allHref} ("${landed}"), share cards on screen: ${card} (was the Top 4 card)`,
+  )
   record('B2', '"0 books" only when valid filters match nothing', allTitle !== '0 books' && zeroTitle === '0 books' && zeroCopy, `?mood=zzz → "${allTitle}" (was "0 books"); adventurous + short + slow → "${zeroTitle}", empty state: ${zeroCopy}`)
 
   // B4: --destructive, light mode darkened to L 0.52
@@ -1251,8 +1270,11 @@ async function qaPhase3(browser: Browser) {
   await go(page, '/')
   const challenge = (await page.locator('main h2', { hasText: 'reading challenge' }).first().textContent())?.trim()
   const statsHref = await page.getByRole('link', { name: 'See stats', exact: true }).getAttribute('href')
-  const seeDiscover = await page.getByRole('link', { name: 'See Discover', exact: true }).count()
-  record('B5', 'Challenge card and For you links', challenge === '2026 reading challenge' && statsHref === '/profile/stats' && seeDiscover > 0, `h2 "${challenge}", "See stats" → ${statsHref}, "See Discover" links: ${seeDiscover}`)
+  // For you: visible "See all", named "See all picks" for screen readers
+  const picks = page.getByRole('link', { name: 'See all picks', exact: true })
+  const picksText = (await picks.first().textContent())?.replace(/\s+/g, ' ').trim()
+  const picksHref = await picks.first().getAttribute('href')
+  record('B5', 'Challenge card and For you links', challenge === '2026 reading challenge' && statsHref === '/profile/stats' && picksHref === '/discover', `h2 "${challenge}", "See stats" → ${statsHref}, For you "${picksText}" → ${picksHref}`)
   // Proper nouns that may follow another capitalized word (brands, names, screen names)
   const PROPER = ['Goodreads', 'Kindle', 'Audible', 'StoryGraph', 'Discover', 'Awards', 'Book', 'Club', 'Girlies', 'Wing', 'Flame', 'Chen', 'Lucía', 'Sofía', 'Herrera', 'Reads']
   const titleCase: string[] = []
@@ -1338,7 +1360,13 @@ async function qaPhase3(browser: Browser) {
   const leaked = first.filter((n) => /^(LogSheet|drawer|sonner)-/.test(n))
   const entryKB = gzipKB([entry])
   const initialKB = gzipKB(first)
-  record('B7', 'Entry chunk < 100 KB gzip', entryKB < 100, `${entry} ${entryKB} KB gzip (125.2 before)`)
+  record(
+    'B7',
+    'Entry chunk < 100 KB gzip',
+    entryKB < 100,
+    `${entry} ${entryKB} KB gzip (125.2 before)`,
+    'react-dom + react-router + tailwind-merge alone are ~100 KB gzip; first-screen JS is down 10% and the LogSheet opens in ~35 ms. Changing libraries is out of scope',
+  )
   record(
     'B7',
     'LogSheet, vaul and sonner out of the first screen',
@@ -1440,8 +1468,9 @@ try {
   for (const a of failing) console.log(`  ${a.screen}:`, JSON.stringify({ overflow: a.overflow, nested: a.nested, small: a.small, headings: a.headings }))
   console.log(`Text contrast: ${contrastIssues.length} failing text nodes (light + dark)`)
   for (const c of contrastIssues) console.log(`  ${c.scheme} ${c.screen}: "${c.text}" ${c.ratio} < ${c.min} (${c.fg} on ${c.bg})`)
-  console.log(`QA checks (phases 1–3): ${qa.filter((c) => c.pass).length}/${qa.length} pass`)
-  for (const c of qa) console.log(`  ${c.pass ? 'PASS' : 'FAIL'} ${c.id} ${c.check}: ${c.evidence}`)
+  const accepted = qa.filter((c) => !c.pass && c.accepted)
+  console.log(`QA checks (phases 1–3): ${qa.filter((c) => c.pass).length}/${qa.length} pass, ${accepted.length} accepted, ${qa.length - qa.filter((c) => c.pass).length - accepted.length} failing`)
+  for (const c of qa) console.log(`  ${verdict(c)} ${c.id} ${c.check}: ${c.evidence}${!c.pass && c.accepted ? ` (accepted: ${c.accepted})` : ''}`)
 } finally {
   await browser.close()
   stopServer(server)

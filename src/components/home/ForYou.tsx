@@ -15,14 +15,14 @@ export function ForYou({ recs, hide }: Pick<Data, 'recs' | 'hide'>) {
         kicker="Picked for you"
         title="For you"
         note={recs[0]?.reason}
-        link={{ to: '/discover', label: 'See Discover' }}
+        link={{ to: '/discover', label: 'See all', srLabel: 'picks' }}
         className="px-4"
       />
       {recs.length === 0 ? (
         <p className="mx-4 rounded-xl border border-dashed border-muted-foreground p-4 text-sm text-muted-foreground">
           You've seen it all for now.{' '}
           <Link to="/discover" className="font-semibold text-foreground underline underline-offset-4">
-            See Discover
+            See all picks
           </Link>
           .
         </p>

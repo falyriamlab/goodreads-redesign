@@ -11,7 +11,8 @@
     "test": "vitest run",
     "capture": "vite build && node scripts/capture-case-study.ts",
     "assets": "node scripts/generate-brand-assets.ts",
-    "covers": "node scripts/fetch-covers.ts"
+    "covers": "node scripts/fetch-covers.ts",
+    "tokens": "node scripts/export-tokens.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -1,6 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Download, Link2, Share2 } from 'lucide-react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { toBlob } from 'html-to-image'
 import { toast } from '@/lib/toast'
 import { SegmentedRadio } from '@/components/common/SegmentedRadio'
@@ -64,7 +64,34 @@ const MONTH_NAME = (month: string) =>
 
 const firstSentence = (text: string) => (text.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? text).trim()
 
+/** A book card for a book that doesn't exist (an old or mistyped link) gets the app's "not found" state */
 export function SharePage() {
+  const [params] = useSearchParams()
+  const { target } = parseShareParams(params)
+  if (target.type === 'book' && !getBookById(target.bookId)) return <BookNotFound />
+  return <ShareCardPage />
+}
+
+function BookNotFound() {
+  return (
+    <>
+      <TopBar title="Book not found" back backFallback="/profile" />
+      <div className="space-y-4 px-4 py-6">
+        <p className="text-muted-foreground">We couldn't find that book.</p>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild className="min-h-11">
+            <Link to="/">Go home</Link>
+          </Button>
+          <Button asChild variant="outline" className="min-h-11 border-muted-foreground">
+            <Link to="/discover/results">See all books</Link>
+          </Button>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function ShareCardPage() {
   const [params, setParams] = useSearchParams()
   const { target, style, bookId } = parseShareParams(params)
   const profile = useLibrary((s) => s.profile)
@@ -124,7 +151,7 @@ export function SharePage() {
       case 'book': {
         const book = getBookById(target.bookId)
         const e = entries[target.bookId]
-        // Unknown book id: show the Top 4 card instead
+        // Unknown book ids never get here (BookNotFound); the guard keeps the types honest
         if (!book) return top4()
         {
           const statusLine =

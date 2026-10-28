@@ -630,6 +630,12 @@
     },
     {
       "id": "B2",
+      "check": "Share card for a missing book → not found",
+      "pass": true,
+      "evidence": "/share?type=book&book=nope: h1 \"Book not found\", \"We couldn't find that book.\" true, Go home → /, See all books → /discover/results (\"40 books\"), share cards on screen: 0 (was the Top 4 card)"
+    },
+    {
+      "id": "B2",
       "check": "\"0 books\" only when valid filters match nothing",
       "pass": true,
       "evidence": "?mood=zzz → \"40 books\" (was \"0 books\"); adventurous + short + slow → \"0 books\", empty state: true"
@@ -650,7 +656,7 @@
       "id": "B5",
       "check": "Challenge card and For you links",
       "pass": true,
-      "evidence": "h2 \"2026 reading challenge\", \"See stats\" → /profile/stats, \"See Discover\" links: 1"
+      "evidence": "h2 \"2026 reading challenge\", \"See stats\" → /profile/stats, For you \"See all picks\" → /discover"
     },
     {
       "id": "B5",
@@ -668,37 +674,38 @@
       "id": "B6",
       "check": "One chip: pill, border, no shadow, selected = secondary + icon",
       "pass": true,
-      "evidence": "Discover filters 25 (2 selected, 36/32px); Library shelves 6 (3 selected, 36/32px); Results filters 13 (7 selected, 36/32px); Home status chips 10 (0 selected, 32px); Book tags 14 (0 selected, 32px)"
+      "evidence": "Discover filters 25 (3 selected, 36/32px); Library shelves 6 (3 selected, 36/32px); Results filters 13 (7 selected, 36/32px); Home status chips 10 (0 selected, 32px); Book tags 14 (0 selected, 32px)"
     },
     {
       "id": "B7",
       "check": "Entry chunk < 100 KB gzip",
       "pass": false,
-      "evidence": "index-Boy7fnVW.js 130.5 KB gzip (125.2 before)"
+      "evidence": "index-BvdpFWBw.js 130.5 KB gzip (125.2 before)",
+      "accepted": "react-dom + react-router + tailwind-merge alone are ~100 KB gzip; first-screen JS is down 10% and the LogSheet opens in ~35 ms. Changing libraries is out of scope"
     },
     {
       "id": "B7",
       "check": "LogSheet, vaul and sonner out of the first screen",
       "pass": true,
-      "evidence": "Home first screen: 39 JS files, 187.9 KB gzip (209.1 before); loaded after, in idle time: LogSheet-BtPidV_z.js, drawer-CJ05OoF1.js, toggle-group-BQFCGHzR.js, checkbox-lF_0RjAb.js, LovedButton-l55DWxcv.js, SegmentedRadio-D0L6lrNt.js, textarea-DjvP1sJt.js, dist-Bym6lZQ5.js, sonner-BwyeI7sP.js"
+      "evidence": "Home first screen: 39 JS files, 187.9 KB gzip (209.1 before); loaded after, in idle time: LogSheet-C99r2m9z.js, drawer-9XafVmvk.js, checkbox-BAutSZO4.js, toggle-group-CxmxpiuV.js, LovedButton-B4juLrWE.js, SegmentedRadio-DDDj1qKi.js, textarea-GS-gIF25.js, dist-CYEPdX7m.js, sonner-de_dljTi.js"
     },
     {
       "id": "B7",
       "check": "First LogSheet open on Fast 3G, tap 2 s after the button appears",
       "pass": true,
-      "evidence": "33 ms from tap to sheet (Phase 2, sheet in the initial bundle: ~40 ms)"
+      "evidence": "32 ms from tap to sheet (Phase 2, sheet in the initial bundle: ~40 ms)"
     },
     {
       "id": "B7",
       "check": "First LogSheet open on Fast 3G, tap 1 s after the button appears",
       "pass": true,
-      "evidence": "30 ms from tap to sheet (Phase 2, sheet in the initial bundle: ~40 ms); reported, not a criterion"
+      "evidence": "31 ms from tap to sheet (Phase 2, sheet in the initial bundle: ~40 ms); reported, not a criterion"
     },
     {
       "id": "B7",
       "check": "First LogSheet open on Fast 3G, tap 0 s after the button appears",
       "pass": true,
-      "evidence": "834 ms from tap to sheet (Phase 2, sheet in the initial bundle: ~40 ms); reported, not a criterion"
+      "evidence": "1019 ms from tap to sheet (Phase 2, sheet in the initial bundle: ~40 ms); reported, not a criterion"
     },
     {
       "id": "B8",

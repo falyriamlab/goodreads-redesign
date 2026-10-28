@@ -2,7 +2,7 @@
 
 Marginalia is the app's only visual system: covers treated as physical objects, a quiet page with one strong moment per screen, and clear, neutral states. It was picked over Night Shelf (immersive, dark-first) in the visual-pass exploration. See [the PR](https://github.com/falyriamlab/goodreads-redesign/pull/new/visual-pass) for why.
 
-Since theme v2 it runs on the **"Goodreads 1"** palette (tweakcn): indigo on stone. Type is **sans-first**: Plus Jakarta Sans for every title and number, and Playfair Display SemiBold Italic only for three special moments.
+Since theme v2 it runs on the **"Goodreads 1"** palette (tweakcn): indigo on stone. Type is **sans-first**: Plus Jakarta Sans for every title and number, and Playfair Display SemiBold Italic only for Home's greeting, the book hero title and the share-card headlines.
 
 Everything below uses theme tokens from `src/index.css`. Contrast is computed in sRGB, as browsers blend (WCAG 2.x formula).
 
@@ -121,10 +121,12 @@ There is no full-width `bg-primary` band anywhere in the app. The only place ind
 | Book titles in cards, rows and grids (`book-title`) | 15px semibold |
 | Stat numbers (`stat-number` + `stat-unit`) | 36px bold + 18px regular, muted |
 
-**Playfair Display SemiBold Italic** (the only cut loaded, `font-synthesis: none`) appears only in:
+**Playfair Display SemiBold Italic** (the only cut loaded, `font-synthesis: none`) is used in exactly three places:
 1. Home's greeting ("Hey, Sofía", 30px);
 2. the book title in the book page hero (30px);
-3. the share cards' headlines and big numbers (the card headline, the book title, the top 4 titles and the stat numbers).
+3. the share cards' headlines (the card headline, the book title, the top 4 titles and the big stat numbers).
+
+Nowhere else: not in page titles, section titles, stat numbers in the app, drawers or toasts. A fourth use means changing this rule first.
 
 Everything else in a share card (kicker, quote, "Living rent-free…", "Your vibe…", genre labels, footer and wordmark) is sans. Body text (synopsis, reviews, comments) is sans everywhere. The mono (star values, rank numbers, the invite link) is Roboto Mono.
 
@@ -177,8 +179,8 @@ Elements painted with `--primary` (light, at rest, counted from computed styles 
 **Sentence case** in titles, buttons, tabs, drawer titles and toasts: only the first word and proper nouns are capitalized ("2026 reading challenge", "Edit profile", "Share card", "Added to Want to read", where "Want to read" is a shelf's name).
 
 **Navigation uses one verb, "See"** (going to more content, on another screen or expanded in place):
-- **See all** opens or expands the full list of what the section shows ("See all stats", "See all 6 reviews", "See all tropes"). Screen readers get the noun when the visible label is just "See all".
-- **See {destination}** goes anywhere else, named after where it lands: "See stats" (challenge card), "See Discover" (For you), "See content warnings".
+- **See all** opens or expands the full list of what the section shows ("See all stats", "See all 6 reviews", "See all tropes"; on Home's For you, "See all" in the header and "See all picks" in its empty state). Screen readers get the noun when the visible label is just "See all" (For you's reads "See all picks").
+- **See {destination}** goes anywhere else, named after where it lands: "See stats" (challenge card), "See content warnings".
 - Never "View", "See more", "Show more" or "Go to". "Go home" is the one exception: it's a recovery action on the error and 404 screens, not browsing.
 - **Show** isn't navigation: it applies a selection, switches a view or collapses ("Show 40 books" on the filters, "Show as table", "Show fewer reviews").
 

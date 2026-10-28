@@ -6,7 +6,7 @@ type Props = {
   /** Use instead of label when a visible heading names the bar */
   labelledBy?: string
   valueText: string
-  /** ink: the reading challenge. --foreground fill on the --muted track (light 9.55:1, dark 13.76:1) instead of --primary */
+  /** ink: the reading challenge. --foreground fill on the --track instead of --primary */
   tone?: 'default' | 'ink'
   className?: string
 }
@@ -26,7 +26,7 @@ export function ProgressBar({ percent, label, labelledBy, valueText, tone = 'def
       aria-valuemax={100}
       aria-valuenow={value}
       aria-valuetext={valueText}
-      className={cn('h-2 overflow-hidden rounded-full', 'bg-muted', className)}
+      className={cn('h-2 overflow-hidden rounded-full', 'bg-track', className)}
     >
       <div
         className={cn(

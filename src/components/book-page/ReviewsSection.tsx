@@ -61,6 +61,7 @@ export function ReviewsSection({ book }: { book: Book }) {
         </h2>
         <Button
           variant="outline"
+          data-log-sheet-opener=""
           className="min-h-11 border-muted-foreground"
           onClick={(e) =>
             logSheet.open(book.id, {

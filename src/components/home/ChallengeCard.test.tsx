@@ -39,7 +39,7 @@ describe('ChallengeCard', () => {
     const section = host.querySelector('section')!
     expect(section.className).toContain('bg-card')
     expect(section.className).not.toContain('bg-primary')
-    expect(host.querySelector('h2')!.textContent).toBe('2026 Reading Challenge')
+    expect(host.querySelector('h2')!.textContent).toBe('2026 reading challenge')
     expect(host.querySelector('.stat-number')!.textContent).toBe('38')
 
     const bar = host.querySelector('[role="progressbar"]')!
@@ -50,7 +50,7 @@ describe('ChallengeCard', () => {
     expect(host.textContent).toContain('ahead. Lowkey slaying.')
     const link = host.querySelector('a')!
     expect(link.getAttribute('href')).toBe('/profile/stats')
-    expect(link.textContent).toBe('View reading challenge')
+    expect(link.textContent).toBe('See stats')
   })
 
   it('once the goal is met: "Goal crushed. Iconic." and "Raise your goal"', () => {

@@ -9,8 +9,8 @@ type Props = {
   kicker?: string
   /** One line under the title, e.g. why a recommendation fits */
   note?: string
-  /** "See more" / "See all", always right-aligned. srLabel adds context for screen readers. */
-  link?: { to: string; label: 'See more' | 'See all'; srLabel?: string }
+  /** Copy rule: "See all" for a full list, "See {destination}" otherwise. Always right-aligned; srLabel adds context. */
+  link?: { to: string; label: `See ${string}`; srLabel?: string }
   /** Anything else on the right (e.g. a button) when there's no link */
   action?: ReactNode
   /** Heading level stays h2; tabIndex lets deep links move focus to it */

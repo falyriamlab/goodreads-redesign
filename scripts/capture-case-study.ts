@@ -13,6 +13,7 @@
 import { spawn, type ChildProcess } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
+import zlib from 'node:zlib'
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright'
 
 const ROOT = process.cwd()
@@ -88,9 +89,12 @@ async function shot(page: Page, file: string) {
 }
 
 let captures = 0
-const audits: { screen: string; overflow: number; nested: number; small: unknown[] }[] = []
+const audits: { screen: string; overflow: number; nested: number; small: unknown[]; headings: string[] }[] = []
 
-/** 44px targets (counting ::after hit extensions), nothing interactive nested, no horizontal overflow */
+/**
+ * 44px targets (counting ::after hit extensions), nothing interactive nested, no horizontal overflow,
+ * and the heading outline: one h1, first, and no skipped level (h1 → h3)
+ */
 async function audit(page: Page, screen: string) {
   const r = await page.evaluate(() => {
     const sel =
@@ -122,6 +126,23 @@ async function audit(page: Page, screen: string) {
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       nested: document.querySelectorAll('a a, a button, button a, button button, a input, button input').length,
       small,
+      headings: (() => {
+        // An open modal (drawer, sheet) hides the page from assistive tech: its own outline is what's read,
+        // starting at its title (an h2), so there it's checked for skipped levels only
+        const modal = document.querySelector('[role="dialog"][data-state="open"]')
+        const hs = [...(modal ?? document).querySelectorAll<HTMLElement>('h1, h2, h3, h4, h5, h6, [role="heading"]')].filter(
+          (h) => modal || !h.closest('[aria-hidden="true"], [hidden], [role="img"]'),
+        )
+        const levels = hs.map((h) => Number(h.getAttribute('aria-level') ?? h.tagName.slice(1)))
+        const issues: string[] = []
+        const h1s = levels.filter((l) => l === 1).length
+        if (!modal && h1s !== 1) issues.push(`${h1s} h1`)
+        else if (!modal && levels[0] !== 1) issues.push(`starts at h${levels[0]}`)
+        levels.forEach((l, i) => {
+          if (i > 0 && l > levels[i - 1] + 1) issues.push(`h${levels[i - 1]} → h${l} "${hs[i].textContent!.trim().slice(0, 30)}"`)
+        })
+        return issues
+      })(),
     }
   })
   audits.push({ screen, ...r })
@@ -527,7 +548,11 @@ async function shareCards(browser: Browser) {
 
 type Check = { id: string; check: string; pass: boolean; evidence: string }
 const qa: Check[] = []
-const record = (id: string, check: string, pass: boolean, evidence: string) => qa.push({ id, check, pass, evidence })
+const record = (id: string, check: string, pass: boolean, evidence: string) => {
+  qa.push({ id, check, pass, evidence })
+  // Progress as it goes: the QA phases take minutes
+  console.log(`  ${pass ? 'pass' : 'FAIL'} ${id} ${check}`)
+}
 const storedEntry = (page: Page, bookId: string) =>
   page.evaluate((id) => JSON.parse(localStorage.getItem('goodreads-library')!).state.entries[id], bookId)
 
@@ -563,8 +588,8 @@ async function qaChecks(browser: Browser) {
     await open()
     await sheetOpen(page)
     await page.goBack()
-    await page.waitForTimeout(600)
-    const closed = !(await drawer.isVisible())
+    // The close animation takes ~0.5s after the popstate (≈840ms from Back in Playwright): wait for it, up to 2s
+    const closed = await drawer.waitFor({ state: 'hidden', timeout: 2000 }).then(() => true, () => false)
     const sameUrl = page.url() === BASE + url
     await page.goBack()
     await page.waitForTimeout(600)
@@ -1005,29 +1030,417 @@ async function qaPhase2(browser: Browser) {
   await context.close()
 }
 
+/* ---------- QA phase 3 checks (M7, M8, B1–B8) ---------- */
+
+/** Contrast helpers injected into the page: tokens and computed colors → sRGB, composited, WCAG ratio */
+const COLOR_HELPERS = `
+  window.__px = (c) => {
+    const ctx = (window.__ctx ??= document.createElement('canvas').getContext('2d', { willReadFrequently: true }))
+    ctx.clearRect(0, 0, 1, 1)
+    ctx.fillStyle = '#000'
+    ctx.fillStyle = c
+    ctx.fillRect(0, 0, 1, 1)
+    return [...ctx.getImageData(0, 0, 1, 1).data].map((v) => v / 255)
+  }
+  window.__token = (name, el = document.documentElement) => window.__px(getComputedStyle(el).getPropertyValue(name).trim())
+  window.__bg = (el) => {
+    const layers = []
+    for (let n = el; n; n = n.parentElement) {
+      const c = window.__px(getComputedStyle(n).backgroundColor)
+      if (c[3] > 0) layers.push(c)
+      if (c[3] >= 1) break
+    }
+    let bg = [1, 1, 1]
+    for (const l of layers.reverse()) bg = l.slice(0, 3).map((v, i) => l[3] * v + (1 - l[3]) * bg[i])
+    return bg
+  }
+  window.__ratio = (a, b) => {
+    const lum = ([r, g, bl]) => {
+      const f = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+      return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(bl)
+    }
+    const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m)
+    return Math.round(((x + 0.05) / (y + 0.05)) * 100) / 100
+  }
+  window.__same = (a, b) => a.slice(0, 3).every((v, i) => Math.abs(v - b[i]) < 0.02)
+`
+/** The helpers above, as the page sees them */
+type ColorHelpers = {
+  __px: (color: string) => number[]
+  __token: (name: string) => number[]
+  __bg: (el: Element) => number[]
+  __ratio: (a: number[], b: number[]) => number
+  __same: (a: number[], b: number[]) => boolean
+}
+
+const dayAfter = (iso: string) => {
+  const d = new Date(`${iso}T12:00:00Z`)
+  d.setUTCDate(d.getUTCDate() + 1)
+  return d.toISOString().slice(0, 10)
+}
+
+/** gzip size (KB) of built files, by the names the browser requested */
+const gzipKB = (files: string[]) =>
+  Math.round(
+    (files.reduce((sum, f) => sum + zlib.gzipSync(fs.readFileSync(path.join(ROOT, 'dist', 'assets', f)), { level: 9 }).length, 0) / 1024) * 10,
+  ) / 10
+
+async function qaPhase3(browser: Browser) {
+  const context = await newContext(browser, 'light')
+  await context.addInitScript(COLOR_HELPERS)
+  const page = await context.newPage()
+  await page.goto(BASE)
+  await resetDemo(page)
+  const pop = page.locator('[data-slot="popover-content"]')
+
+  // M7: every bar's fill against its track ≥ 3:1, light and dark (the tracks used to be --muted: 1.01:1 in dark)
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme })
+    const bars: string[] = []
+    let min = Infinity
+    let muted = 0
+    for (const [url, where] of [
+      ['/', 'Home'],
+      ['/book/fourth-wing', 'Book'],
+      ['/profile', 'Profile'],
+      ['/profile/stats', 'Stats'],
+    ] as const) {
+      await go(page, url)
+      const r = await page.evaluate(() => {
+        const w = window as unknown as ColorHelpers
+        const tracks = [...document.querySelectorAll<HTMLElement>('main .bg-track')].filter((t) => t.firstElementChild && t.getClientRects().length)
+        return {
+          ratios: tracks.map((t) => w.__ratio(w.__px(getComputedStyle(t.firstElementChild!).backgroundColor), w.__bg(t))),
+          // A bar still on the old token would be a .bg-muted pill with a fill inside
+          muted: [...document.querySelectorAll('main .rounded-full.bg-muted')].filter((t) => t.firstElementChild).length,
+        }
+      })
+      muted += r.muted
+      const ratios = r.ratios.sort((a, b) => a - b)
+      if (ratios.length) {
+        min = Math.min(min, ratios[0])
+        bars.push(`${where} ${ratios.length} bars ${ratios[0]}${ratios[ratios.length - 1] !== ratios[0] ? `–${ratios[ratios.length - 1]}` : ''}`)
+      }
+    }
+    const tokens = await page.evaluate(() => {
+      const w = window as unknown as ColorHelpers
+      return {
+        ink: w.__ratio(w.__token('--foreground'), w.__token('--track')),
+        primary: w.__ratio(w.__token('--primary'), w.__token('--track')),
+        placeholder: w.__ratio(w.__token('--placeholder'), w.__token('--background')),
+      }
+    })
+    record('M7', `Bar fill vs track ≥ 3:1 (${scheme})`, min >= 3 && muted === 0, `${bars.join(', ')}; tokens: challenge ink ${tokens.ink}, primary ${tokens.primary}; tracks left on --muted: ${muted}`)
+    record('M7', `Cover placeholder visible (${scheme})`, tokens.placeholder > 1.1, `--placeholder vs --background ${tokens.placeholder}${scheme === 'dark' ? ' (--muted was 1.01)' : ''}`)
+  }
+  await page.emulateMedia({ colorScheme: 'light' })
+
+  // M8: saving the last page offers to finish, in the same popover
+  const openProgress = async (value: string) => {
+    await go(page, '/book/fourth-wing')
+    await page.getByRole('button', { name: 'Update progress' }).click()
+    await pop.locator('input').fill(value)
+    await pop.locator('input').press('Enter')
+    await page.waitForTimeout(300)
+  }
+  await openProgress('518')
+  const offer = (await pop.getByText("That's the last page!").isVisible()) && (await pop.getByText('Main character finish.').isVisible())
+  const focused = await page.evaluate(() => document.activeElement?.textContent?.trim())
+  const notYet = (await storedEntry(page, 'fourth-wing')).currentPage
+  await pop.getByRole('button', { name: 'Just save progress' }).click()
+  await page.waitForTimeout(800)
+  const justSaved = await storedEntry(page, 'fourth-wing')
+  const toastShown = await page.getByText('Progress saved.').isVisible()
+  record(
+    'M8',
+    'Last page: offer, then "Just save progress"',
+    offer && focused === 'Mark as read' && notYet === 312 && justSaved.currentPage === 518 && justSaved.status === 'reading' && !(await pop.isVisible()) && toastShown,
+    `offer shown: ${offer}, focus on "${focused}", nothing saved before choosing (p. ${notYet}); after: p. ${justSaved.currentPage}, ${justSaved.status}, toast: ${toastShown}`,
+  )
+  await openProgress('518')
+  await pop.getByRole('button', { name: 'Mark as read' }).click()
+  await sheetOpen(page)
+  const status = await page.locator(SHEET).locator('[role="radio"][aria-checked="true"]').first().textContent()
+  const marked = (await storedEntry(page, 'fourth-wing')).currentPage
+  record('M8', 'Last page: "Mark as read" opens the LogSheet on Read', status?.trim() === 'Read' && marked === 518, `sheet status: ${status?.trim()}, page kept: ${marked}`)
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(500)
+
+  // M8: on Home, the reading card's main button is "Update progress" until the last page, then "Finished it"
+  await go(page, '/')
+  const mains = await page.evaluate(() => {
+    const w = window as unknown as ColorHelpers
+    const primary = w.__token('--primary')
+    return [...document.querySelectorAll('main article')]
+      .filter((a) => a.textContent!.includes('Finished it'))
+      .map((a) => {
+        const main = [...a.querySelectorAll('button')].filter((b) => w.__same(w.__px(getComputedStyle(b).backgroundColor), primary))
+        return `${a.querySelector('h3')!.textContent!.trim()} (${a.querySelector('.stat-number')!.textContent}%): ${main.map((b) => b.textContent!.trim()).join(' + ') || 'none'}`
+      })
+  })
+  const fw = mains.find((m) => m.startsWith('Fourth Wing'))
+  const other = mains.find((m) => !m.startsWith('Fourth Wing'))
+  record('M8', 'Home: "Finished it" is the primary at 100%', !!fw?.endsWith(': Finished it') && !!other?.endsWith(': Update progress'), mains.join('; '))
+
+  // B1: no future dates (demo clock included): inline error, aria-describedby, Save disabled
+  await resetDemo(page)
+  await go(page, '/')
+  await page.getByRole('button', { name: 'Finished it' }).first().click()
+  await sheetOpen(page)
+  const sheet = page.locator(SHEET)
+  for (const field of ['Finished', 'Started'] as const) {
+    const input = sheet.getByLabel(field, { exact: true })
+    const today = (await input.getAttribute('max'))!
+    const original = await input.inputValue()
+    await input.fill(dayAfter(today))
+    await page.waitForTimeout(200)
+    const describedBy = await input.getAttribute('aria-describedby')
+    const message = describedBy ? await page.locator(`[id="${describedBy}"]`).textContent() : null
+    const invalid = await input.getAttribute('aria-invalid')
+    const disabled = await sheet.getByRole('button', { name: 'Save', exact: true }).isDisabled()
+    await input.fill(original || today)
+    await page.waitForTimeout(200)
+    const cleared = !(await sheet.getByRole('button', { name: 'Save', exact: true }).isDisabled())
+    record(
+      'B1',
+      `${field} date in the future`,
+      message?.trim() === "Dates can't be in the future." && invalid === 'true' && disabled && cleared,
+      `${dayAfter(today)} (demo today ${today}): "${message?.trim()}", aria-invalid ${invalid}, Save disabled: ${disabled}; back to ${original || today}: Save enabled ${cleared}`,
+    )
+  }
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(500)
+
+  // B2: invalid filters are dropped silently, with a replace (Back skips the bad URL); "0 books" only for a real zero
+  const h1 = async () => (await page.locator('h1').first().textContent())?.trim()
+  await go(page, '/settings')
+  await go(page, '/discover/results?mood=zzz&pace=fast')
+  const cleaned = page.url().replace(BASE, '')
+  const fastTitle = await h1()
+  await page.goBack()
+  await page.waitForTimeout(500)
+  const backTo = page.url().replace(BASE, '')
+  record('B2', 'Invalid filter dropped, URL replaced', cleaned === '/discover/results?pace=fast' && backTo === '/settings' && fastTitle !== '0 books', `?mood=zzz&pace=fast → ${cleaned} ("${fastTitle}"); Back → ${backTo}`)
+  await go(page, '/discover/results?mood=zzz')
+  const allTitle = await h1()
+  await go(page, '/discover/results?mood=adventurous&length=short&pace=slow')
+  const zeroTitle = await h1()
+  const zeroCopy = await page.getByText('No books match all of that.').isVisible()
+  record('B2', '"0 books" only when valid filters match nothing', allTitle !== '0 books' && zeroTitle === '0 books' && zeroCopy, `?mood=zzz → "${allTitle}" (was "0 books"); adventurous + short + slow → "${zeroTitle}", empty state: ${zeroCopy}`)
+
+  // B4: --destructive, light mode darkened to L 0.52
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme })
+    await go(page, '/settings')
+    const d = await page.evaluate(() => {
+      const w = window as unknown as ColorHelpers
+      const destructive = w.__token('--destructive')
+      return {
+        background: w.__ratio(destructive, w.__token('--background')),
+        card: w.__ratio(destructive, w.__token('--card')),
+        onIt: w.__ratio(w.__token('--destructive-foreground'), destructive),
+        white: w.__ratio([1, 1, 1], destructive),
+      }
+    })
+    const pass = scheme === 'light' ? d.background >= 4.5 && d.card >= 4.5 && d.white >= 4.5 : true
+    record('B4', `--destructive (${scheme})`, pass, `text on background ${d.background}, on card ${d.card}; white on it ${d.white}${scheme === 'dark' ? `, its foreground on it ${d.onIt} (dark unchanged)` : ''}`)
+  }
+  await page.emulateMedia({ colorScheme: 'light' })
+
+  // B5: copy rule. Home's challenge card and For you, then a sweep of the UI chrome on every route
+  await go(page, '/')
+  const challenge = (await page.locator('main h2', { hasText: 'reading challenge' }).first().textContent())?.trim()
+  const statsHref = await page.getByRole('link', { name: 'See stats', exact: true }).getAttribute('href')
+  const seeDiscover = await page.getByRole('link', { name: 'See Discover', exact: true }).count()
+  record('B5', 'Challenge card and For you links', challenge === '2026 reading challenge' && statsHref === '/profile/stats' && seeDiscover > 0, `h2 "${challenge}", "See stats" → ${statsHref}, "See Discover" links: ${seeDiscover}`)
+  // Proper nouns that may follow another capitalized word (brands, names, screen names)
+  const PROPER = ['Goodreads', 'Kindle', 'Audible', 'StoryGraph', 'Discover', 'Awards', 'Book', 'Club', 'Girlies', 'Wing', 'Flame', 'Chen', 'Lucía', 'Sofía', 'Herrera', 'Reads']
+  const titleCase: string[] = []
+  const verbs: string[] = []
+  for (const url of ROUTES) {
+    await go(page, url)
+    const r = await page.evaluate((proper) => {
+      const chrome = [...document.querySelectorAll<HTMLElement>('h1, h2, h3, legend, label, button, [role="tab"], [role="menuitem"], a')].filter(
+        // User content (book titles, people, groups, threads) keeps its own capitals
+        (el) => !el.closest('[role="img"], .book-title, article') && !el.matches('a[href^="/book/"], a[href^="/u/"], a[href^="/community/"], a[href^="/messages/"]'),
+      )
+      const texts = chrome.flatMap((el) =>
+        [...el.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent!.trim()).filter(Boolean),
+      )
+      const flagged = texts.filter((t) => {
+        const words = t.split(/\s+/)
+        return words.some((w, i) => i > 0 && /^[A-Z][a-z]/.test(w) && /^[A-Z][a-z]/.test(words[i - 1]) && !proper.includes(w))
+      })
+      const nav = [...document.querySelectorAll('a, button')].map((el) => el.textContent!.trim()).filter((t) => /^(View|See more|Show more|Go to)\b/.test(t))
+      return { flagged, nav }
+    }, PROPER)
+    titleCase.push(...r.flagged.map((t) => `${url}: "${t}"`))
+    verbs.push(...r.nav.map((t) => `${url}: "${t}"`))
+  }
+  record('B5', `Sentence case in titles, buttons, tabs and links (${ROUTES.length} routes)`, titleCase.length === 0, titleCase.length ? titleCase.slice(0, 6).join(', ') : '0 Title Case strings outside proper nouns')
+  record('B5', 'One navigation verb (no View / See more / Show more / Go to)', verbs.length === 0, verbs.length ? verbs.join(', ') : 'none left ("View" and "See more" were on Home, "Go to Home" on 404)')
+
+  // B6: one chip. Pill, --muted-foreground border, no shadow; selected = --secondary + an icon
+  await go(page, '/discover')
+  await page.locator('[data-slot="chip"]').first().click()
+  const chips: string[] = []
+  let chipFails = 0
+  for (const [url, where] of [
+    ['/discover', 'Discover filters'],
+    ['/library', 'Library shelves'],
+    ['/discover/results?mood=dark&pace=fast', 'Results filters'],
+    ['/', 'Home status chips'],
+    ['/book/fourth-wing', 'Book tags'],
+  ] as const) {
+    if (url !== '/discover') await go(page, url)
+    const r = await page.evaluate(() => {
+      const w = window as unknown as ColorHelpers
+      const els = [
+        ...document.querySelectorAll<HTMLElement>('main [data-slot="chip"], main [data-slot="dropdown-menu-trigger"].rounded-full, main a.rounded-full[href^="/discover?"]'),
+      ].filter((el) => el.getClientRects().length && !el.classList.contains('border-transparent'))
+      const secondary = w.__token('--secondary')
+      const border = w.__token('--muted-foreground')
+      const bad: string[] = []
+      let selected = 0
+      for (const el of els) {
+        const s = getComputedStyle(el)
+        const rect = el.getBoundingClientRect()
+        const isSelected = el.getAttribute('aria-pressed') === 'true' || w.__same(w.__px(s.backgroundColor), secondary)
+        if (isSelected) selected++
+        const problems = [
+          s.boxShadow !== 'none' && 'shadow',
+          parseFloat(s.borderTopLeftRadius) < rect.height / 2 - 0.5 && 'not a pill',
+          !w.__same(w.__px(s.borderTopColor), border) && 'border',
+          isSelected && !el.querySelector('svg') && 'selected without icon',
+        ].filter(Boolean)
+        if (problems.length) bad.push(`${el.textContent!.trim().slice(0, 20)}: ${problems.join('/')}`)
+      }
+      const heights = [...new Set(els.map((el) => Math.round(el.getBoundingClientRect().height)))]
+      return { count: els.length, selected, bad, heights }
+    })
+    chipFails += r.bad.length + (r.count === 0 ? 1 : 0)
+    chips.push(`${where} ${r.count} (${r.selected} selected, ${r.heights.join('/')}px)${r.bad.length ? ' ✗ ' + r.bad.slice(0, 2).join(', ') : ''}`)
+  }
+  record('B6', 'One chip: pill, border, no shadow, selected = secondary + icon', chipFails === 0, chips.join('; '))
+  await context.close()
+
+  // B7: the initial bundle, and the LogSheet's first open
+  const indexHtml = fs.readFileSync(path.join(ROOT, 'dist', 'index.html'), 'utf8')
+  const entry = /src="\/assets\/([^"]+\.js)"/.exec(indexHtml)![1]
+  const fresh = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2, isMobile: true, hasTouch: true })
+  const f = await fresh.newPage()
+  await f.goto(BASE + '/', { waitUntil: 'domcontentloaded' })
+  await f.locator('main article').first().waitFor()
+  const scripts = () => f.evaluate(() => performance.getEntriesByType('resource').map((e) => e.name.split('/').pop()!).filter((n) => n.endsWith('.js')))
+  const first = await scripts()
+  await f.waitForTimeout(6000)
+  const deferred = (await scripts()).filter((n) => !first.includes(n))
+  const leaked = first.filter((n) => /^(LogSheet|drawer|sonner)-/.test(n))
+  const entryKB = gzipKB([entry])
+  const initialKB = gzipKB(first)
+  record('B7', 'Entry chunk < 100 KB gzip', entryKB < 100, `${entry} ${entryKB} KB gzip (125.2 before)`)
+  record(
+    'B7',
+    'LogSheet, vaul and sonner out of the first screen',
+    leaked.length === 0 && deferred.some((n) => n.startsWith('LogSheet-')) && deferred.some((n) => n.startsWith('sonner-')),
+    `Home first screen: ${first.length} JS files, ${initialKB} KB gzip (209.1 before); loaded after, in idle time: ${deferred.join(', ')}`,
+  )
+  await fresh.close()
+  // First open on a slow connection (Fast 3G: 150 ms RTT, 1.6 Mbps) while Home's covers are still loading.
+  // The tap comes 2 s after the button appears (reading the card; no hover, it's a phone), then 1 s, then the
+  // instant it appears (worst case). The criterion is on 2 s; the other two are reported as they are
+  for (const delay of [2000, 1000, 0]) {
+    const slow = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 })
+    const s = await slow.newPage()
+    const cdp = await slow.newCDPSession(s)
+    await cdp.send('Network.enable')
+    await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 150, downloadThroughput: 200_000, uploadThroughput: 90_000 })
+    // Timed in the page, from the click event to the sheet in the DOM (Playwright's own click waits aren't the app's)
+    await s.addInitScript(() => {
+      const w = window as unknown as { t0?: number; t1?: number }
+      addEventListener('click', () => (w.t0 ??= performance.now()), true)
+      new MutationObserver(() => {
+        if (w.t0 !== undefined && w.t1 === undefined && document.querySelector('[data-slot="drawer-content"]')) w.t1 = performance.now()
+      }).observe(document, { childList: true, subtree: true })
+    })
+    await s.goto(BASE + '/', { waitUntil: 'domcontentloaded' })
+    const button = s.getByRole('button', { name: 'Finished it' }).first()
+    await button.waitFor()
+    await s.waitForTimeout(delay)
+    await button.click()
+    await s.locator(SHEET).waitFor({ state: 'visible' })
+    const ms = Math.round(await s.evaluate(() => (window as unknown as { t0: number; t1: number }).t1 - (window as unknown as { t0: number }).t0))
+    record(
+      'B7',
+      `First LogSheet open on Fast 3G, tap ${delay / 1000} s after the button appears`,
+      delay === 2000 ? ms < 100 : true,
+      `${ms} ms from tap to sheet (Phase 2, sheet in the initial bundle: ~40 ms)${delay === 2000 ? '' : '; reported, not a criterion'}`,
+    )
+    await slow.close()
+  }
+
+  // B8: manifest, icons, colors from the tokens, no service worker
+  const m = await browser.newContext({ viewport: VIEWPORT })
+  await m.addInitScript(COLOR_HELPERS)
+  const mp = await m.newPage()
+  await mp.goto(BASE + '/', { waitUntil: 'networkidle' })
+  const manifest = await mp.evaluate(async () => {
+    const link = document.querySelector<HTMLLinkElement>('link[rel="manifest"]')
+    const json = link ? await (await fetch(link.href)).json() : null
+    const icons: string[] = json
+      ? await Promise.all(
+          json.icons.map(async (i: { src: string; sizes: string }) => {
+            const img = new Image()
+            img.src = i.src
+            await img.decode()
+            return `${i.sizes}=${img.naturalWidth}`
+          }),
+        )
+      : []
+    const w = window as unknown as ColorHelpers
+    const hex = '#' + w.__token('--background').slice(0, 3).map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join('')
+    return { href: link?.getAttribute('href'), json, icons, tokenHex: hex, workers: (await navigator.serviceWorker.getRegistrations()).length }
+  })
+  const j = manifest.json
+  const iconsOk = manifest.icons.includes('192x192=192') && manifest.icons.includes('512x512=512')
+  record(
+    'B8',
+    'Web manifest',
+    !!j && j.name === 'Goodreads Concept' && !!j.short_name && j.display === 'standalone' && j.start_url === '/' && iconsOk && j.theme_color === manifest.tokenHex && j.background_color === manifest.tokenHex && manifest.workers === 0,
+    `${manifest.href}: "${j?.name}" / "${j?.short_name}", ${j?.display}, start_url ${j?.start_url}, icons ${manifest.icons.join(', ')}, theme and background ${j?.theme_color} = --background ${manifest.tokenHex}, service workers: ${manifest.workers}`,
+  )
+  await m.close()
+}
+
 /* ---------- main ---------- */
 
 const server = await startServer()
 const browser = await chromium.launch({ channel: 'chrome' })
 try {
-  for (const dir of ['screens', 'flows', 'share-cards']) fs.rmSync(path.join(OUT, dir), { recursive: true, force: true })
-  for (const scheme of ['light', 'dark'] as const) await captureScreens(browser, scheme)
-  const metrics = await measureFlows(browser)
-  await shareCards(browser)
-  await qaChecks(browser)
-  await qaPhase2(browser)
+  if (process.env.QA_ONLY !== '1') for (const dir of ['screens', 'flows', 'share-cards']) fs.rmSync(path.join(OUT, dir), { recursive: true, force: true })
+  // QA_ONLY=1 skips the captures; QA_PHASES=3 (or 1,3…) runs only those QA phases. For debugging the checks
+  const qaOnly = process.env.QA_ONLY === '1'
+  const phases = (process.env.QA_PHASES ?? '1,2,3').split(',')
+  if (!qaOnly) for (const scheme of ['light', 'dark'] as const) await captureScreens(browser, scheme)
+  const metrics = qaOnly ? {} : await measureFlows(browser)
+  if (!qaOnly) await shareCards(browser)
+  if (phases.includes('1')) await qaChecks(browser)
+  if (phases.includes('2')) await qaPhase2(browser)
+  if (phases.includes('3')) await qaPhase3(browser)
+  const outline = audits.filter((a) => a.headings.length > 0)
+  record('B3', `Heading outline on every audited screen (${audits.length})`, outline.length === 0, outline.length ? outline.map((a) => `${a.screen}: ${a.headings.join(', ')}`).join('; ') : `${audits.length} of ${audits.length} screens: one h1, no skipped level (Results skipped h1 → h3)`)
 
   fs.writeFileSync(path.join(OUT, 'audit.json'), JSON.stringify({ screens: audits, contrast: contrastIssues, qa }, null, 2) + '\n')
   fs.writeFileSync(path.join(OUT, 'metrics.json'), JSON.stringify(metrics, null, 2) + '\n')
 
-  const failing = audits.filter((a) => a.overflow > 0 || a.nested > 0 || a.small.length > 0)
+  const failing = audits.filter((a) => a.overflow > 0 || a.nested > 0 || a.small.length > 0 || a.headings.length > 0)
   console.log(`Captures: ${captures}`)
   console.log('Flows:', JSON.stringify(metrics, null, 2))
   console.log(`Audit: ${audits.length} screens, ${failing.length} with issues`)
-  for (const a of failing) console.log(`  ${a.screen}:`, JSON.stringify({ overflow: a.overflow, nested: a.nested, small: a.small }))
+  for (const a of failing) console.log(`  ${a.screen}:`, JSON.stringify({ overflow: a.overflow, nested: a.nested, small: a.small, headings: a.headings }))
   console.log(`Text contrast: ${contrastIssues.length} failing text nodes (light + dark)`)
   for (const c of contrastIssues) console.log(`  ${c.scheme} ${c.screen}: "${c.text}" ${c.ratio} < ${c.min} (${c.fg} on ${c.bg})`)
-  console.log(`QA checks (phases 1–2): ${qa.filter((c) => c.pass).length}/${qa.length} pass`)
+  console.log(`QA checks (phases 1–3): ${qa.filter((c) => c.pass).length}/${qa.length} pass`)
   for (const c of qa) console.log(`  ${c.pass ? 'PASS' : 'FAIL'} ${c.id} ${c.check}: ${c.evidence}`)
 } finally {
   await browser.close()

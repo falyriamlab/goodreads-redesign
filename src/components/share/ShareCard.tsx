@@ -131,7 +131,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
                     <span>{g.label}</span>
                     <span className="font-bold tabular-nums">{g.percent}%</span>
                   </div>
-                  <div className={cn('h-5 overflow-hidden rounded-full', brand ? 'border-2 border-primary-foreground' : 'bg-muted')}>
+                  <div className={cn('h-5 overflow-hidden rounded-full', brand ? 'border-2 border-primary-foreground' : 'bg-track')}>
                     <div className={cn('h-full rounded-full', brand ? 'bg-primary-foreground' : 'bg-primary')} style={{ width: `${g.percent}%` }} />
                   </div>
                 </div>
@@ -152,7 +152,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
             <div className="mt-14 flex justify-center">
               {renderCover(content.book, 'w-[520px]')}
             </div>
-            <h1 className="mt-14 text-center font-serif text-8xl leading-[1.05] font-semibold">{content.book.title}</h1>
+            <p className="mt-14 text-center font-serif text-8xl leading-[1.05] font-semibold">{content.book.title}</p>
             <p className={cn('mt-4 text-center text-4xl', soft)}>{content.book.author}</p>
             <div className="mt-10 flex items-center justify-center gap-8">
               {content.rating !== null && <StarRating value={content.rating} size="xl" tone={brand ? 'current' : 'rating'} />}
@@ -204,8 +204,9 @@ function Kicker({ children, className }: { children: ReactNode; className?: stri
   return <p className={cn('text-3xl font-semibold tracking-[0.16em] uppercase', className)}>{children}</p>
 }
 
+// A <p>, not a heading: the card is one image (role="img" + alt), so it adds nothing to the page outline
 function Headline({ children }: { children: ReactNode }) {
-  return <h1 className="mt-6 font-serif text-[120px] leading-[0.95] font-semibold tracking-tight">{children}</h1>
+  return <p className="mt-6 font-serif text-[120px] leading-[0.95] font-semibold tracking-tight">{children}</p>
 }
 
 function StatBlock({ label, value, soft }: { label: string; value: string; soft: string }) {

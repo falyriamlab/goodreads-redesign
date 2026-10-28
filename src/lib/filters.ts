@@ -138,6 +138,30 @@ export function valuesByFrequency(books: Book[], pick: (b: Book) => string[]): s
   return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([v]) => v)
 }
 
+/**
+ * The filter params the catalog can actually match, in URL order: unknown params, values no book has
+ * (?mood=zzz) and duplicates are dropped. Results replaces its URL with this, so a bad link is ignored silently.
+ */
+export function cleanFilterParams(params: URLSearchParams, catalog: Book[]): URLSearchParams {
+  const vocab: Record<keyof Filters, Set<string>> = {
+    moods: new Set(catalog.flatMap((b) => b.moods)),
+    pace: new Set(PACES),
+    tropes: new Set(catalog.flatMap((b) => b.tropes)),
+    genres: new Set(catalog.flatMap((b) => b.genres)),
+    length: new Set(LENGTHS),
+    exclude: new Set(catalog.flatMap((b) => b.contentWarnings)),
+  }
+  const next = new URLSearchParams()
+  const seen = new Set<string>()
+  for (const [key, value] of params) {
+    const group = GROUP_BY_PARAM[key]
+    if (!group || !vocab[group].has(value) || seen.has(`${key}=${value}`)) continue
+    seen.add(`${key}=${value}`)
+    next.append(key, value)
+  }
+  return next
+}
+
 /* ---------- Order-preserving URL edits (so "last filter" means the one added last) ---------- */
 
 /** Adds the value to the end, or removes just that value */

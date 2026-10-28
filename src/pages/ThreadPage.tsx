@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { useAllReplies, useAllThreads } from '@/components/community/data'
 import { FixedComposer } from '@/components/community/FixedComposer'
 import { JoinButton } from '@/components/community/JoinButton'

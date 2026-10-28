@@ -1,7 +1,7 @@
 import { useId } from 'react'
 import { BookOpen, CheckCheck, Heart, MessageCircle, MessagesSquare, Sparkles, type LucideIcon } from 'lucide-react'
 import { Link } from 'react-router'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { TopBar } from '@/components/layout/TopBar'
 import { Button } from '@/components/ui/button'
 import { splitNotifications } from '@/lib/community'

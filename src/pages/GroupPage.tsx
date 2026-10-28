@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import { MessageSquare, Plus } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { summarizeThreads, useAllReplies, useAllThreads } from '@/components/community/data'
 import { JoinButton } from '@/components/community/JoinButton'
 import { NewThreadDrawer } from '@/components/community/NewThreadDrawer'

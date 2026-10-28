@@ -8,8 +8,8 @@ type Props = { challenge: ChallengeProgress; pace: ChallengePace; percent: numbe
 
 /**
  * Rule 2: the reading challenge is a card (Home and Profile), not a full-width band. Neutral on purpose:
- * the count is a stat number, and the bar is ink on the muted track (the one progress bar that isn't --primary).
- * Once the goal is met, the link becomes "Raise your goal".
+ * the count is a stat number, and the bar is ink on the track (the one progress bar that isn't --primary).
+ * The link is "See stats" (copy rule: See + destination); once the goal is met it becomes "Raise your goal".
  */
 export function ChallengeCard({ challenge, pace, percent, to = '/profile/stats' }: Props) {
   const id = useId()
@@ -18,16 +18,10 @@ export function ChallengeCard({ challenge, pace, percent, to = '/profile/stats' 
     <section aria-labelledby={id} className="mx-4 space-y-4 rounded-lg border border-border bg-card p-5 text-card-foreground">
       <div className="flex items-center justify-between gap-3">
         <h2 id={id} className="section-title">
-          {challenge.year} Reading Challenge
+          {challenge.year} reading challenge
         </h2>
         <Link to={to} className={seeMoreClass}>
-          {pace.goalMet ? (
-            'Raise your goal'
-          ) : (
-            <>
-              View<span className="sr-only"> reading challenge</span>
-            </>
-          )}
+          {pace.goalMet ? 'Raise your goal' : 'See stats'}
         </Link>
       </div>
       <p className="flex items-baseline gap-2">

@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { BookCover } from '@/components/book/BookCover'
 import { ConceptNote } from '@/components/common/ConceptNote'
 import { Button } from '@/components/ui/button'

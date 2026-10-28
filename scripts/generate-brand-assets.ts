@@ -3,7 +3,11 @@
  *
  * - public/og-image.png (1200×630): the Brand month share card from case-study/share-cards/,
  *   framed with the project name, on the theme indigo
- * - public/favicon-32.png and public/apple-touch-icon.png (180×180): renders of public/favicon.svg
+ * - public/favicon-32.png, public/apple-touch-icon.png (180×180), public/icon-192.png and public/icon-512.png:
+ *   renders of public/favicon.svg
+ * - public/manifest.webmanifest: install name, icons and colors. theme_color and background_color are the light
+ *   theme's --background, read from src/index.css and converted to sRGB by the browser (same as the theme-color meta).
+ *   No service worker on purpose: nothing caches an old version after a deploy.
  *
  * Colors are the light theme tokens in sRGB (--primary at L 0.56 = rgb(92 94 232), --primary-foreground = white).
  * White on that indigo is 4.98:1. Type: Playfair Display SemiBold Italic + Plus Jakarta Sans, like the app.
@@ -52,6 +56,8 @@ try {
   for (const [file, size] of [
     ['favicon-32.png', 32],
     ['apple-touch-icon.png', 180],
+    ['icon-192.png', 192],
+    ['icon-512.png', 512],
   ] as const) {
     const icon = await browser.newPage({ viewport: { width: size, height: size } })
     await icon.setContent(`<html><body style="margin:0">${svg.replace('<svg ', `<svg width="${size}" height="${size}" `)}</body></html>`)
@@ -59,7 +65,36 @@ try {
     if (file === 'apple-touch-icon.png') await icon.evaluate(() => document.querySelector('rect')?.setAttribute('rx', '0'))
     await icon.screenshot({ path: path.join(PUBLIC, file), omitBackground: true })
   }
-  console.log('Wrote public/og-image.png, public/favicon-32.png, public/apple-touch-icon.png')
+  // Token → sRGB hex: the browser paints the oklch() value on a canvas and reads the pixel back
+  const css = fs.readFileSync(path.join(ROOT, 'src', 'index.css'), 'utf8')
+  const lightTheme = css.slice(css.indexOf(':root,'), css.indexOf('.dark,'))
+  const background = /--background:\s*([^;]+);/.exec(lightTheme)?.[1]
+  if (!background) throw new Error('--background not found in src/index.css')
+  const hex = await page.evaluate((color) => {
+    const ctx = document.createElement('canvas').getContext('2d')!
+    ctx.fillStyle = color
+    ctx.fillRect(0, 0, 1, 1)
+    const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
+    return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')
+  }, background)
+  const manifest = {
+    name: 'Goodreads Concept',
+    short_name: 'GR Concept',
+    description: 'A mobile-first concept redesign of Goodreads for a UX case study. Not affiliated with Goodreads or Amazon.',
+    id: '/',
+    start_url: '/',
+    scope: '/',
+    display: 'standalone',
+    lang: 'en',
+    theme_color: hex,
+    background_color: hex,
+    icons: [
+      { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+    ],
+  }
+  fs.writeFileSync(path.join(PUBLIC, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2) + '\n')
+  console.log('Wrote public/og-image.png, favicon-32.png, apple-touch-icon.png, icon-192.png, icon-512.png, manifest.webmanifest')
 } finally {
   await browser.close()
 }

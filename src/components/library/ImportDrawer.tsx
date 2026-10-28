@@ -1,6 +1,6 @@
 import { useId, useMemo, useState, type ChangeEvent } from 'react'
 import { CircleAlert, FileUp } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { BookCover } from '@/components/book/BookCover'
 import { statusMeta } from '@/components/book/statusMeta'
 import { SegmentedRadio } from '@/components/common/SegmentedRadio'

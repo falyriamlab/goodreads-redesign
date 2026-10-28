@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { formatTimeAgo } from '@/lib/date'
 import { groups } from '@/mocks/community'
 import { useLibrary } from '@/state/library'

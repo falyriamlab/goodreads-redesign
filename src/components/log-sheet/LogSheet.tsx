@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState, type ComponentProps } from 'react'
 import { CircleAlert } from 'lucide-react'
 import { useNavigate } from 'react-router'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { BookCover } from '@/components/book/BookCover'
 import { LovedButton } from '@/components/book/LovedButton'
 import { StarRating } from '@/components/book/StarRating'
@@ -23,6 +23,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { todayISO } from '@/lib/date'
+import { checkLogDates } from '@/lib/logDates'
 import { parsePageInput } from '@/lib/pageInput'
 import { cn } from '@/lib/utils'
 import { books, getBookById } from '@/mocks/books'
@@ -116,7 +117,9 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
 
   const finishing = status === 'read' || status === 'dnf'
   const reviewAllowed = book.isPublished && finishing
-  const dateError = finishing && startedAt !== '' && finishedAt !== '' && finishedAt < startedAt
+  const today = todayISO()
+  const dates = checkLogDates({ startedAt, finishedAt, finishing, today })
+  const dateError = dates.message !== null
   // DNF "Stopped at page" is optional, but never out of range
   const dnfPage = parsePageInput(dnfPageText, book.pages, { required: false })
   const pageError = status === 'dnf' && !dnfPage.valid
@@ -247,9 +250,9 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
                     id={ids.started}
                     type="date"
                     value={startedAt}
-                    max={todayISO()}
+                    max={today}
                     onChange={(e) => setStartedAt(e.target.value)}
-                    aria-invalid={dateError || undefined}
+                    aria-invalid={dates.startedInvalid || undefined}
                     aria-describedby={dateError ? ids.dateError : undefined}
                     className={fieldClass}
                   />
@@ -261,9 +264,9 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
                       id={ids.finished}
                       type="date"
                       value={finishedAt}
-                      max={todayISO()}
+                      max={today}
                       onChange={(e) => setFinishedAt(e.target.value)}
-                      aria-invalid={dateError || undefined}
+                      aria-invalid={dates.finishedInvalid || undefined}
                       aria-describedby={dateError ? ids.dateError : undefined}
                       className={fieldClass}
                     />
@@ -272,7 +275,7 @@ export function LogSheet({ bookId, options, open, onOpenChange, onCloseAutoFocus
                 {dateError && (
                   <p id={ids.dateError} role="alert" className="col-span-2 flex items-center gap-1.5 text-sm font-medium">
                     <CircleAlert className="size-4 shrink-0 text-destructive" aria-hidden="true" />
-                    Finish date can't be before you started.
+                    {dates.message}
                   </p>
                 )}
               </div>

@@ -1,7 +1,7 @@
 import { Outlet, ScrollRestoration } from 'react-router'
+import { LazyToaster } from '@/components/layout/LazyToaster'
 import { OfflineNotice } from '@/components/layout/OfflineNotice'
 import { LogSheetProvider } from '@/components/log-sheet/LogSheetProvider'
-import { Toaster } from '@/components/ui/sonner'
 
 // Toasts go at the top, just under the TopBar: the bottom is taken by the nav and the log sheet,
 // and a toast there would cover sheet actions (e.g. "Start reading" in What's next?)
@@ -15,7 +15,7 @@ export function RootLayout() {
       {/* New pages start at the top; back/forward restores the previous position */}
       <ScrollRestoration />
       <OfflineNotice />
-      <Toaster
+      <LazyToaster
         position="top-center"
         offset={toastOffset}
         mobileOffset={toastOffset}

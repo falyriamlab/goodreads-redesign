@@ -4,223 +4,260 @@
       "screen": "home",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "discover-filters",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "results",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "search-forth-wing",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "book-fourth-wing-1",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "book-fourth-wing-2",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "book-fourth-wing-3",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "book-fourth-wing-4",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "book-fourth-wing-5",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "book-fourth-wing-6",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "logsheet-read",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "whats-next",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "library-grid",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "library-my-order",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "import-summary",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "journal",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "profile",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "stats",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "feed",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "buddy-read-spoilers",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "notifications",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "conversation",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "share",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "visitor-profile",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "edit-profile",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "settings",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "buddy-reads",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "groups",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "group",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "thread",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "messages",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "find-friends",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "invite",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "not-found",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "dev-components",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "library-list",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     },
     {
       "screen": "library-selection",
       "overflow": 0,
       "nested": 0,
-      "small": []
+      "small": [],
+      "headings": []
     }
   ],
   "contrast": [],
@@ -530,6 +567,150 @@
       "check": "Inset focus rings vs row background (dark)",
       "pass": true,
       "evidence": "Segment (checked) 4.01, Segment (unchecked) 5.75, Bottom nav tab 5.75, Notification row (unread) 5.29, Book page row 5.75"
+    },
+    {
+      "id": "M7",
+      "check": "Bar fill vs track ≥ 3:1 (light)",
+      "pass": true,
+      "evidence": "Home 3 bars 3.24–9.52, Book 1 bars 3.24, Profile 4 bars 3.24–9.52, Stats 15 bars 3.24; tokens: challenge ink 9.52, primary 3.24; tracks left on --muted: 0"
+    },
+    {
+      "id": "M7",
+      "check": "Cover placeholder visible (light)",
+      "pass": true,
+      "evidence": "--placeholder vs --background 1.22"
+    },
+    {
+      "id": "M7",
+      "check": "Bar fill vs track ≥ 3:1 (dark)",
+      "pass": true,
+      "evidence": "Home 3 bars 4.01–9.7, Book 1 bars 4.01, Profile 4 bars 4.01–9.7, Stats 15 bars 4.01; tokens: challenge ink 9.7, primary 4.01; tracks left on --muted: 0"
+    },
+    {
+      "id": "M7",
+      "check": "Cover placeholder visible (dark)",
+      "pass": true,
+      "evidence": "--placeholder vs --background 1.43 (--muted was 1.01)"
+    },
+    {
+      "id": "M8",
+      "check": "Last page: offer, then \"Just save progress\"",
+      "pass": true,
+      "evidence": "offer shown: true, focus on \"Mark as read\", nothing saved before choosing (p. 312); after: p. 518, reading, toast: true"
+    },
+    {
+      "id": "M8",
+      "check": "Last page: \"Mark as read\" opens the LogSheet on Read",
+      "pass": true,
+      "evidence": "sheet status: Read, page kept: 518"
+    },
+    {
+      "id": "M8",
+      "check": "Home: \"Finished it\" is the primary at 100%",
+      "pass": true,
+      "evidence": "Fourth Wing (100%): Finished it; The Cruel Prince (37%): Update progress"
+    },
+    {
+      "id": "B1",
+      "check": "Finished date in the future",
+      "pass": true,
+      "evidence": "2026-10-17 (demo today 2026-10-16): \"Dates can't be in the future.\", aria-invalid true, Save disabled: true; back to 2026-10-16: Save enabled true"
+    },
+    {
+      "id": "B1",
+      "check": "Started date in the future",
+      "pass": true,
+      "evidence": "2026-10-17 (demo today 2026-10-16): \"Dates can't be in the future.\", aria-invalid true, Save disabled: true; back to 2026-10-02: Save enabled true"
+    },
+    {
+      "id": "B2",
+      "check": "Invalid filter dropped, URL replaced",
+      "pass": true,
+      "evidence": "?mood=zzz&pace=fast → /discover/results?pace=fast (\"18 books\"); Back → /settings"
+    },
+    {
+      "id": "B2",
+      "check": "\"0 books\" only when valid filters match nothing",
+      "pass": true,
+      "evidence": "?mood=zzz → \"40 books\" (was \"0 books\"); adventurous + short + slow → \"0 books\", empty state: true"
+    },
+    {
+      "id": "B4",
+      "check": "--destructive (light)",
+      "pass": true,
+      "evidence": "text on background 4.88, on card 5.61; white on it 6.12"
+    },
+    {
+      "id": "B4",
+      "check": "--destructive (dark)",
+      "pass": true,
+      "evidence": "text on background 4.55, on card 3.88; white on it 3.76, its foreground on it 4.55 (dark unchanged)"
+    },
+    {
+      "id": "B5",
+      "check": "Challenge card and For you links",
+      "pass": true,
+      "evidence": "h2 \"2026 reading challenge\", \"See stats\" → /profile/stats, \"See Discover\" links: 1"
+    },
+    {
+      "id": "B5",
+      "check": "Sentence case in titles, buttons, tabs and links (27 routes)",
+      "pass": true,
+      "evidence": "0 Title Case strings outside proper nouns"
+    },
+    {
+      "id": "B5",
+      "check": "One navigation verb (no View / See more / Show more / Go to)",
+      "pass": true,
+      "evidence": "none left (\"View\" and \"See more\" were on Home, \"Go to Home\" on 404)"
+    },
+    {
+      "id": "B6",
+      "check": "One chip: pill, border, no shadow, selected = secondary + icon",
+      "pass": true,
+      "evidence": "Discover filters 25 (2 selected, 36/32px); Library shelves 6 (3 selected, 36/32px); Results filters 13 (7 selected, 36/32px); Home status chips 10 (0 selected, 32px); Book tags 14 (0 selected, 32px)"
+    },
+    {
+      "id": "B7",
+      "check": "Entry chunk < 100 KB gzip",
+      "pass": false,
+      "evidence": "index-Boy7fnVW.js 130.5 KB gzip (125.2 before)"
+    },
+    {
+      "id": "B7",
+      "check": "LogSheet, vaul and sonner out of the first screen",
+      "pass": true,
+      "evidence": "Home first screen: 39 JS files, 187.9 KB gzip (209.1 before); loaded after, in idle time: LogSheet-BtPidV_z.js, drawer-CJ05OoF1.js, toggle-group-BQFCGHzR.js, checkbox-lF_0RjAb.js, LovedButton-l55DWxcv.js, SegmentedRadio-D0L6lrNt.js, textarea-DjvP1sJt.js, dist-Bym6lZQ5.js, sonner-BwyeI7sP.js"
+    },
+    {
+      "id": "B7",
+      "check": "First LogSheet open on Fast 3G, tap 2 s after the button appears",
+      "pass": true,
+      "evidence": "33 ms from tap to sheet (Phase 2, sheet in the initial bundle: ~40 ms)"
+    },
+    {
+      "id": "B7",
+      "check": "First LogSheet open on Fast 3G, tap 1 s after the button appears",
+      "pass": true,
+      "evidence": "30 ms from tap to sheet (Phase 2, sheet in the initial bundle: ~40 ms); reported, not a criterion"
+    },
+    {
+      "id": "B7",
+      "check": "First LogSheet open on Fast 3G, tap 0 s after the button appears",
+      "pass": true,
+      "evidence": "834 ms from tap to sheet (Phase 2, sheet in the initial bundle: ~40 ms); reported, not a criterion"
+    },
+    {
+      "id": "B8",
+      "check": "Web manifest",
+      "pass": true,
+      "evidence": "/manifest.webmanifest: \"Goodreads Concept\" / \"GR Concept\", standalone, start_url /, icons 192x192=192, 512x512=512, theme and background #e7e5e4 = --background #e7e5e4, service workers: 0"
+    },
+    {
+      "id": "B3",
+      "check": "Heading outline on every audited screen (37)",
+      "pass": true,
+      "evidence": "37 of 37 screens: one h1, no skipped level (Results skipped h1 → h3)"
     }
   ]
 }

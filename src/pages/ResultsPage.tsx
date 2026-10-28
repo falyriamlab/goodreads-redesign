@@ -1,11 +1,12 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { X } from 'lucide-react'
 import { useSearchParams } from 'react-router'
 import { BookCard } from '@/components/book/BookCard'
+import { Chip } from '@/components/common/Chip'
 import { SegmentedRadio } from '@/components/common/SegmentedRadio'
 import { TopBar } from '@/components/layout/TopBar'
 import { Button } from '@/components/ui/button'
-import { activeFilters, filterBooks, filtersFromParams, matchSummary } from '@/lib/filters'
+import { activeFilters, cleanFilterParams, filterBooks, filtersFromParams, matchSummary } from '@/lib/filters'
 import { score, userTaste } from '@/lib/recommend'
 import { books } from '@/mocks/books'
 import { currentUser } from '@/mocks/user'
@@ -14,7 +15,13 @@ import { useLibrary } from '@/state/library'
 type Sort = 'best' | 'shortest'
 
 export function ResultsPage() {
-  const [params, setParams] = useSearchParams()
+  const [rawParams, setParams] = useSearchParams()
+  // Invalid filters (a hand-edited or old link) are ignored, and the URL is cleaned without a new history entry
+  const params = useMemo(() => cleanFilterParams(rawParams, books), [rawParams])
+  const dirty = params.toString() !== rawParams.toString()
+  useEffect(() => {
+    if (dirty) setParams(params, { replace: true })
+  }, [dirty, params, setParams])
   const [sort, setSort] = useState<Sort>('best')
   const entries = useLibrary((s) => s.entries)
   const sortLabelId = useId()
@@ -47,15 +54,11 @@ export function ResultsPage() {
           <ul aria-label="Active filters" className="flex gap-2 relative overflow-x-auto px-4 pb-1">
             {chips.map((chip, i) => (
               <li key={`${chip.param}=${chip.value}`} className="shrink-0">
-                <button
-                  type="button"
-                  aria-label={`Remove filter: ${chip.label}`}
-                  onClick={() => removeAt(i)}
-                  className="inline-flex min-h-11 items-center gap-1 rounded-full border border-muted-foreground bg-secondary font-semibold text-secondary-foreground px-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                >
+                {/* Selected, with an × instead of the check: pressing it removes the filter */}
+                <Chip selected icon={null} aria-label={`Remove filter: ${chip.label}`} onClick={() => removeAt(i)}>
                   {chip.label}
                   <X className="size-4" strokeWidth={2.5} aria-hidden="true" />
-                </button>
+                </Chip>
               </li>
             ))}
           </ul>
@@ -87,6 +90,8 @@ export function ResultsPage() {
                 className="[&>button]:text-sm"
               />
             </div>
+            {/* The cards are h3: this keeps the outline h1 → h2 → h3 */}
+            <h2 className="sr-only">Matching books</h2>
             {/* As many 7rem columns as fit: 3 on a phone, fewer with large text */}
             <ul className="grid grid-cols-[repeat(auto-fill,minmax(7rem,1fr))] gap-x-3 gap-y-6 px-4 pt-2">
               {results.map((book) => (

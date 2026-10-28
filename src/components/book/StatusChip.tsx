@@ -1,5 +1,6 @@
 import { useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react'
 import { ChevronDown, Plus, Trash2 } from 'lucide-react'
+import { chipVariants } from '@/components/common/chipVariants'
 import type { ReadingStatus } from '@/types/library'
 import {
   DropdownMenu,
@@ -102,24 +103,22 @@ export function StatusChip({
     <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
         ref={triggerRef}
+        data-log-sheet-opener=""
         {...quickHandlers}
         aria-label={ariaLabel}
         className={cn(
-          'relative inline-flex max-w-full min-w-11 items-center justify-center font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+          // On cards it's the shared Chip (status variant, no shadow). Shelved = neutral fill + the shelf's own
+          // icon and name (never hue alone). Only the book page's big "Want to read" (variant primary, nothing
+          // shelved yet) is the view's main action in --primary.
           variant === 'primary'
-            ? 'min-h-11 w-full gap-2 rounded-lg px-4 text-sm'
-            : cn(
-                // Visual pill is 32px tall; the ::after extends the hit area to 44px
-                "h-8 rounded-full text-xs shadow-sm after:absolute after:-inset-y-1.5 after:inset-x-0 after:content-['']",
-                variant === 'compact' ? 'gap-0.5 px-2.5' : 'gap-1 px-3',
-              ),
-          // Shelved = neutral fill + the shelf's own icon and name (never hue alone). Only the book page's
-          // big "Want to read" (variant primary, nothing shelved yet) is the view's main action in --primary.
-          status !== null
-            ? 'border border-muted-foreground bg-secondary text-secondary-foreground hover:bg-secondary/80'
-            : variant === 'primary'
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-              : 'border border-input bg-background text-foreground hover:bg-muted',
+            ? cn(
+                'relative inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                status !== null
+                  ? 'border border-muted-foreground bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                  : 'bg-primary text-primary-foreground hover:bg-primary/90',
+              )
+            : cn(chipVariants({ variant: 'status', selected: status !== null }), variant === 'compact' && 'gap-0.5 px-2.5'),
+          'max-w-full min-w-11 justify-center font-semibold whitespace-nowrap',
           className,
         )}
       >

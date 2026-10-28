@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { useOnline } from '@/lib/useOnline'
 
 const TOAST_ID = 'offline'

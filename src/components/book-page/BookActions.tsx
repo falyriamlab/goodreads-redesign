@@ -33,7 +33,8 @@ export function BookActions({ book }: { book: Book }) {
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4">
+      {/* Rating a book that isn't Read opens the log sheet */}
+      <div data-log-sheet-opener="" className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4">
         <p className="text-lg font-semibold">Your rating</p>
         <StarRating mode="input" value={a.entry.rating} onChange={a.rate} label={`Your rating for ${book.title}`} />
       </div>

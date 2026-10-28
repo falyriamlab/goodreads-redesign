@@ -130,7 +130,7 @@ function BarList({ data }: { data: Datum[] }) {
             <span>{d.fullLabel ?? d.label}</span>
             <span className="font-semibold tabular-nums">{d.display ?? d.value}</span>
           </div>
-          <div aria-hidden="true" className="h-2.5 overflow-hidden rounded-full bg-muted">
+          <div aria-hidden="true" className="h-2.5 overflow-hidden rounded-full bg-track">
             <div className="h-full rounded-full bg-primary" style={{ width: `${(d.value / max) * 100}%` }} />
           </div>
         </li>

@@ -255,7 +255,7 @@ function YearSoFar({ data, privateLabel }: { data: ProfileViewData; privateLabel
                     {/* The number is always written: the bar is never the only carrier */}
                     <span className="font-semibold tabular-nums">{g.percent}%</span>
                   </div>
-                  <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-muted">
+                  <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-track">
                     <div className="h-full rounded-full bg-primary" style={{ width: `${g.percent}%` }} />
                   </div>
                 </li>

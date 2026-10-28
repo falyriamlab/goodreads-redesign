@@ -1,7 +1,7 @@
 import { useId, useRef, useState } from 'react'
 import { ChevronDown, EyeOff, Lock } from 'lucide-react'
 import { Link, useParams } from 'react-router'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { BookCover } from '@/components/book/BookCover'
 import { useBuddyComments } from '@/components/community/data'
 import { FixedComposer } from '@/components/community/FixedComposer'

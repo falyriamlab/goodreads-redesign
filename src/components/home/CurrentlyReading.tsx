@@ -8,6 +8,7 @@ import { useLogSheet } from '@/components/log-sheet/context'
 import { Button } from '@/components/ui/button'
 import { readingProgress } from '@/lib/readingProgress'
 import { textLinkClass } from '@/lib/ui'
+import { cn } from '@/lib/utils'
 import type { Book } from '@/types/book'
 import type { useHomeData } from './useHomeData'
 
@@ -43,6 +44,8 @@ export function CurrentlyReading({ reading }: { reading: Reading }) {
 function ReadingCard({ book, currentPage }: { book: Book; currentPage: number }) {
   const logSheet = useLogSheet()
   const p = readingProgress(book, currentPage)
+  // One main action per card: updating progress while there are pages left, finishing once there aren't
+  const done = currentPage >= book.pages
   return (
     // relative: contains the sr-only span, which would otherwise escape the carousel and widen the page
     <article className="relative h-full space-y-4 rounded-2xl border border-border bg-card p-4 text-card-foreground">
@@ -68,8 +71,13 @@ function ReadingCard({ book, currentPage }: { book: Book; currentPage: number })
       </div>
       <ProgressBar percent={p.percent} label={`Progress in ${book.title}`} valueText={p.detail} />
       <div className="flex gap-2">
-        <UpdateProgress book={book} currentPage={currentPage} className="flex-1 px-2" />
-        <Button className="min-h-11 flex-1 px-2" onClick={(e) => logSheet.open(book.id, { intent: 'read', returnFocus: e.currentTarget })}>
+        <UpdateProgress book={book} currentPage={currentPage} variant={done ? 'outline' : 'default'} className="flex-1 px-2" />
+        <Button
+          variant={done ? 'default' : 'outline'}
+          data-log-sheet-opener=""
+          className={cn('min-h-11 flex-1 px-2', !done && 'border-muted-foreground')}
+          onClick={(e) => logSheet.open(book.id, { intent: 'read', returnFocus: e.currentTarget })}
+        >
           Finished it
         </Button>
       </div>

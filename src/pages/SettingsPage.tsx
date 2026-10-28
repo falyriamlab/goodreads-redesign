@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Download, Headphones, LogOut, RotateCcw, Tablet } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { SegmentedRadio } from '@/components/common/SegmentedRadio'
 import { TopBar } from '@/components/layout/TopBar'
 import { Button } from '@/components/ui/button'

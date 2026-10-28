@@ -1,4 +1,4 @@
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { getChallengePace } from '@/lib/challenge'
 import { now } from '@/lib/clock'
 import { recommend } from '@/lib/recommend'

@@ -5,6 +5,7 @@ import { BookCard } from '@/components/book/BookCard'
 import { BookActions } from '@/components/book-page/BookActions'
 import { BookHero } from '@/components/book-page/BookHero'
 import { ReviewsSection } from '@/components/book-page/ReviewsSection'
+import { chipVariants } from '@/components/common/chipVariants'
 import { ClampText } from '@/components/common/ClampText'
 import { TopBar, TopBarIconButton } from '@/components/layout/TopBar'
 import { formatDate } from '@/lib/date'
@@ -104,8 +105,7 @@ function Section({ title, children, action }: { title: string; children: ReactNo
 }
 
 /* 4. Moods, pace and tropes as links into Discover */
-const pillLink =
-  "relative inline-flex h-8 items-center rounded-full border border-muted-foreground px-3 text-xs font-medium text-foreground transition-colors outline-none after:absolute after:-inset-y-1.5 after:inset-x-0 after:content-[''] hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+const pillLink = chipVariants({ variant: 'tag' })
 
 function Vibes({ book }: { book: Book }) {
   const groups: { label: string; param: string; values: string[] }[] = [

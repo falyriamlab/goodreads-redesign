@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { CircleAlert, Plus, X } from 'lucide-react'
 import { useBlocker, useNavigate } from 'react-router'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { SortableBookList } from '@/components/common/SortableBookList'
 import { TopBar } from '@/components/layout/TopBar'
 import { FavoritePickerDrawer } from '@/components/profile/FavoritePickerDrawer'

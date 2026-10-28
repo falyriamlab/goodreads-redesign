@@ -184,19 +184,23 @@ function NoResults({ query }: { query: string }) {
 function BookResults({ results, query, onOpen }: { results: SearchResult[]; query: string; onOpen: () => void }) {
   if (results.length === 0) return <NoResults query={query} />
   return (
-    <ul className="divide-y divide-border">
-      {results.map(({ book, highlights }) => (
-        <li key={book.id}>
-          <BookCard
-            book={book}
-            variant="row"
-            onOpen={onOpen}
-            titleContent={<Highlight text={book.title} ranges={highlights.title} />}
-            authorContent={<Highlight text={book.author} ranges={highlights.author} />}
-          />
-        </li>
-      ))}
-    </ul>
+    <>
+      {/* The rows' titles are h3: this keeps the outline h1 → h2 → h3 */}
+      <h2 className="sr-only">Books</h2>
+      <ul className="divide-y divide-border">
+        {results.map(({ book, highlights }) => (
+          <li key={book.id}>
+            <BookCard
+              book={book}
+              variant="row"
+              onOpen={onOpen}
+              titleContent={<Highlight text={book.title} ranges={highlights.title} />}
+              authorContent={<Highlight text={book.author} ranges={highlights.author} />}
+            />
+          </li>
+        ))}
+      </ul>
+    </>
   )
 }
 

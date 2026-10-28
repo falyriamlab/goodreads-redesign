@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { books } from '@/mocks/books'
 import {
   activeFilters,
+  cleanFilterParams,
   EMPTY_FILTERS,
   filterBooks,
   filtersFromParams,
@@ -64,5 +65,11 @@ describe('filters', () => {
     expect(activeFilters(params).map((a) => a.label)).toEqual(['Fast', 'Dark', 'No violence'])
     const fw = books.find((b) => b.id === 'fourth-wing')!
     expect(matchSummary(fw, f({ moods: ['dark'], pace: ['fast'], tropes: ['enemies to lovers'] }))).toBe('Dark · Fast · Enemies to lovers')
+  })
+
+  it('cleans params down to values the catalog can match, keeping their order', () => {
+    const params = new URLSearchParams('mood=zzz&pace=fast&utm=x&mood=dark&pace=fast&genre=&length=huge&exclude=violence')
+    expect(cleanFilterParams(params, books).toString()).toBe('pace=fast&mood=dark&exclude=violence')
+    expect(cleanFilterParams(new URLSearchParams('mood=zzz'), books).toString()).toBe('')
   })
 })

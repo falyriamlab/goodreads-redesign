@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
-import { Check, Pencil, Plus } from 'lucide-react'
-import { toast } from 'sonner'
+import { Pencil, Plus } from 'lucide-react'
+import { toast } from '@/lib/toast'
+import { Chip } from '@/components/common/Chip'
+import { chipVariants } from '@/components/common/chipVariants'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
@@ -11,8 +13,8 @@ import type { Shelf } from '@/types/library'
 
 const LONG_PRESS_MS = 500
 
-const chipClass =
-  "relative inline-flex h-9 shrink-0 items-center gap-1 rounded-full border px-3.5 text-sm whitespace-nowrap transition-colors outline-none select-none after:absolute after:-inset-y-1 after:inset-x-0 after:content-[''] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+// One row that scrolls sideways: labels never wrap, and a long press doesn't select the text
+const rowChip = 'whitespace-nowrap select-none'
 
 type DrawerState = { mode: 'create' } | { mode: 'edit'; focusShelfId?: string } | null
 
@@ -34,14 +36,14 @@ export function ShelfChips({ value, onChange }: { value: string | null; onChange
             onLongPress={() => setDrawer({ mode: 'edit', focusShelfId: s.id })}
           />
         ))}
-        <button type="button" className={cn(chipClass, 'border-dashed border-muted-foreground font-medium')} onClick={() => setDrawer({ mode: 'create' })}>
+        <button type="button" className={cn(chipVariants(), rowChip, 'border-dashed')} onClick={() => setDrawer({ mode: 'create' })}>
           <Plus className="size-4" aria-hidden="true" />
           New shelf
         </button>
         {shelves.length > 0 && (
           <button
             type="button"
-            className={cn(chipClass, 'border-transparent font-medium underline underline-offset-4')}
+            className={cn(chipVariants(), rowChip, 'border-transparent bg-transparent underline underline-offset-4')}
             onClick={() => setDrawer({ mode: 'edit' })}
           >
             <Pencil className="size-3.5" aria-hidden="true" />
@@ -76,8 +78,8 @@ function ShelfChip({
   const cancel = () => clearTimeout(timer.current)
 
   return (
-    <button
-      type="button"
+    <Chip
+      selected={pressed}
       aria-pressed={pressed}
       onPointerDown={() => {
         if (!onLongPress) return
@@ -95,14 +97,10 @@ function ShelfChip({
         if (longPressed.current) return
         onPress()
       }}
-      className={cn(
-        chipClass,
-        pressed ? 'border-muted-foreground bg-secondary font-semibold text-secondary-foreground' : 'border-muted-foreground bg-background font-medium hover:bg-muted',
-      )}
+      className={rowChip}
     >
-      {pressed && <Check className="size-4" strokeWidth={3} aria-hidden="true" />}
       {label}
-    </button>
+    </Chip>
   )
 }
 

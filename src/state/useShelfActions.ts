@@ -1,4 +1,4 @@
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import type { ReadingStatus } from '@/types/library'
 import { useLibrary } from './library'
 

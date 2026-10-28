@@ -2,7 +2,7 @@ import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 're
 import { Download, Link2, Share2 } from 'lucide-react'
 import { useSearchParams } from 'react-router'
 import { toBlob } from 'html-to-image'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { SegmentedRadio } from '@/components/common/SegmentedRadio'
 import { TopBar } from '@/components/layout/TopBar'
 import { CARD_HEIGHT, CARD_WIDTH, ShareCard, type ShareCardContent } from '@/components/share/ShareCard'
@@ -297,7 +297,7 @@ export function SharePage() {
               {coverUrls ? (
                 <ShareCard ref={cardRef} content={content} style={style} handle={profile.handle} alt={alt} coverUrls={coverUrls} />
               ) : (
-                <div style={{ width: CARD_WIDTH, height: CARD_HEIGHT }} className="animate-pulse bg-muted" />
+                <div style={{ width: CARD_WIDTH, height: CARD_HEIGHT }} className="animate-pulse bg-placeholder" />
               )}
             </div>
           </div>

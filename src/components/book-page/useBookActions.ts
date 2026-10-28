@@ -1,4 +1,4 @@
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import type { LogRequest } from '@/components/book/StatusChip'
 import { useLogSheet } from '@/components/log-sheet/context'
 import { useLibrary, useLibraryEntry } from '@/state/library'

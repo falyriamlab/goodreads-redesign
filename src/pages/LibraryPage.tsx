@@ -216,6 +216,8 @@ function ShelfPanel({ tab }: { tab: ReadingStatus }) {
 
       {/* Content */}
       <div className="px-4">
+        {/* Book titles in the list are h3: this keeps the outline h1 → h2 → h3 */}
+        <h2 className="sr-only">{SHELF_TABS.find((t) => t.value === tab)?.label} books</h2>
         {list.length === 0 ? (
           <div className="space-y-2 rounded-xl border border-dashed border-muted-foreground p-4 text-sm">
             <p>

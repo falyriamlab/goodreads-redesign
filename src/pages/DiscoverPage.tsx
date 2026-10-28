@@ -1,11 +1,11 @@
 import { useId, useRef, type ReactNode } from 'react'
 import { Award, ChevronRight, ListOrdered, ScanBarcode, Search } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { BookCard } from '@/components/book/BookCard'
+import { Chip } from '@/components/common/Chip'
 import { SegmentedRadio } from '@/components/common/SegmentedRadio'
 import { FilterDrawer } from '@/components/discover/FilterDrawer'
-import { ToggleChip } from '@/components/discover/ToggleChip'
 import { TopBar } from '@/components/layout/TopBar'
 import { Button } from '@/components/ui/button'
 import {
@@ -83,7 +83,9 @@ export function DiscoverPage() {
           </h2>
           <div className="flex flex-wrap gap-x-2 gap-y-3">
             {MOODS.map((m) => (
-              <ToggleChip key={m} label={capitalize(m)} pressed={filters.moods.includes(m)} onPressedChange={() => toggle('moods', m)} />
+              <Chip key={m} selected={filters.moods.includes(m)} aria-pressed={filters.moods.includes(m)} onClick={() => toggle('moods', m)}>
+                {capitalize(m)}
+              </Chip>
             ))}
           </div>
         </section>
@@ -135,7 +137,9 @@ export function DiscoverPage() {
           <div className="flex flex-wrap gap-x-2 gap-y-3">
             {/* Top 6, plus any picked from the drawer so they stay visible */}
             {[...new Set([...TOP_TROPES, ...filters.tropes])].map((t) => (
-              <ToggleChip key={t} label={capitalize(t)} pressed={filters.tropes.includes(t)} onPressedChange={() => toggle('tropes', t)} />
+              <Chip key={t} selected={filters.tropes.includes(t)} aria-pressed={filters.tropes.includes(t)} onClick={() => toggle('tropes', t)}>
+                {capitalize(t)}
+              </Chip>
             ))}
           </div>
         </section>

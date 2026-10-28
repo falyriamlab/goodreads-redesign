@@ -1,5 +1,6 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useEffect } from 'react'
 import type { ReadingStatus } from '@/types/library'
+import { schedulePreload } from './preload'
 
 export type LogSheetOptions = {
   /** Preselected status, e.g. "read" after choosing Read in a StatusChip */
@@ -18,8 +19,10 @@ export type LogSheetApi = {
 
 export const LogSheetContext = createContext<LogSheetApi | null>(null)
 
+/** Every control that can open the sheet calls this, so its chunk is preloaded once one is on screen */
 export function useLogSheet(): LogSheetApi {
   const ctx = useContext(LogSheetContext)
   if (!ctx) throw new Error('useLogSheet must be used inside <LogSheetProvider>')
+  useEffect(() => schedulePreload(), [])
   return ctx
 }

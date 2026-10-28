@@ -75,6 +75,8 @@
     --color-shadow-color: var(--shadow-color);
     --color-destructive-foreground: var(--destructive-foreground);
     --color-rating: var(--rating);
+    --color-track: var(--track);
+    --color-placeholder: var(--placeholder);
     /* Marginalia (docs/visual-system.md) */
     --color-band: var(--band);
     --color-band-foreground: var(--band-foreground);
@@ -89,8 +91,9 @@
 
 /*
  * Theme v2 "Goodreads 1" (tweakcn): indigo on stone. Dark mode is the theme as published; light mode
- * changes only the L of four tokens for contrast (same chroma and hue):
- * --primary 0.5854 → 0.56, --muted-foreground 0.5510 → 0.50, --muted 0.9232 → 0.86, --rating 0.58 0.16 70.
+ * changes only the L of five tokens for contrast (same chroma and hue):
+ * --primary 0.5854 → 0.56, --muted-foreground 0.5510 → 0.50, --muted 0.9232 → 0.86, --rating 0.58 0.16 70,
+ * --destructive 0.6368 → 0.52.
  *
  * Color usage rules (WCAG AA, sRGB; full table in docs/visual-system.md):
  * - Every *-foreground passes 4.5:1 on its own surface. primary-foreground on primary: 4.98 light / 5.75 dark.
@@ -103,7 +106,8 @@
  * - --muted-foreground: 4.78 on --background, 5.50 on --card (light). On --muted it's only 3.92:
  *   text inside a bg-muted panel uses text-foreground (9.55).
  * - --rating (stars) is a non-text graphic: 3.51 on --background, 4.04 on --card (light) / 9.02, 7.69 (dark).
- * - --muted is the cover placeholder and the bar track; bar fill (primary) on it: 3.25 light / 5.69 dark.
+ * - --track (every bar's track) and --placeholder (a cover with no image) are --muted in light mode and the
+ *   theme's --secondary in dark mode, where --muted is the background itself (1.01:1).
  *
  * Marginalia tokens:
  * - --band: the paper band for a screen's hero moment (warm paper on the stone background).
@@ -127,7 +131,7 @@
     --muted-foreground: oklch(0.50 0.0234 264.3637);
     --accent: oklch(0.9376 0.0260 321.9388);
     --accent-foreground: oklch(0.3729 0.0306 259.7328);
-    --destructive: oklch(0.6368 0.2078 25.3313);
+    --destructive: oklch(0.52 0.2078 25.3313);
     --destructive-foreground: oklch(1.0000 0 0);
     --border: oklch(0.8687 0.0043 56.3660);
     --input: oklch(0.8687 0.0043 56.3660);
@@ -147,6 +151,8 @@
     --sidebar-border: oklch(0.8687 0.0043 56.3660);
     --sidebar-ring: oklch(0.5854 0.2041 277.1173);
     --rating: oklch(0.58 0.16 70);
+    --track: var(--muted);
+    --placeholder: var(--muted);
     --band: oklch(0.962 0.02 85);
     --band-foreground: oklch(0.2795 0.0368 260.0310);
     --band-muted-foreground: oklch(0.50 0.0234 264.3637);
@@ -209,6 +215,8 @@
     --sidebar-border: oklch(0.3359 0.0077 59.4197);
     --sidebar-ring: oklch(0.6801 0.1583 276.9349);
     --rating: oklch(0.80 0.16 80);
+    --track: var(--secondary);
+    --placeholder: var(--secondary);
     --band: oklch(0.265 0.012 67);
     --band-foreground: oklch(0.9288 0.0126 255.5078);
     --band-muted-foreground: oklch(0.7137 0.0192 261.3246);
